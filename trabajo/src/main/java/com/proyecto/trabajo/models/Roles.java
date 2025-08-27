@@ -1,14 +1,10 @@
 package com.proyecto.trabajo.models;
 
-import java.time.LocalDateTime;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,18 +14,10 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 
-public class Tickets {
-
+public class Roles {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_ticket;
-    @Column(nullable = false, length = 5)
-    private LocalDateTime fecha_ini;
-    private LocalDateTime fecha_finn;
-    private String ambiente;
-    private String historial;
-
-    @ManyToOne
-    @JoinColumn(name = "id_usu")
-    private Usuarios usuario; 
+    private Byte id_roles;
+    @Column(nullable = false, length = 3)
+    private String nom_rol;
 }

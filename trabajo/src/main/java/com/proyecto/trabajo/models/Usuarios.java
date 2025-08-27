@@ -1,10 +1,17 @@
 package com.proyecto.trabajo.models;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,6 +33,23 @@ public class Usuarios {
     private String correo;
 
     private Integer num_doc;
-    @Column(nullable=false,length=30)
+    @Column(nullable=false,length=30) 
     private String password;
+
+    @ManyToOne
+    @JoinColumn(name = "id_estado_usuario")
+    private Estado_usuario estado_usuario;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Solicitudes> solicitudes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Tickets> tickets = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "tip_document")
+    private Tip_documento tip_documento;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Prestamos> prestamos = new ArrayList<>();
 }
