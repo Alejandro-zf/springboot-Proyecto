@@ -6,6 +6,7 @@ import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -37,7 +38,7 @@ public class Usuarios {
     private String password;
 
     @ManyToOne
-    @JoinColumn(name = "id_estado_usuario")
+    @JoinColumn(name = "id_estado_usuario", nullable = false, foreignKey = @ForeignKey(name = "FK_Id_estado_usuario"))
     private Estado_usuario estado_usuario;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -47,9 +48,12 @@ public class Usuarios {
     private List<Tickets> tickets = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "tip_document")
+    @JoinColumn(name = "tip_document", nullable = false, foreignKey = @ForeignKey(name = "FK_Tip_document"))
     private Tip_documento tip_documento;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Prestamos> prestamos = new ArrayList<>();
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true )
+    private List <Roles_Usuario> role = new ArrayList<>();
 }

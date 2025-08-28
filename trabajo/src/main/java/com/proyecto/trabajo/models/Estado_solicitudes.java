@@ -18,13 +18,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 @Entity
-public class Categoria {
+public class Estado_solicitudes {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Byte id_categoria;
-    @Column(nullable = false, length =30)
-    private String nom_categoria;
+    private Integer id_estado_soli;
 
-    @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List <Elementos> elementoss = new ArrayList<>();
+    @Column(nullable = false,length = 25)
+    private String tipo_estado;
+
+    @OneToMany(mappedBy = "estado_solicitudes", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List <Solicitudes> solicitudes = new ArrayList<>();
 }
