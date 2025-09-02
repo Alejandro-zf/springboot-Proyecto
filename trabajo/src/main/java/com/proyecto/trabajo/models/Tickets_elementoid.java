@@ -12,13 +12,12 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = { "id_ticket", "id_elemento" })
+@EqualsAndHashCode(of = { "ticketid", "elementoid" })
 
 public class Tickets_elementoid implements Serializable {
-    public Tickets_elementoid(Integer id, Integer id2){
+    public Tickets_elementoid(Integer id_ticket, Integer id_elemento){
     }
 
-    private Long id_ticket;
-    private Long id_elemento;
-
+    private Long ticketid;
+    private Long elementoid;
 }

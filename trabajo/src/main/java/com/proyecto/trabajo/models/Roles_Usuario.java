@@ -15,11 +15,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-
-@Embeddable
-
 public class Roles_Usuario {
 
+    @Embeddable
     public class Roles_Usuarioid implements Serializable{
         private Long id_usuario;
         private Long id_roles;

@@ -16,15 +16,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-
 public class Tickets_elemento {
 
     @Embeddable
     public class Tickets_elementoid implements Serializable{
 
-        private Long id_ticket;
-        private Long id_elemento;
-
+        private Long ticketid;
+        private Long elementoid;
     }
 
     @Column(nullable = false, length = 255)
@@ -38,11 +36,10 @@ public class Tickets_elemento {
     private Tickets_elementoid id = new Tickets_elementoid();
     
     @ManyToOne
-    @MapsId("id_ticket")
+    @MapsId("ticketid")
     private Tickets tickets;
 
     @ManyToOne
-    @MapsId("id_elemento")
+    @MapsId("elementoid")
     private Elementos elementos;
-
 }

@@ -18,7 +18,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 @Entity
-
 public class Estado_ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

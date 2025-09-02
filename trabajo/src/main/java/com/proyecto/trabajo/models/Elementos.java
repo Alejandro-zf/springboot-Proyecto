@@ -3,7 +3,6 @@ package com.proyecto.trabajo.models;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.engine.internal.ForeignKeys;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -48,7 +47,7 @@ public class Elementos {
     private Categoria categoria;
 
     @OneToMany(mappedBy = "elementos", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List <Tickets_elemento> element = new ArrayList<>();
+    private List <Tickets_elemento> ticket = new ArrayList<>();
 
     @OneToMany(mappedBy = "elementos", cascade = CascadeType.ALL, orphanRemoval = true)
     private List <Prestamos_Elemento> prestamo =new ArrayList<>();

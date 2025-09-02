@@ -50,7 +50,7 @@ public class Usuarios {
     @ManyToOne
     @JoinColumn(name = "tip_document", nullable = false, foreignKey = @ForeignKey(name = "FK_Tip_document"))
     private Tip_documento tip_documento;
-
+    
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Prestamos> prestamos = new ArrayList<>();
 

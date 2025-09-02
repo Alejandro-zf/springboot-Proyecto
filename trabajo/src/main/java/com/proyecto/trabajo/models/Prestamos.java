@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @Entity
-
 public class Prestamos {
 
     @Id

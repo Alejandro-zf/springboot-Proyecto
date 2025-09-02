@@ -18,7 +18,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @Entity
-
 public class Roles {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
