@@ -28,4 +28,4 @@ public class Estado_ticket {
 
     @OneToMany(mappedBy = "estado_ticket", cascade = CascadeType.ALL,orphanRemoval = true)
     private List <Tickets> tickets = new ArrayList<>();
-}
+}   

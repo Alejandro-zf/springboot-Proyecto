@@ -1,40 +1,35 @@
 package com.proyecto.trabajo.models;
 
-import java.io.Serializable;
-
-import jakarta.persistence.Embeddable;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Data
 @Entity
+@Table(name = "elemento_solicitudes")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Elemento_Solicitudes {
 
-    @Embeddable
-    public class Elemento_Solicitudesid implements Serializable{
-
-    private Long id_solicitud;
-    private Long id_elemento;
-    
-    }
-    
     @EmbeddedId
     private Elemento_Solicitudesid id = new Elemento_Solicitudesid();
 
     
     @ManyToOne
-    @MapsId("id_solicitud")
+    @MapsId("solicitudid")
+    @JoinColumn(name = "solicitud_id", foreignKey = @ForeignKey(name = "FK_elemento_solicitudes_solicitudes"))
     private Solicitudes solicitudes;
 
-    
+
     @ManyToOne
-    @MapsId("id_elemento")
+    @MapsId("elementoid")
+    @JoinColumn(name = "elemento_id", foreignKey = @ForeignKey(name = "FK_elemento_solicitudes_elementos"))
     private Elementos elementos;
 }

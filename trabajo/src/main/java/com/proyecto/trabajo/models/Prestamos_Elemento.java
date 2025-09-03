@@ -1,41 +1,43 @@
 package com.proyecto.trabajo.models;
 
-import java.io.Serializable;
+import org.antlr.v4.runtime.misc.NotNull;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Data
+
 @Entity
+@Table(name = "prestamos_elementos")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Prestamos_Elemento {
-
-    @Embeddable
-    public class Prestamos_Elementoid implements Serializable{
-    
-    private Long id_prestamo;
-    private Long id_elemento;
-    }
-
-    @Column(nullable = false, length = 255)
-    private String  Obser_prest;
 
     @EmbeddedId
     private Prestamos_Elementoid id = new Prestamos_Elementoid();
 
+
     @ManyToOne
-    @MapsId("id_prestamo")
+    @MapsId("prestamoid")
+    @JoinColumn(name = "prestamos_id", foreignKey = @ForeignKey(name = "FK_prestamos_elementos_prestamos"))
     private Prestamos prestamos;
 
     @ManyToOne
-    @MapsId("id_elemento")
+    @MapsId("elementoid")
+    @JoinColumn(name = "elemento_id", foreignKey = @ForeignKey(name = "FK_prestamos_elementos_elementos"))
     private Elementos elementos;
+
+
+    @NotNull
+    @Column(name = "Obser_prest")
+    private String Obser_prest;
 }

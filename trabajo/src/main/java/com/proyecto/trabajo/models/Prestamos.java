@@ -26,7 +26,8 @@ public class Prestamos {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_prestamo;
+    private Long id_prestamo;
+    
     private LocalDateTime fecha_entre;
     private LocalDateTime fecha_recep;
 

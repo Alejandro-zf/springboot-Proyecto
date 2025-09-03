@@ -1,45 +1,41 @@
 package com.proyecto.trabajo.models;
 
-import java.io.Serializable;
-
 import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Entity
+@Table(name = "tickets_elemento")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Entity
+
 public class Tickets_elemento {
 
-    @Embeddable
-    public class Tickets_elementoid implements Serializable{
-
-        private Long ticketid;
-        private Long elementoid;
-    }
+    @EmbeddedId
+    private Tickets_elementoid id = new Tickets_elementoid();
 
     @Column(nullable = false, length = 255)
     private String  Obser_ticket;
 
     @Column(nullable = false, length = 25)
     private String  num_ticket;
-
-
-    @EmbeddedId
-    private Tickets_elementoid id = new Tickets_elementoid();
     
     @ManyToOne
     @MapsId("ticketid")
+    @JoinColumn(name = "ticket_id", foreignKey =  @ForeignKey(name = "FK_ticket_id_ticket"))
     private Tickets tickets;
 
     @ManyToOne
     @MapsId("elementoid")
+    @JoinColumn(name = "elemento_id", foreignKey =  @ForeignKey(name = "FK_elemento_id_elemento"))
     private Elementos elementos;
 }

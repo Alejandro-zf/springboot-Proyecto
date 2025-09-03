@@ -23,12 +23,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @Entity
-
 public class Elementos {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_elemento;
+    private Long id_elemento;
     @Column(nullable = false, length = 30)
     private String nom_elemento;
     @Column(nullable = false, length = 150)
