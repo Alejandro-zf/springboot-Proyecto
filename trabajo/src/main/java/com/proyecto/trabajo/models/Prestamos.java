@@ -40,8 +40,8 @@ public class Prestamos {
     private Usuarios usuario;
 
     
-    @OneToMany(mappedBy = "prestamos", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Prestamos_Elemento> elemento = new ArrayList<>();
+    @OneToMany(mappedBy = "prestamos")
+    private List<Prestamos_Elemento> prestamoss;
 
     @ManyToOne
     @JoinColumn(name = "id_espacio", nullable = false, foreignKey = @ForeignKey(name = "FK_Id_espaciio"))

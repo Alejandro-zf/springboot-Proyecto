@@ -45,9 +45,9 @@ public class Elementos {
     @JoinColumn(name = "categoria", nullable = false, foreignKey = @ForeignKey(name = "FK_Id_categoria"))
     private Categoria categoria;
 
-    @OneToMany(mappedBy = "elementos", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List <Tickets_elemento> ticket = new ArrayList<>();
+    @OneToMany(mappedBy = "elementos")
+    private List <Tickets_elemento> elementossticket;
 
-    @OneToMany(mappedBy = "elementos", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List <Prestamos_Elemento> prestamo =new ArrayList<>();
+    @OneToMany(mappedBy = "elementos")
+    private List <Prestamos_Elemento> prestamosselemen;
 }

@@ -27,7 +27,7 @@ public class Prestamos_Elemento {
 
 
     @ManyToOne
-    @MapsId("prestamoid")
+    @MapsId("prestamosid")
     @JoinColumn(name = "prestamos_id", foreignKey = @ForeignKey(name = "FK_prestamos_elementos_prestamos"))
     private Prestamos prestamos;
 
@@ -35,7 +35,6 @@ public class Prestamos_Elemento {
     @MapsId("elementoid")
     @JoinColumn(name = "elemento_id", foreignKey = @ForeignKey(name = "FK_prestamos_elementos_elementos"))
     private Elementos elementos;
-
 
     @NotNull
     @Column(name = "Obser_prest")
