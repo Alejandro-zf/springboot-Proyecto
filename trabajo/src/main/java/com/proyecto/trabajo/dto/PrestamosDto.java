@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-
 public class PrestamosDto {
 private Long id_prest;
-private LocalDateTime fecha_ent;
-private LocalDateTime fech_recep;
+private LocalDateTime fecha_entreg;
+private LocalDateTime fecha_repc;
 private String tipo_pres;
+
 }

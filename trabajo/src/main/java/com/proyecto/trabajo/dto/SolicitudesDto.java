@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
 public class SolicitudesDto {
 private Long id_soli;
 private Integer cant;
-private LocalDateTime fech_ini;
-private LocalDateTime fech_fin;
+private LocalDateTime fecha_ini;
+private LocalDateTime fecha_fn;
 private String ambient;
-private String estad;
+private String obse;
 }

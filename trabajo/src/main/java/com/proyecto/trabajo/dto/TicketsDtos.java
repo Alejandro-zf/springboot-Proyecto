@@ -9,10 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class TicketsDtO {
-    private Long id_tick;
-    private LocalDateTime fech_ini;
-    private LocalDateTime fech_fin;
-    private String ambient;
-
+public class TicketsDtos {
+private Long id_tickets;
+private LocalDateTime fecha_in;
+private LocalDateTime fecha_fin;
+private String ambient;
 }

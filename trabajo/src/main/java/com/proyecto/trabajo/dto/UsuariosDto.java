@@ -8,12 +8,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class UsuariosDto {
-    private Long id_usua;
-    private String nomb_usu;
-    private String apel_usu;
-    private String coorreo;
-    private Integer num_docu;
-    private String passwor;
-
-
+private Long id_usuari;
+private String nom_usua;
+private String ape_usua;
+private String corre;
+private Integer num_docu;
+private String passwor;
 }
