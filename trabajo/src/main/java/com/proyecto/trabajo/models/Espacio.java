@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 public class Espacio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_espacio;
+    private Integer id;
     @Column(nullable = false,length = 25)
     private String nom_espa;
     

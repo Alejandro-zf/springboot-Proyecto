@@ -26,7 +26,7 @@ public class Tickets {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_ticket;
+    private Long id;
     private LocalDateTime fecha_ini;
     private LocalDateTime fecha_finn;
     

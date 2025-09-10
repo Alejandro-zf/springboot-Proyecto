@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 public class Tip_documento {
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
-   private Byte id_documento;
+   private Byte id;
    
    @Column(nullable = false,length=30)
    private String tipo_doc; 

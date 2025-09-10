@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class Accesorios {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_accesorios;
+    private Integer id;
     private Integer cant;
     @Column(nullable = false,length = 30)
     private String nom_acce;

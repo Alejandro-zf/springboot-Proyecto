@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 public class Solicitudes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_solicitud;
+    private Long id;
     private Integer cantidad;
     private LocalDateTime fecha_inicio;
     private LocalDateTime fecha_fin;

@@ -27,7 +27,7 @@ public class Elementos {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_elemento;
+    private Long id;
     @Column(nullable = false, length = 30)
     private String nom_elemento;
     @Column(nullable = false, length = 150)
