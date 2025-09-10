@@ -23,6 +23,4 @@ public class Accesorios {
     @Column(nullable = false,length = 20)
     private String marca;
     private Integer num_serie;
-     
-
 }
