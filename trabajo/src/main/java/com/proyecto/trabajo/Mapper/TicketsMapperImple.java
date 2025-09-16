@@ -18,7 +18,6 @@ public class TicketsMapperImple implements TicketsMapper {
         entity.setFecha_ini(dto.getFecha_in());
         entity.setFecha_finn(dto.getFecha_fin());
         entity.setAmbiente(dto.getAmbient());
-        // Relaciones usuario/estado requieren IDs en el DTO; se dejan null por ahora
         return entity;
     }
 
