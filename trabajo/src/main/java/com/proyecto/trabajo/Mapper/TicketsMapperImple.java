@@ -4,8 +4,6 @@ import org.springframework.stereotype.Component;
 
 import com.proyecto.trabajo.dto.TicketsDtos;
 import com.proyecto.trabajo.models.Tickets;
-import com.proyecto.trabajo.models.Usuarios;
-import com.proyecto.trabajo.models.Estado_ticket;
 
 @Component
 public class TicketsMapperImple implements TicketsMapper {
