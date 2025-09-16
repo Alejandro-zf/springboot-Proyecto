@@ -18,7 +18,6 @@ public class PrestamosMapperImple implements PrestamosMapper {
         entity.setFecha_entre(dto.getFecha_entreg());
         entity.setFecha_recep(dto.getFecha_repc());
         entity.setTipo_prest(dto.getTipo_pres());
-        // Relaciones usuario/espacio requieren IDs en el DTO; se dejan null por ahora
         return entity;
     }
 
