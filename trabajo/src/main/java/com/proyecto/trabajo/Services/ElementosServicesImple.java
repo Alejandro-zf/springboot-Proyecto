@@ -2,7 +2,6 @@ package com.proyecto.trabajo.Services;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.proyecto.trabajo.Mapper.ElementosMapper;
@@ -13,34 +12,34 @@ import com.proyecto.trabajo.repository.ElementosRepository;
 @Service
 public class ElementosServicesImple implements ElementosServices {
     
-    @Autowired
-    private ElementosRepository elementosRepo;
+    private final ElementosRepository elementosRepo;
+    private final ElementosMapper elementosMapper;
 
-    @Autowired
-    private ElementosMapper elementosMapper;
-
-    @Override
-    public ElementoDto getElemento(Long id_elemen) {
-        Elementos elementos = elementosRepo.findById(id_elemen).get();
-        return elementosMapper.toElementoDto(elementos);
+    public ElementosServicesImple(ElementosRepository elementosRepo, ElementosMapper elementosMapper) {
+        this.elementosRepo = elementosRepo;
+        this.elementosMapper = elementosMapper;
     }
 
     @Override
-    public ElementoDto saveElemento(ElementoDto elementoDto) {
-        Elementos elementos = elementosMapper.toElementos(elementoDto);
+    public ElementoDto guardar(ElementoDto dto) {
+        Elementos elementos = elementosMapper.toElementos(dto);
         return elementosMapper.toElementoDto(elementosRepo.save(elementos));
     }
 
     @Override
-    public List<ElementoDto> getAllElementos() {
+    public ElementoDto buscarPorId(Long id) {
+        Elementos elementos = elementosRepo.findById(id).orElse(null);
+        return elementosMapper.toElementoDto(elementos);
+    }
+
+    @Override
+    public List<ElementoDto> listarTodos() {
         List<Elementos> elementos = elementosRepo.findAll();
         return elementosMapper.toElementoDtoList(elementos);
     }
 
     @Override
-    public ElementoDto deleteElementos(Long id_elemen) {
-        Elementos elementos = elementosRepo.findById(id_elemen).get();
-        elementosRepo.delete(elementos);
-        return elementosMapper.toElementoDto(elementos);
+    public void eliminar(Long id) {
+        elementosRepo.deleteById(id);
     }
 }

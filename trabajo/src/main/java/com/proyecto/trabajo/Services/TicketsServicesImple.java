@@ -2,7 +2,6 @@ package com.proyecto.trabajo.Services;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.proyecto.trabajo.Mapper.TicketsMapper;
@@ -13,34 +12,34 @@ import com.proyecto.trabajo.repository.TicketsRepository;
 @Service
 public class TicketsServicesImple implements TicketsServices {
     
-    @Autowired
-    private TicketsRepository ticketsRepo;
+    private final TicketsRepository ticketsRepo;
+    private final TicketsMapper ticketsMapper;
 
-    @Autowired
-    private TicketsMapper ticketsMapper;
-
-    @Override
-    public TicketsDtos getTicket(Long id_tickets) {
-        Tickets tickets = ticketsRepo.findById(id_tickets).get();
-        return ticketsMapper.toTicketsDto(tickets);
+    public TicketsServicesImple(TicketsRepository ticketsRepo, TicketsMapper ticketsMapper) {
+        this.ticketsRepo = ticketsRepo;
+        this.ticketsMapper = ticketsMapper;
     }
 
     @Override
-    public TicketsDtos saveTicket(TicketsDtos ticketsDtos) {
-        Tickets tickets = ticketsMapper.toTickets(ticketsDtos);
-        return ticketsMapper.toTicketsDto(ticketsRepo.save(tickets));
+    public TicketsDtos guardar(TicketsDtos dto) {
+        Tickets tickets = ticketsMapper.toEntity(dto);
+        return ticketsMapper.toDTO(ticketsRepo.save(tickets));
     }
 
     @Override
-    public List<TicketsDtos> getAllTickets() {
+    public TicketsDtos buscarPorId(Long id) {
+        Tickets tickets = ticketsRepo.findById(id).orElse(null);
+        return ticketsMapper.toDTO(tickets);
+    }
+
+    @Override
+    public List<TicketsDtos> listarTodos() {
         List<Tickets> tickets = ticketsRepo.findAll();
         return ticketsMapper.toTicketsDtoList(tickets);
     }
 
     @Override
-    public TicketsDtos deleteTickets(Long id_tickets) {
-        Tickets tickets = ticketsRepo.findById(id_tickets).get();
-        ticketsRepo.delete(tickets);
-        return ticketsMapper.toTicketsDto(tickets);
+    public void eliminar(Long id) {
+        ticketsRepo.deleteById(id);
     }
 }

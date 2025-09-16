@@ -5,12 +5,12 @@ import java.util.List;
 import com.proyecto.trabajo.dto.UsuariosDto;
 
 public interface UsuariosServices {
-    public UsuariosDto getUsuario(Long id_usuari);
+    UsuariosDto guardar(UsuariosDto dto);
 
-    public UsuariosDto saveUsuario(UsuariosDto usuariosDto);
- 
-    public List<UsuariosDto> getAllUsuarios();
+    UsuariosDto buscarPorId(Long id);
 
-    public UsuariosDto deleteUsuarios(Long id_usuari);
+    List<UsuariosDto> listarTodos();
+
+    void eliminar(Long id);
 
 }

@@ -29,6 +29,12 @@ public class TicketsMapperImple implements TicketsMapper {
         return tickets;
     }
 
+    // Alias explícitos estilo toEntity/toDTO
+    @Override
+    public Tickets toEntity(TicketsDtos dto) {
+        return toTickets(dto);
+    }
+
     @Override
     public TicketsDtos toTicketsDto(Tickets tickets) {
         if (tickets == null) {
@@ -43,6 +49,11 @@ public class TicketsMapperImple implements TicketsMapper {
         ticketsDto.setEstado_ticket(tickets.getEstado_ticket());
         
         return ticketsDto;
+    }
+
+    @Override
+    public TicketsDtos toDTO(Tickets entity) {
+        return toTicketsDto(entity);
     }
 
     @Override
