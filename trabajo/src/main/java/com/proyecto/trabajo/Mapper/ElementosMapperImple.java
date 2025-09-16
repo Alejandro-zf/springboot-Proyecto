@@ -26,8 +26,6 @@ public class ElementosMapperImple implements ElementosMapper {
 
         return elementos;
     }
-
-    // Alias explícitos estilo toEntity/toDTO
     @Override
     public Elementos toEntity(ElementoDto dto) {
         return toElementos(dto);
