@@ -5,11 +5,11 @@ import java.util.List;
 import com.proyecto.trabajo.dto.ElementoDto;
 
 public interface ElementosServices {
-    public ElementoDto getElemento(Long id_elemen);
+    ElementoDto guardar(ElementoDto dto);
 
-    public ElementoDto saveElemento(ElementoDto elementoDto);
- 
-    public List<ElementoDto> getAllElementos();
+    ElementoDto buscarPorId(Long id);
 
-    public ElementoDto deleteElementos(Long id_elemen);
+    List<ElementoDto> listarTodos();
+
+    void eliminar(Long id);
 }

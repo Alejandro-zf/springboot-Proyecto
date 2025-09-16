@@ -27,6 +27,12 @@ public class ElementosMapperImple implements ElementosMapper {
         return elementos;
     }
 
+    // Alias explícitos estilo toEntity/toDTO
+    @Override
+    public Elementos toEntity(ElementoDto dto) {
+        return toElementos(dto);
+    }
+
     @Override
     public ElementoDto toElementoDto(Elementos elementos) {
         if (elementos == null) {
@@ -40,6 +46,11 @@ public class ElementosMapperImple implements ElementosMapper {
         elementoDto.setComponen(elementos.getComponentes());
         
         return elementoDto;
+    }
+
+    @Override
+    public ElementoDto toDTO(Elementos entity) {
+        return toElementoDto(entity);
     }
 
     @Override

@@ -5,11 +5,11 @@ import java.util.List;
 import com.proyecto.trabajo.dto.TicketsDtos;
 
 public interface TicketsServices {
-    public TicketsDtos getTicket(Long id_tickets);
+    TicketsDtos guardar(TicketsDtos dto);
 
-    public TicketsDtos saveTicket(TicketsDtos ticketsDtos);
- 
-    public List<TicketsDtos> getAllTickets();
+    TicketsDtos buscarPorId(Long id);
 
-    public TicketsDtos deleteTickets(Long id_tickets);
+    List<TicketsDtos> listarTodos();
+
+    void eliminar(Long id);
 }

@@ -26,6 +26,11 @@ public Usuarios toUsuarios(UsuariosDto usuariosDto){
 }
 
 @Override
+public Usuarios toEntity(UsuariosDto dto) {
+    return toUsuarios(dto);
+}
+
+@Override
 public UsuariosDto toUsuariosDto(Usuarios usuarios) {
     if (usuarios == null){
         return null;
@@ -38,6 +43,11 @@ public UsuariosDto toUsuariosDto(Usuarios usuarios) {
     usuariosDto.setNum_docu(usuarios.getNum_doc());
     usuariosDto.setPasswor(usuarios.getPassword());
     return usuariosDto;
+}
+
+@Override
+public UsuariosDto toDTO(Usuarios entity) {
+    return toUsuariosDto(entity);
 }
  @Override
     public List<UsuariosDto> toUsuariosDtoList(List<Usuarios> usuarioss) {
