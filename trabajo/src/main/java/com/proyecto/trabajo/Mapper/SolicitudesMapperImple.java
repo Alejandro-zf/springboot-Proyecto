@@ -19,7 +19,6 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
         entity.setFecha_inicio(dto.getFecha_ini());
         entity.setFecha_fin(dto.getFecha_fn());
         entity.setAmbiente(dto.getAmbient());
-        // Campo estado no existe en DTO; no se mapea
         return entity;
     }
 
