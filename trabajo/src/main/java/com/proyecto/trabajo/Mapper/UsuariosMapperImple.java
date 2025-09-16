@@ -1,64 +1,40 @@
 package com.proyecto.trabajo.Mapper;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.stereotype.Component;
 
 import com.proyecto.trabajo.dto.UsuariosDto;
 import com.proyecto.trabajo.models.Usuarios;
+
 @Component
 public class UsuariosMapperImple implements UsuariosMapper {
-@Override
-public Usuarios toUsuarios(UsuariosDto usuariosDto){
-    if (usuariosDto == null){
-        return null ;
+
+    @Override
+    public Usuarios toEntity(UsuariosDto dto) {
+        if (dto == null) {
+            return null;
+        }
+        Usuarios entity = new Usuarios();
+        entity.setId(dto.getId_usuari());
+        entity.setNom_usu(dto.getNom_usua());
+        entity.setApe_usu(dto.getApe_usua());
+        entity.setCorreo(dto.getCorre());
+        entity.setNum_doc(dto.getNum_docu());
+        entity.setPassword(dto.getPasswor());
+        return entity;
     }
-    Usuarios usuarios = new Usuarios();
-    usuarios.setId(usuariosDto.getId_usuari());
-    usuarios.setNom_usu(usuariosDto.getNom_usua());
-    usuarios.setApe_usu(usuariosDto.getApe_usua());
-    usuarios.setCorreo(usuariosDto.getCorre());
-    usuarios.setNum_doc(usuariosDto.getNum_docu());
-    usuarios.setPassword(usuariosDto.getPasswor());
 
-    return usuarios;
-}
-
-@Override
-public Usuarios toEntity(UsuariosDto dto) {
-    return toUsuarios(dto);
-}
-
-@Override
-public UsuariosDto toUsuariosDto(Usuarios usuarios) {
-    if (usuarios == null){
-        return null;
+    @Override
+    public UsuariosDto toDTO(Usuarios entity) {
+        if (entity == null) {
+            return null;
+        }
+        UsuariosDto dto = new UsuariosDto();
+        dto.setId_usuari(entity.getId());
+        dto.setNom_usua(entity.getNom_usu());
+        dto.setApe_usua(entity.getApe_usu());
+        dto.setCorre(entity.getCorreo());
+        dto.setNum_docu(entity.getNum_doc());
+        dto.setPasswor(entity.getPassword());
+        return dto;
     }
-    UsuariosDto usuariosDto  = new UsuariosDto();
-    usuariosDto.setId_usuari(usuarios.getId());
-    usuariosDto.setNom_usua(usuarios.getNom_usu());
-    usuariosDto.setApe_usua(usuarios.getApe_usu());
-    usuariosDto.setCorre(usuarios.getCorreo());
-    usuariosDto.setNum_docu(usuarios.getNum_doc());
-    usuariosDto.setPasswor(usuarios.getPassword());
-    return usuariosDto;
-}
-
-@Override
-public UsuariosDto toDTO(Usuarios entity) {
-    return toUsuariosDto(entity);
-}
- @Override
-    public List<UsuariosDto> toUsuariosDtoList(List<Usuarios> usuarioss) {
-    if (usuarioss == null ){
-        return List.of();
-    }
-    List<UsuariosDto> usuariosDtos = new ArrayList<UsuariosDto>(usuarioss.size());
-
-    for (Usuarios usuarios : usuarioss) {
-        usuariosDtos.add(toUsuariosDto(usuarios));
-}
-return usuariosDtos;
-}
 }

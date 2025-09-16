@@ -1,8 +1,5 @@
 package com.proyecto.trabajo.Mapper;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.stereotype.Component;
 
 import com.proyecto.trabajo.dto.TicketsDtos;
@@ -14,58 +11,29 @@ import com.proyecto.trabajo.models.Estado_ticket;
 public class TicketsMapperImple implements TicketsMapper {
 
     @Override
-    public Tickets toTickets(TicketsDtos ticketsDtos) {
-        if (ticketsDtos == null) {
-            return null;
-        }
-        Tickets tickets = new Tickets();
-        tickets.setId(ticketsDtos.getId_tickets());
-        tickets.setFecha_ini(ticketsDtos.getFecha_in());
-        tickets.setFecha_finn(ticketsDtos.getFecha_fin());
-        tickets.setAmbiente(ticketsDtos.getAmbient());
-        tickets.setUsuario(ticketsDtos.getUsuario());
-        tickets.setEstado_ticket(ticketsDtos.getEstado_ticket());
-
-        return tickets;
-    }
-
-    // Alias explícitos estilo toEntity/toDTO
-    @Override
     public Tickets toEntity(TicketsDtos dto) {
-        return toTickets(dto);
-    }
-
-    @Override
-    public TicketsDtos toTicketsDto(Tickets tickets) {
-        if (tickets == null) {
+        if (dto == null) {
             return null;
         }
-        TicketsDtos ticketsDto = new TicketsDtos();
-        ticketsDto.setId_tickets(tickets.getId());
-        ticketsDto.setFecha_in(tickets.getFecha_ini());
-        ticketsDto.setFecha_fin(tickets.getFecha_finn());
-        ticketsDto.setAmbient(tickets.getAmbiente());
-        ticketsDto.setUsuario(tickets.getUsuario());
-        ticketsDto.setEstado_ticket(tickets.getEstado_ticket());
-        
-        return ticketsDto;
+        Tickets entity = new Tickets();
+        entity.setId(dto.getId_tickets());
+        entity.setFecha_ini(dto.getFecha_in());
+        entity.setFecha_finn(dto.getFecha_fin());
+        entity.setAmbiente(dto.getAmbient());
+        // Relaciones usuario/estado requieren IDs en el DTO; se dejan null por ahora
+        return entity;
     }
 
     @Override
     public TicketsDtos toDTO(Tickets entity) {
-        return toTicketsDto(entity);
-    }
-
-    @Override
-    public List<TicketsDtos> toTicketsDtoList(List<Tickets> tickets) {
-        if (tickets == null) {
-            return List.of();
+        if (entity == null) {
+            return null;
         }
-        List<TicketsDtos> ticketsDtos = new ArrayList<TicketsDtos>(tickets.size());
-
-        for (Tickets ticket : tickets) {
-            ticketsDtos.add(toTicketsDto(ticket));
-        }
-        return ticketsDtos;
+        TicketsDtos dto = new TicketsDtos();
+        dto.setId_tickets(entity.getId());
+        dto.setFecha_in(entity.getFecha_ini());
+        dto.setFecha_fin(entity.getFecha_finn());
+        dto.setAmbient(entity.getAmbiente());
+        return dto;
     }
 }
