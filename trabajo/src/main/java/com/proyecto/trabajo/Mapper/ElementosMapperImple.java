@@ -43,16 +43,4 @@ public class ElementosMapperImple implements ElementosMapper {
         
         return elementoDto;
     }
-
-    public List<ElementoDto> toElementoDtoList(List<Elementos> elementos) {
-        if (elementos == null) {
-            return List.of();
-        }
-        List<ElementoDto> elementoDtos = new ArrayList<>(elementos.size());
-
-        for (Elementos elemento : elementos) {
-            elementoDtos.add(toDTO(elemento));
-        }
-        return elementoDtos;
-    }
 }
