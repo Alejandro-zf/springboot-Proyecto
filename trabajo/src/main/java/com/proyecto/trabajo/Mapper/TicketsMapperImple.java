@@ -18,7 +18,6 @@ public class TicketsMapperImple implements TicketsMapper {
         entity.setFecha_ini(dto.getFecha_in());
         entity.setFecha_finn(dto.getFecha_fin());
         entity.setAmbiente(dto.getAmbient());
-    
         return entity;
     }
 
