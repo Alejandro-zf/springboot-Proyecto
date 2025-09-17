@@ -24,16 +24,16 @@ public class SolicitudesServicesImple implements SolicitudesServices {
     }
 
     @Override
-    public SolicitudesDto guardar(SolicitudesDto dto) {
-        Solicitudes entity = solicitudesMapper.toEntity(dto);
-        Solicitudes guardado = solicitudesRepository.save(entity);
-        return solicitudesMapper.toDTO(guardado);
+    public SolicitudesDto guardar(SolicitudesDto solicitudesdto) {
+        Solicitudes solicitudes = solicitudesMapper.toSolicitudes(solicitudesdto);
+        Solicitudes guardado = solicitudesRepository.save(solicitudes);
+        return solicitudesMapper.toSolicitudesDTO(guardado);
     }
 
     @Override
     public SolicitudesDto buscarPorId(Long id) {
         return solicitudesRepository.findById(id)
-                .map(solicitudesMapper::toDTO)
+                .map(solicitudesMapper::toSolicitudesDTO)
                 .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada"));
     }
 
@@ -41,7 +41,7 @@ public class SolicitudesServicesImple implements SolicitudesServices {
     public List<SolicitudesDto> listarTodos() {
         return solicitudesRepository.findAll()
                 .stream()
-                .map(solicitudesMapper::toDTO)
+                .map(solicitudesMapper::toSolicitudesDTO)
                 .collect(Collectors.toList());
     }
 

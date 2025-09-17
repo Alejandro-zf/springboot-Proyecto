@@ -9,31 +9,31 @@ import com.proyecto.trabajo.models.Solicitudes;
 public class SolicitudesMapperImple implements SolicitudesMapper {
 
     @Override
-    public Solicitudes toEntity(SolicitudesDto dto) {
-        if (dto == null) {
+    public Solicitudes toSolicitudes(SolicitudesDto solicitudesdto) {
+        if (solicitudesdto == null) {
             return null;
         }
-        Solicitudes entity = new Solicitudes();
-        entity.setId(dto.getId_soli());
-        entity.setCantidad(dto.getCant());
-        entity.setFecha_inicio(dto.getFecha_ini());
-        entity.setFecha_fin(dto.getFecha_fn());
-        entity.setAmbiente(dto.getAmbient());
-        // Campo estado no existe en DTO; no se mapea
-        return entity;
+        Solicitudes solicitudes = new Solicitudes();
+        solicitudes.setId(solicitudesdto.getId_soli());
+        solicitudes.setCantidad(solicitudesdto.getCant());
+        solicitudes.setFecha_inicio(solicitudesdto.getFecha_ini());
+        solicitudes.setFecha_fin(solicitudesdto.getFecha_fn());
+        solicitudes.setAmbiente(solicitudesdto.getAmbient());
+        
+        return solicitudes;
     }
 
     @Override
-    public SolicitudesDto toDTO(Solicitudes entity) {
-        if (entity == null) {
+    public SolicitudesDto toSolicitudesDTO(Solicitudes solicitudes) {
+        if (solicitudes == null) {
             return null;
         }
-        SolicitudesDto dto = new SolicitudesDto();
-        dto.setId_soli(entity.getId());
-        dto.setCant(entity.getCantidad());
-        dto.setFecha_ini(entity.getFecha_inicio());
-        dto.setFecha_fn(entity.getFecha_fin());
-        dto.setAmbient(entity.getAmbiente());
-        return dto;
+        SolicitudesDto solicitudesdto = new SolicitudesDto();
+        solicitudesdto.setId_soli(solicitudes.getId());
+        solicitudesdto.setCant(solicitudes.getCantidad());
+        solicitudesdto.setFecha_ini(solicitudes.getFecha_inicio());
+        solicitudesdto.setFecha_fn(solicitudes.getFecha_fin());
+        solicitudesdto.setAmbient(solicitudes.getAmbiente());
+        return solicitudesdto;
     }
 }
