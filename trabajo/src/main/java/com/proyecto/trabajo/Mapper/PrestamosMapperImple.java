@@ -9,29 +9,28 @@ import com.proyecto.trabajo.models.Prestamos;
 public class PrestamosMapperImple implements PrestamosMapper {
 
     @Override
-    public Prestamos toPrestamos(PrestamosDto prestamosDto) {
-        if (prestamosDto == null) {
+    public Prestamos toEntity(PrestamosDto dto) {
+        if (dto == null) {
             return null;
         }
-        Prestamos prestamos = new Prestamos();
-        prestamos.setId(prestamosDto.getId_prest());
-        prestamos.setFecha_entre(prestamosDto.getFecha_entreg());
-        prestamos.setFecha_recep(prestamosDto.getFecha_repc());
-        prestamos.setTipo_prest(prestamosDto.getTipo_pres());
-        // Relaciones usuario/espacio requieren IDs en el DTO; se dejan null por ahora
-        return prestamos;
+        Prestamos entity = new Prestamos();
+        entity.setId(dto.getId_prest());
+        entity.setFecha_entre(dto.getFecha_entreg());
+        entity.setFecha_recep(dto.getFecha_repc());
+        entity.setTipo_prest(dto.getTipo_pres());
+        return entity;
     }
 
     @Override
-    public PrestamosDto toPrestamosDto(Prestamos prestamos) {
-        if (prestamos == null) {
+    public PrestamosDto toDTO(Prestamos entity) {
+        if (entity == null) {
             return null;
         }
-        PrestamosDto prestamosDto = new PrestamosDto();
-        prestamosDto.setId_prest(prestamos.getId());
-        prestamosDto.setFecha_entreg(prestamos.getFecha_entre());
-        prestamosDto.setFecha_repc(prestamos.getFecha_recep());
-        prestamosDto.setTipo_pres(prestamos.getTipo_prest());
-        return prestamosDto;
+        PrestamosDto dto = new PrestamosDto();
+        dto.setId_prest(entity.getId());
+        dto.setFecha_entreg(entity.getFecha_entre());
+        dto.setFecha_repc(entity.getFecha_recep());
+        dto.setTipo_pres(entity.getTipo_prest());
+        return dto;
     }
 }

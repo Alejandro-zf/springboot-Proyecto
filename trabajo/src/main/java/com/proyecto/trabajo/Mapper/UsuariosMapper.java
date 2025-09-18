@@ -4,6 +4,6 @@ import com.proyecto.trabajo.dto.UsuariosDto;
 import com.proyecto.trabajo.models.Usuarios;
 
 public interface UsuariosMapper {
-    Usuarios toUsuarios(UsuariosDto usuariosDto);
-    UsuariosDto toUsuariosDto(Usuarios usuarios);
+    Usuarios toEntity(UsuariosDto dto);
+    UsuariosDto toDTO(Usuarios entity);
 }

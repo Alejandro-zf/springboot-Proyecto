@@ -13,11 +13,4 @@ public interface AccesoriosRepository extends JpaRepository<Accesorios, Integer>
 
     @Query("select a from Accesorios a where a.num_serie = :numSerie")
     List<Accesorios> findByNumSerie(@Param("numSerie") Integer numSerie);
-    
-    List<Accesorios> findByNom_acceContainingIgnoreCase(String nombre);
-    List<Accesorios> findByMarcaContainingIgnoreCase(String marca);
-    List<Accesorios> findByNum_serie(Integer numeroSerie);
-    List<Accesorios> findByCant(Integer cantidad);
-    List<Accesorios> findByCantGreaterThan(Integer cantidad);
-    List<Accesorios> findByCantBetween(Integer cantidadMinima, Integer cantidadMaxima);
 }

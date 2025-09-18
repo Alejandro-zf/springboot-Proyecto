@@ -25,15 +25,15 @@ public class UsuariosServicesImple implements UsuariosServices {
 
     @Override
     public UsuariosDto guardar(UsuariosDto dto) {
-        Usuarios usuarios = usuariosMapper.toUsuarios(dto);
-        Usuarios guardado = usuariosRepository.save(usuarios);
-        return usuariosMapper.toUsuariosDto(guardado);
+        Usuarios entity = usuariosMapper.toEntity(dto);
+        Usuarios guardado = usuariosRepository.save(entity);
+        return usuariosMapper.toDTO(guardado);
     }
 
     @Override
     public UsuariosDto buscarPorId(Long id) {
         return usuariosRepository.findById(id)
-                .map(usuariosMapper::toUsuariosDto)
+                .map(usuariosMapper::toDTO)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
     }
 
@@ -41,19 +41,12 @@ public class UsuariosServicesImple implements UsuariosServices {
     public List<UsuariosDto> listarTodos() {
         return usuariosRepository.findAll()
                 .stream()
-                .map(usuariosMapper::toUsuariosDto)
+                .map(usuariosMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
     public void eliminar(Long id) {
         usuariosRepository.deleteById(id);
-    }
-
-    @Override
-    public UsuariosDto actualizarUsuario(UsuariosDto dto) {
-        Usuarios usuarios = usuariosMapper.toUsuarios(dto);
-        Usuarios actualizado = usuariosRepository.save(usuarios);
-        return usuariosMapper.toUsuariosDto(actualizado);
     }
 }

@@ -9,32 +9,32 @@ import com.proyecto.trabajo.models.Usuarios;
 public class UsuariosMapperImple implements UsuariosMapper {
 
     @Override
-    public Usuarios toUsuarios(UsuariosDto usuariosDto) {
-        if (usuariosDto == null) {
+    public Usuarios toEntity(UsuariosDto dto) {
+        if (dto == null) {
             return null;
         }
-        Usuarios usuarios = new Usuarios();
-        usuarios.setId(usuariosDto.getId_usuari());
-        usuarios.setNom_usu(usuariosDto.getNom_usua());
-        usuarios.setApe_usu(usuariosDto.getApe_usua());
-        usuarios.setCorreo(usuariosDto.getCorre());
-        usuarios.setNum_doc(usuariosDto.getNum_docu());
-        usuarios.setPassword(usuariosDto.getPasswor());
-        return usuarios;
+        Usuarios entity = new Usuarios();
+        entity.setId(dto.getId_usuari());
+        entity.setNom_usu(dto.getNom_usua());
+        entity.setApe_usu(dto.getApe_usua());
+        entity.setCorreo(dto.getCorre());
+        entity.setNum_doc(dto.getNum_docu());
+        entity.setPassword(dto.getPasswor());
+        return entity;
     }
 
     @Override
-    public UsuariosDto toUsuariosDto(Usuarios usuarios) {
-        if (usuarios == null) {
+    public UsuariosDto toDTO(Usuarios entity) {
+        if (entity == null) {
             return null;
         }
-        UsuariosDto usuariosDto = new UsuariosDto();
-        usuariosDto.setId_usuari(usuarios.getId());
-        usuariosDto.setNom_usua(usuarios.getNom_usu());
-        usuariosDto.setApe_usua(usuarios.getApe_usu());
-        usuariosDto.setCorre(usuarios.getCorreo());
-        usuariosDto.setNum_docu(usuarios.getNum_doc());
-        usuariosDto.setPasswor(usuarios.getPassword());
-        return usuariosDto;
+        UsuariosDto dto = new UsuariosDto();
+        dto.setId_usuari(entity.getId());
+        dto.setNom_usua(entity.getNom_usu());
+        dto.setApe_usua(entity.getApe_usu());
+        dto.setCorre(entity.getCorreo());
+        dto.setNum_docu(entity.getNum_doc());
+        dto.setPasswor(entity.getPassword());
+        return dto;
     }
 }

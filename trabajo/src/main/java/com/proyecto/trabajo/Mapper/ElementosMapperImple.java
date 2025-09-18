@@ -13,33 +13,33 @@ import com.proyecto.trabajo.models.Elementos;
 public class ElementosMapperImple implements ElementosMapper {
 
     @Override
-    public Elementos toElementos(ElementoDto elementoDto) {
-        if (elementoDto == null) {
+    public Elementos toEntity(ElementoDto dto) {
+        if (dto == null) {
             return null;
         }
         
         Elementos elementos = new Elementos();
-        elementos.setId(elementoDto.getId_elemen());
-        elementos.setNom_elemento(elementoDto.getNom_eleme());
-        elementos.setObser(elementoDto.getObse());
-        elementos.setNum_serie(elementoDto.getNum_seri());
-        elementos.setComponentes(elementoDto.getComponen());
+        elementos.setId(dto.getId_elemen());
+        elementos.setNom_elemento(dto.getNom_eleme());
+        elementos.setObser(dto.getObse());
+        elementos.setNum_serie(dto.getNum_seri());
+        elementos.setComponentes(dto.getComponen());
 
         return elementos;
     }
 
     @Override
-    public ElementoDto toElementoDto(Elementos elementos) {
-        if (elementos == null) {
+    public ElementoDto toDTO(Elementos entity) {
+        if (entity == null) {
             return null;
         }
         
         ElementoDto elementoDto = new ElementoDto();
-        elementoDto.setId_elemen(elementos.getId());
-        elementoDto.setNom_eleme(elementos.getNom_elemento());
-        elementoDto.setObse(elementos.getObser());
-        elementoDto.setNum_seri(elementos.getNum_serie());
-        elementoDto.setComponen(elementos.getComponentes());
+        elementoDto.setId_elemen(entity.getId());
+        elementoDto.setNom_eleme(entity.getNom_elemento());
+        elementoDto.setObse(entity.getObser());
+        elementoDto.setNum_seri(entity.getNum_serie());
+        elementoDto.setComponen(entity.getComponentes());
         
         return elementoDto;
     }
@@ -51,7 +51,7 @@ public class ElementosMapperImple implements ElementosMapper {
         List<ElementoDto> elementoDtos = new ArrayList<>(elementos.size());
 
         for (Elementos elemento : elementos) {
-            elementoDtos.add(toElementoDto(elemento));
+            elementoDtos.add(toDTO(elemento));
         }
         return elementoDtos;
         
