@@ -14,4 +14,6 @@ private Long id_tickets;
 private LocalDateTime fecha_in;
 private LocalDateTime fecha_fin;
 private String ambient;
+private Long id_usuario;
+private Byte id_estado_ticket;
 }
