@@ -8,3 +8,5 @@ public interface PrestamosServices {
     java.util.List<PrestamosDto> listarTodos();
     void eliminar(Long id);
 }
+
+//asi ses
