@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.proyecto.trabajo.Mapper.PrestamosMapper;
 import com.proyecto.trabajo.dto.PrestamosDto;
@@ -24,29 +25,49 @@ public class PrestamosServicesImple implements PrestamosServices {
     }
 
     @Override
+    @Transactional
     public PrestamosDto guardar(PrestamosDto dto) {
-        Prestamos entity = prestamosMapper.toEntity(dto);
-        Prestamos guardado = prestamosRepository.save(entity);
-        return prestamosMapper.toDTO(guardado);
+        Prestamos prestamos = prestamosMapper.toPrestamos(dto);
+        Prestamos guardado = prestamosRepository.save(prestamos);
+        return prestamosMapper.toPrestamosDto(guardado);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PrestamosDto buscarPorId(Long id) {
-        return prestamosRepository.findById(id)
-                .map(prestamosMapper::toDTO)
-                .orElseThrow(() -> new EntityNotFoundException("Prestamo no encontrado"));
+        Prestamos prestamos = prestamosRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Préstamo no encontrado"));
+        return prestamosMapper.toPrestamosDto(prestamos);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<PrestamosDto> listarTodos() {
         return prestamosRepository.findAll()
                 .stream()
-                .map(prestamosMapper::toDTO)
+                .map(prestamosMapper::toPrestamosDto)
                 .collect(Collectors.toList());
     }
 
     @Override
+    @Transactional
     public void eliminar(Long id) {
-        prestamosRepository.deleteById(id);
+        Prestamos prestamos = prestamosRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Préstamo no encontrado"));
+        prestamosRepository.delete(prestamos);
+    }
+
+    @Override
+    @Transactional
+    public PrestamosDto actualizarPrestamo(PrestamosDto dto) {
+        Prestamos prestamos = prestamosRepository.findById(dto.getId_prest())
+                .orElseThrow(() -> new EntityNotFoundException("Préstamo no encontrado"));
+        
+        prestamos.setTipo_prest(dto.getTipo_prest());
+        prestamos.setFecha_entre(dto.getFecha_entre());
+        prestamos.setFecha_recep(dto.getFecha_recep());
+        
+        Prestamos actualizado = prestamosRepository.save(prestamos);
+        return prestamosMapper.toPrestamosDto(actualizado);
     }
 }

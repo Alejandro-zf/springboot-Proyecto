@@ -4,6 +4,6 @@ import com.proyecto.trabajo.dto.TicketsDtos;
 import com.proyecto.trabajo.models.Tickets;
 
 public interface TicketsMapper {
-    Tickets toEntity(TicketsDtos dto);
-    TicketsDtos toDTO(Tickets entity);
+    Tickets toTickets(TicketsDtos ticketsDto);
+    TicketsDtos toTicketsDto(Tickets tickets);
 }

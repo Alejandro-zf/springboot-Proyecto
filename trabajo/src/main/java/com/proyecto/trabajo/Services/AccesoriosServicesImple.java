@@ -25,15 +25,15 @@ public class AccesoriosServicesImple implements AccesoriosServices {
 
     @Override
     public AccesoriosDto guardar(AccesoriosDto dto) {
-        Accesorios entity = accesoriosMapper.toEntity(dto);
+        Accesorios entity = accesoriosMapper.toAccesorios(dto);
         Accesorios guardado = accesoriosRepository.save(entity);
-        return accesoriosMapper.toDTO(guardado);
+        return accesoriosMapper.toAccesoriosDto(guardado);
     }
 
     @Override
     public AccesoriosDto buscarPorId(Integer id) {
         return accesoriosRepository.findById(id)
-                .map(accesoriosMapper::toDTO)
+                .map(accesoriosMapper::toAccesoriosDto)
                 .orElseThrow(() -> new EntityNotFoundException("Accesorio no encontrado"));
     }
 
@@ -41,12 +41,19 @@ public class AccesoriosServicesImple implements AccesoriosServices {
     public List<AccesoriosDto> listarTodos() {
         return accesoriosRepository.findAll()
                 .stream()
-                .map(accesoriosMapper::toDTO)
+                .map(accesoriosMapper::toAccesoriosDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public void eliminar(Integer id) {
         accesoriosRepository.deleteById(id);
+    }
+
+    @Override
+    public AccesoriosDto actualizarAccesorio(AccesoriosDto dto) {
+        Accesorios accesorios = accesoriosMapper.toAccesorios(dto);
+        Accesorios actualizado = accesoriosRepository.save(accesorios);
+        return accesoriosMapper.toAccesoriosDto(actualizado);
     }
 }
