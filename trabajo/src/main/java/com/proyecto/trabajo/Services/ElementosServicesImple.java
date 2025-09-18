@@ -25,15 +25,15 @@ public class ElementosServicesImple implements ElementosServices {
 
     @Override
     public ElementoDto guardar(ElementoDto dto) {
-        Elementos entity = elementosMapper.toEntity(dto);
-        Elementos guardado = elementosRepository.save(entity);
-        return elementosMapper.toDTO(guardado);
+        Elementos elementos = elementosMapper.toElementos(dto);
+        Elementos guardado = elementosRepository.save(elementos);
+        return elementosMapper.toElementoDto(guardado);
     }
 
     @Override
     public ElementoDto buscarPorId(Long id) {
         return elementosRepository.findById(id)
-                .map(elementosMapper::toDTO)
+                .map(elementosMapper::toElementoDto)
                 .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
     }
 
@@ -41,12 +41,19 @@ public class ElementosServicesImple implements ElementosServices {
     public List<ElementoDto> listarTodos() {
         return elementosRepository.findAll()
                 .stream()
-                .map(elementosMapper::toDTO)
+                .map(elementosMapper::toElementoDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public void eliminar(Long id) {
         elementosRepository.deleteById(id);
+    }
+
+    @Override
+    public ElementoDto actualizarElemento(ElementoDto dto) {
+        Elementos elementos = elementosMapper.toElementos(dto);
+        Elementos actualizado = elementosRepository.save(elementos);
+        return elementosMapper.toElementoDto(actualizado);
     }
 }

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.proyecto.trabajo.Mapper.SolicitudesMapper;
 import com.proyecto.trabajo.dto.SolicitudesDto;
@@ -24,29 +25,51 @@ public class SolicitudesServicesImple implements SolicitudesServices {
     }
 
     @Override
-    public SolicitudesDto guardar(SolicitudesDto dto) {
-        Solicitudes entity = solicitudesMapper.toEntity(dto);
-        Solicitudes guardado = solicitudesRepository.save(entity);
-        return solicitudesMapper.toDTO(guardado);
+    @Transactional
+    public SolicitudesDto guardar(SolicitudesDto solicitudesDto) {
+        Solicitudes solicitudes = solicitudesMapper.toSolicitudes(solicitudesDto);
+        Solicitudes guardado = solicitudesRepository.save(solicitudes);
+        return solicitudesMapper.toSolicitudesDTO(guardado);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public SolicitudesDto buscarPorId(Long id) {
-        return solicitudesRepository.findById(id)
-                .map(solicitudesMapper::toDTO)
+        Solicitudes solicitudes = solicitudesRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada"));
+        return solicitudesMapper.toSolicitudesDTO(solicitudes);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<SolicitudesDto> listarTodos() {
         return solicitudesRepository.findAll()
                 .stream()
-                .map(solicitudesMapper::toDTO)
+                .map(solicitudesMapper::toSolicitudesDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
+    @Transactional
     public void eliminar(Long id) {
-        solicitudesRepository.deleteById(id);
+        Solicitudes solicitudes = solicitudesRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada"));
+        solicitudesRepository.delete(solicitudes);
+    }
+
+    @Override
+    @Transactional
+    public SolicitudesDto actualizarSolicitud(SolicitudesDto dto) {
+        Solicitudes solicitudes = solicitudesRepository.findById(dto.getId_soli())
+                .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada"));
+        
+        solicitudes.setCantidad(dto.getCant());
+        solicitudes.setFecha_inicio(dto.getFecha_ini());
+        solicitudes.setFecha_fin(dto.getFecha_fn());
+        solicitudes.setAmbiente(dto.getAmbient());
+        solicitudes.setEstado(dto.getObse());
+        
+        Solicitudes actualizado = solicitudesRepository.save(solicitudes);
+        return solicitudesMapper.toSolicitudesDTO(actualizado);
     }
 }

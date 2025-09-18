@@ -16,4 +16,7 @@ private LocalDateTime fecha_ini;
 private LocalDateTime fecha_fn;
 private String ambient;
 private String obse;
+private Long id_usuario;
+private Integer id_espacio;
+private Integer id_estado_soli;
 }
