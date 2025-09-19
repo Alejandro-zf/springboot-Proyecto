@@ -60,14 +60,14 @@ public class PrestamosServicesImple implements PrestamosServices {
     @Override
     @Transactional
     public PrestamosDto actualizarPrestamo(PrestamosDto dto) {
-        Prestamos prestamos = prestamosRepository.findById(dto.getId_prest())
-                .orElseThrow(() -> new EntityNotFoundException("Préstamo no encontrado"));
-        
-        prestamos.setTipo_prest(dto.getTipo_prest());
-        prestamos.setFecha_entre(dto.getFecha_entre());
-        prestamos.setFecha_recep(dto.getFecha_recep());
-        
-        Prestamos actualizado = prestamosRepository.save(prestamos);
-        return prestamosMapper.toPrestamosDto(actualizado);
+    Prestamos prestamos = prestamosRepository.findById(dto.getId_prest())
+        .orElseThrow(() -> new EntityNotFoundException("Préstamo no encontrado"));
+
+    prestamos.setTipo_prest(dto.getTipo_pres());
+    prestamos.setFecha_entre(dto.getFecha_entreg());
+    prestamos.setFecha_recep(dto.getFecha_repc());
+
+    Prestamos actualizado = prestamosRepository.save(prestamos);
+    return prestamosMapper.toPrestamosDto(actualizado);
     }
 }
