@@ -24,10 +24,10 @@ public class Tickets_elemento {
     private Tickets_elementoid id = new Tickets_elementoid();
 
     @Column(nullable = false, length = 255)
-    private String  Obser_ticket;
+    private String  obser_ticket;
 
     @Column(nullable = false, length = 25)
-    private String  num_ticket;
+    private Integer  num_ticket;
     
     @ManyToOne
     @MapsId("ticketid")
