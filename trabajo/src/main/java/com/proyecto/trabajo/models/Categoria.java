@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 public class Categoria {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Byte id_categoria;
+    private Byte id;
     @Column(nullable = false, length =30)
     private String nom_categoria;
 

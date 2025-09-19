@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 public class Roles {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_roles;
+    private Long id;
     @Column(nullable = false, length = 15)
     private String nom_rol;
 
