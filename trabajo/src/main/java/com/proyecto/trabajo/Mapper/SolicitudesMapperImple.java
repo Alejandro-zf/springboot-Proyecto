@@ -27,23 +27,23 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
     }
 
     @Override
-    public Solicitudes toSolicitudes(SolicitudesDto dto) {
-        Usuarios usuario = usuariosRepository.findById(dto.getUsuarioId())
+    public Solicitudes toSolicitudes(SolicitudesDto solicitudesDto) {
+        Usuarios usuario = usuariosRepository.findById(solicitudesDto.getUsuarioId())
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
 
-        Espacio espacio = espacioRepository.findById(dto.getEspacioId().intValue())
+        Espacio espacio = espacioRepository.findById(solicitudesDto.getEspacioId().intValue())
                 .orElseThrow(() -> new EntityNotFoundException("Espacio no encontrado"));
 
-        Estado_solicitudes estadoSolicitudes = estadoSolicitudesRepository.findById(dto.getEstadoSolicitudesId().intValue())
+        Estado_solicitudes estadoSolicitudes = estadoSolicitudesRepository.findById(solicitudesDto.getEstadoSolicitudesId().intValue())
                 .orElseThrow(() -> new EntityNotFoundException("Estado de solicitudes no encontrado"));
 
         Solicitudes solicitudes = new Solicitudes();
-        solicitudes.setId(dto.getId_soli());
-        solicitudes.setCantidad(dto.getCant());
-        solicitudes.setFecha_inicio(dto.getFecha_ini());
-        solicitudes.setFecha_fin(dto.getFecha_fn());
-        solicitudes.setAmbiente(dto.getAmbient());
-        solicitudes.setEstado(dto.getObse());
+        solicitudes.setId(solicitudesDto.getId_soli());
+        solicitudes.setCantidad(solicitudesDto.getCant());
+        solicitudes.setFecha_inicio(solicitudesDto.getFecha_ini());
+        solicitudes.setFecha_fin(solicitudesDto.getFecha_fn());
+        solicitudes.setAmbiente(solicitudesDto.getAmbient());
+        solicitudes.setEstado(solicitudesDto.getObse());
         solicitudes.setUsuario(usuario);
         solicitudes.setEspacio(espacio);
         solicitudes.setEstado_solicitudes(estadoSolicitudes);
@@ -52,7 +52,7 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
     }
 
     @Override
-    public SolicitudesDto toDTO(Solicitudes entity) {
+    public SolicitudesDto toSolicitudesDto(Solicitudes entity) {
         return new SolicitudesDto(
                 entity.getId(),
                 entity.getCantidad(),
