@@ -9,4 +9,9 @@ public interface SolicitudesMapper {
 
     SolicitudesDto toDTO(Solicitudes solicitudes);
 
+    // Método para compatibilidad con ServicesImple
+    default SolicitudesDto toSolicitudesDto(Solicitudes solicitudes) {
+        return toDTO(solicitudes);
+    }
+
 }
