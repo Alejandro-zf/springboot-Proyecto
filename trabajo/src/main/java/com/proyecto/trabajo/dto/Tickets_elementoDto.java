@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class Tickets_elementoDto {
+    private Long ticketId;
+    private Long elementoId;
     private String obs_ticket;
     private Integer nume_ticket;
 }
