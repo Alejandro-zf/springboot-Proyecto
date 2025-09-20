@@ -19,58 +19,49 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
     private final UsuariosRepository usuariosRepository;
     private final EspacioRepository espacioRepository;
     private final EstadoSolicitudesRepository estadoSolicitudesRepository;
-    public SolicitudesMapperImple(UsuariosRepository usuariosRepository, 
-                                 EspacioRepository espacioRepository,
-                                 EstadoSolicitudesRepository estadoSolicitudesRepository) {
+
+    public SolicitudesMapperImple(UsuariosRepository usuariosRepository, EspacioRepository espacioRepository, EstadoSolicitudesRepository estadoSolicitudesRepository) {
         this.usuariosRepository = usuariosRepository;
         this.espacioRepository = espacioRepository;
         this.estadoSolicitudesRepository = estadoSolicitudesRepository;
     }
+
     @Override
-    public Solicitudes toSolicitudes(SolicitudesDto solicitudesDto) {
-        if (solicitudesDto == null)
-            return null;
+    public Solicitudes toSolicitudes(SolicitudesDto dto) {
+        Usuarios usuario = usuariosRepository.findById(dto.getUsuarioId())
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
+
+        Espacio espacio = espacioRepository.findById(dto.getEspacioId().intValue())
+                .orElseThrow(() -> new EntityNotFoundException("Espacio no encontrado"));
+
+        Estado_solicitudes estadoSolicitudes = estadoSolicitudesRepository.findById(dto.getEstadoSolicitudesId().intValue())
+                .orElseThrow(() -> new EntityNotFoundException("Estado de solicitudes no encontrado"));
+
         Solicitudes solicitudes = new Solicitudes();
-        solicitudes.setId(solicitudesDto.getId_soli());
-        solicitudes.setCantidad(solicitudesDto.getCant());
-        solicitudes.setFecha_inicio(solicitudesDto.getFecha_ini());
-        solicitudes.setFecha_fin(solicitudesDto.getFecha_fn());
-        solicitudes.setAmbiente(solicitudesDto.getAmbient());
-        try {
-            Usuarios usuario = usuariosRepository.findById(1L)
-                    .orElseThrow(() -> new EntityNotFoundException("No encontrado elemento"));
-            solicitudes.setUsuario(usuario);
-        } catch (Exception e) {
-            throw new EntityNotFoundException("No encontrado elemento");
-        }
-        try {
-            Espacio espacio = espacioRepository.findById(1)
-                    .orElseThrow(() -> new EntityNotFoundException("No encontrado espacio"));
-            solicitudes.setEspacio(espacio);
-        } catch (Exception e) {
-            throw new EntityNotFoundException("No encontrado espacio");
-        }
-        try {
-            Estado_solicitudes estadoSolicitudes = estadoSolicitudesRepository.findById(1)
-                    .orElseThrow(() -> new EntityNotFoundException("Estado de solicitudes no encontrado"));
-            solicitudes.setEstado_solicitudes(estadoSolicitudes);
-        } catch (Exception e) {
-            throw new EntityNotFoundException("Estado de solicitudes no encontrado");
-        }
+        solicitudes.setId(dto.getId_soli());
+        solicitudes.setCantidad(dto.getCant());
+        solicitudes.setFecha_inicio(dto.getFecha_ini());
+        solicitudes.setFecha_fin(dto.getFecha_fn());
+        solicitudes.setAmbiente(dto.getAmbient());
+        solicitudes.setEstado(dto.getObse());
+        solicitudes.setUsuario(usuario);
+        solicitudes.setEspacio(espacio);
+        solicitudes.setEstado_solicitudes(estadoSolicitudes);
 
         return solicitudes;
     }
-    @Override
-    public SolicitudesDto toSolicitudesDto(Solicitudes solicitudes) {
-        if (solicitudes == null)
-            return null;
 
-        SolicitudesDto solicitudesDto = new SolicitudesDto();
-        solicitudesDto.setId_soli(solicitudes.getId());
-        solicitudesDto.setCant(solicitudes.getCantidad());
-        solicitudesDto.setFecha_ini(solicitudes.getFecha_inicio());
-        solicitudesDto.setFecha_fn(solicitudes.getFecha_fin());
-        solicitudesDto.setAmbient(solicitudes.getAmbiente());
-        return solicitudesDto;
+    @Override
+    public SolicitudesDto toDTO(Solicitudes entity) {
+        return new SolicitudesDto(
+                entity.getId(),
+                entity.getCantidad(),
+                entity.getFecha_inicio(),
+                entity.getFecha_fin(),
+                entity.getAmbiente(),
+                entity.getEstado(),
+                entity.getUsuario().getId(),
+                entity.getEspacio().getId().longValue(),
+                entity.getEstado_solicitudes().getId_estado_soli().longValue());
     }
 }
