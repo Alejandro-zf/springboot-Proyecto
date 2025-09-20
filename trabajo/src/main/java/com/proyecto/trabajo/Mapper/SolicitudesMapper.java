@@ -4,6 +4,9 @@ import com.proyecto.trabajo.dto.SolicitudesDto;
 import com.proyecto.trabajo.models.Solicitudes;
 
 public interface SolicitudesMapper {
-    Solicitudes toSolicitudes(SolicitudesDto solicitudesDto);
-    SolicitudesDto toSolicitudesDto(Solicitudes solicitudes);
+
+    Solicitudes toSolicitudes(SolicitudesDto dto);
+
+    SolicitudesDto toDTO(Solicitudes solicitudes);
+
 }
