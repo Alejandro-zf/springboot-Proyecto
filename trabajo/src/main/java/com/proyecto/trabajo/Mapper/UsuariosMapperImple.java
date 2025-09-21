@@ -37,4 +37,31 @@ public class UsuariosMapperImple implements UsuariosMapper {
         usuariosDto.setPasswor(usuarios.getPassword());
         return usuariosDto;
     }
+
+    @Override
+    public Usuarios toUsuariosFromCreateDto(com.proyecto.trabajo.dto.UsuariosCreateDto createDto) {
+        if (createDto == null) {
+            return null;
+        }
+        Usuarios usuarios = new Usuarios();
+        usuarios.setNom_usu(createDto.getNom_su());
+        usuarios.setApe_usu(createDto.getApe_su());
+        usuarios.setCorreo(createDto.getCorre());
+        usuarios.setNum_doc(createDto.getNum_docu());
+        usuarios.setPassword(createDto.getPasword());
+        return usuarios;
+    }
+
+    @Override
+    public Usuarios toUsuariosFromUpdateDto(com.proyecto.trabajo.dto.UsuariosUpdateDto updateDto) {
+        if (updateDto == null) {
+            return null;
+        }
+        Usuarios usuarios = new Usuarios();
+        usuarios.setNom_usu(updateDto.getNom_us());
+        usuarios.setApe_usu(updateDto.getApe_us());
+        usuarios.setCorreo(updateDto.getCorre());
+        usuarios.setPassword(updateDto.getPassword());
+        return usuarios;
+    }
 }
