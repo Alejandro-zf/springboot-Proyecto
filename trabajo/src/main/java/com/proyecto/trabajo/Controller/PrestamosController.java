@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 
 @RestController
-@RequestMapping("/api/pretsamos")
+@RequestMapping("/api/prestamos")
 
 public class PrestamosController {
 

@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.proyecto.trabajo.Services.UsuariosServices;
 import com.proyecto.trabajo.dto.UsuariosCreateDto;
 import com.proyecto.trabajo.dto.UsuariosDto;
+import com.proyecto.trabajo.dto.UsuariosUpdateDto;
 
 import jakarta.validation.Valid;
 
@@ -36,7 +37,6 @@ public class UsuariosController {
     }
  
 
-    /* 
     //Crear usuario
     @PostMapping
     public ResponseEntity<?> crear(@Valid @RequestBody UsuariosCreateDto dto) {
@@ -68,15 +68,16 @@ public ResponseEntity<List<UsuariosDto>> listarTodos() {
     return ResponseEntity.ok(usuarios);
 }
 
-//Actualizar al usuario
 /* 
+//Actualizar al usuario
 @PutMapping("/{id}")
-public ResponseEntity<UsuariosDto> actualizar(@PathVariable Long id, @Valid @RequestBody ) 
-    
+public ResponseEntity<UsuariosDto>actualizar(@PathVariable Long id, @Valid @RequestBody UsuariosUpdateDto dto){
+    dto.setid
+} 
     
     return entity;
-
 */
+
 
 //Eliminar empleado
 @DeleteMapping("/{id}")
@@ -85,6 +86,7 @@ public ResponseEntity<Void> eliminar(@PathVariable Long id){
     return ResponseEntity.noContent().build();
 }
     }
+
 
 
 
