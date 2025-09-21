@@ -4,10 +4,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.proyecto.trabajo.Services.UsuariosServices;
+import com.proyecto.trabajo.dto.UsuariosCreateDto;
 import com.proyecto.trabajo.dto.UsuariosDto;
 
-import java.util.List;
+import jakarta.validation.Valid;
 
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,15 +34,25 @@ public class UsuariosController {
     public UsuariosController(UsuariosServices usuariosServices){
         this.usuariosServices= usuariosServices;
     }
-/* 
+ 
+
+    /* 
     //Crear usuario
     @PostMapping
-    public ResponseEntity <UsuariosDto> crear(@Valid @RequestBody UsuarioCreateDto dto ) {
-        
-        
-        return entity;
+    public ResponseEntity<?> crear(@Valid @RequestBody UsuariosCreateDto dto) {
+        try{
+            UsuariosDto creado = usuariosServices.guardar(dto);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(Map.of("Mensaje", "Usuario creado exitosamente", "data", creado));
+        } catch (IllegalStateException ex){
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("error", ex.getMessage()));
+        }catch(Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(Map.of("error", "Error al crear el usuario ", "detalle", ex.getMessage()));
+        }
     }
-*/
+
 
 //Obtener por ID
 @GetMapping("/{id}")
