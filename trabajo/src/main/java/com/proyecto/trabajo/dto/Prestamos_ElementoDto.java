@@ -8,5 +8,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class Prestamos_ElementoDto {
-    private String obs_prest;
+    private String obs_pres;
+    private Long id_prest;
+    private Long id_element;
+
+
 }
