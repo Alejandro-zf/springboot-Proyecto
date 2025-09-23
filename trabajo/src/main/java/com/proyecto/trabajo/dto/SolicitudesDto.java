@@ -15,8 +15,6 @@ private Integer cant;
 private LocalDateTime fecha_ini;
 private LocalDateTime fecha_fn;
 private String ambient;
-private String obse;
-private Long usuarioId;
-private Long espacioId;
-private Long estadoSolicitudesId;
+
+
 }
