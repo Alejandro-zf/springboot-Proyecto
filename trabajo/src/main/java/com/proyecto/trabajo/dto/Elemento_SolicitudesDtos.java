@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class Elemento_SolicitudesDtos {
+    
     private Long id_element;
     private String nom_ele;
 

@@ -13,7 +13,7 @@ private String nom_usua;
 private String ape_usua;
 private String corre;
 private Integer num_docu;
-private String passwor;
+
 
 private Integer id_estad_us;
 private String nom_est;
