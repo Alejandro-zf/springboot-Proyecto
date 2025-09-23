@@ -16,4 +16,7 @@ public class Prestamos_ElementoDto {
     private String nomb_ele;
 
 
+    private Long prestamosId;
+    private Long elementoId;
+    private String obs_prest;
 }
