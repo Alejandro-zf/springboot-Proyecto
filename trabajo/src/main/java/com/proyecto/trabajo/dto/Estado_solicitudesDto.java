@@ -10,6 +10,9 @@ import lombok.NoArgsConstructor;
 
 public class Estado_solicitudesDto {
     private Long id_estad;
+    private String nom_est;
+
     private Long id_soli;
+
 
 }

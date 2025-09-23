@@ -12,4 +12,5 @@ public class Tickets_elementoDto {
     private Integer nume_ticket;
     private Long id_Ticket;
     private Long id_element;
+    private String nom_ele;
 }

@@ -10,7 +10,10 @@ import lombok.NoArgsConstructor;
 public class Prestamos_ElementoDto {
     private String obs_pres;
     private Long id_prest;
+    private String tip_prst;
+
     private Long id_element;
+    private String nomb_ele;
 
 
 }
