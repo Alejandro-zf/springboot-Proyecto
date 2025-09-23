@@ -28,7 +28,7 @@ public class Prestamos_ElementoServiceImple implements Prestamos_ElementoService
     @Override
     public Prestamos_ElementoDto asignar(Prestamos_ElementoDto dto) {
         Prestamos_Elemento pe = mapper.toPrestamos_Elemento(dto);
-        Prestamos_Elementoid id = new Prestamos_Elementoid(dto.getPrestamosId(), dto.getElementoId());
+        Prestamos_Elementoid id = new Prestamos_Elementoid(dto.getId_prest(), dto.getId_element());
         if (repository.existsById(id)) {
             throw new IllegalStateException("Ya existe una asignación para ese préstamo y elemento");
         }
@@ -69,7 +69,7 @@ public class Prestamos_ElementoServiceImple implements Prestamos_ElementoService
                 Prestamos_ElementoDto asignado = asignar(dto);
                 elementos.add(asignado);
             } catch (Exception e) {
-                System.out.println("Error al asignar elemento " + dto.getElementoId() + ": " + e.getMessage());
+                System.out.println("Error al asignar elemento " + dto.getId_element() + ": " + e.getMessage());
             }
         }
         return elementos;

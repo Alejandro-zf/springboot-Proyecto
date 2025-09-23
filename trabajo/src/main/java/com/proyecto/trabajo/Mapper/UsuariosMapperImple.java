@@ -14,12 +14,12 @@ public class UsuariosMapperImple implements UsuariosMapper {
             return null;
         }
         Usuarios usuarios = new Usuarios();
-        usuarios.setId(usuariosDto.getId_usuari());
-        usuarios.setNom_usu(usuariosDto.getNom_usua());
-        usuarios.setApe_usu(usuariosDto.getApe_usua());
-        usuarios.setCorreo(usuariosDto.getCorre());
-        usuarios.setNum_doc(usuariosDto.getNum_docu());
-        usuarios.setPassword(usuariosDto.getPasswor());
+    usuarios.setId(usuariosDto.getId_usuari());
+    usuarios.setNom_usu(usuariosDto.getNom_usua());
+    usuarios.setApe_usu(usuariosDto.getApe_usua());
+    usuarios.setCorreo(usuariosDto.getCorre());
+    usuarios.setNum_doc(usuariosDto.getNum_docu());
+    // El DTO UsuariosDto no tiene campo password, así que se omite
         return usuarios;
     }
 
@@ -29,12 +29,12 @@ public class UsuariosMapperImple implements UsuariosMapper {
             return null;
         }
         UsuariosDto usuariosDto = new UsuariosDto();
-        usuariosDto.setId_usuari(usuarios.getId());
-        usuariosDto.setNom_usua(usuarios.getNom_usu());
-        usuariosDto.setApe_usua(usuarios.getApe_usu());
-        usuariosDto.setCorre(usuarios.getCorreo());
-        usuariosDto.setNum_docu(usuarios.getNum_doc());
-        usuariosDto.setPasswor(usuarios.getPassword());
+    usuariosDto.setId_usuari(usuarios.getId());
+    usuariosDto.setNom_usua(usuarios.getNom_usu());
+    usuariosDto.setApe_usua(usuarios.getApe_usu());
+    usuariosDto.setCorre(usuarios.getCorreo());
+    usuariosDto.setNum_docu(usuarios.getNum_doc());
+    // El DTO UsuariosDto no tiene campo password, así que se omite
         return usuariosDto;
     }
 
@@ -44,11 +44,11 @@ public class UsuariosMapperImple implements UsuariosMapper {
             return null;
         }
         Usuarios usuarios = new Usuarios();
-        usuarios.setNom_usu(createDto.getNom_su());
-        usuarios.setApe_usu(createDto.getApe_su());
-        usuarios.setCorreo(createDto.getCorre());
-        usuarios.setNum_doc(createDto.getNum_docu());
-        usuarios.setPassword(createDto.getPasword());
+    usuarios.setNom_usu(createDto.getNom_su());
+    usuarios.setApe_usu(createDto.getApe_su());
+    usuarios.setCorreo(createDto.getCorre());
+    usuarios.setNum_doc(createDto.getNum_docu());
+    usuarios.setPassword(createDto.getPasword());
         return usuarios;
     }
 
@@ -58,10 +58,11 @@ public class UsuariosMapperImple implements UsuariosMapper {
             return null;
         }
         Usuarios usuarios = new Usuarios();
-        usuarios.setNom_usu(updateDto.getNom_us());
-        usuarios.setApe_usu(updateDto.getApe_us());
-        usuarios.setCorreo(updateDto.getCorre());
-        usuarios.setPassword(updateDto.getPassword());
+    usuarios.setId(updateDto.getId_Usu());
+    usuarios.setNom_usu(updateDto.getNom_us());
+    usuarios.setApe_usu(updateDto.getApe_us());
+    usuarios.setCorreo(updateDto.getCorre());
+    usuarios.setPassword(updateDto.getPassword());
         return usuarios;
     }
 }

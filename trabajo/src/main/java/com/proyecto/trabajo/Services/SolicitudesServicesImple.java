@@ -63,11 +63,11 @@ public class SolicitudesServicesImple implements SolicitudesServices {
         Solicitudes solicitudes = solicitudesRepository.findById(dto.getId_soli())
                 .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada"));
         
-        solicitudes.setCantidad(dto.getCant());
-        solicitudes.setFecha_inicio(dto.getFecha_ini());
-        solicitudes.setFecha_fin(dto.getFecha_fn());
-        solicitudes.setAmbiente(dto.getAmbient());
-        solicitudes.setEstado(dto.getObse());
+    solicitudes.setCantidad(dto.getCant());
+    solicitudes.setFecha_inicio(dto.getFecha_ini());
+    solicitudes.setFecha_fin(dto.getFecha_fn());
+    solicitudes.setAmbiente(dto.getAmbient());
+    // solicitudes.setEstado(dto.getObse()); // Eliminado porque no existe en el DTO
         
         Solicitudes actualizado = solicitudesRepository.save(solicitudes);
         return solicitudesMapper.toSolicitudesDto(actualizado);
