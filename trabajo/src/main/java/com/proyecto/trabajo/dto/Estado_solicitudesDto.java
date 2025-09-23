@@ -7,10 +7,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class UsuariosUpdateDto {
-    private Long id_Usu;
-    private String nom_us;
-    private String ape_us;
-    private String corre;
-    private String password;
+
+public class Estado_solicitudesDto {
+    private Long id_estad;
+    private String nom_est;
+
+    private Long id_soli;
+
+
 }
