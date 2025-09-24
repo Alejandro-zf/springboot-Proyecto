@@ -37,9 +37,7 @@ public class Usuarios {
     @Column(nullable=false,length=30) 
     private String password;
 
-    @ManyToOne
-    @JoinColumn(name = "id_estado_usuario", nullable = false, foreignKey = @ForeignKey(name = "FK_Id_estado_usuario"))
-    private Estado_usuario estado_usuario;
+    private Byte estado;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Solicitudes> solicitudes = new ArrayList<>();

@@ -15,6 +15,15 @@ private Integer cant;
 private LocalDateTime fecha_ini;
 private LocalDateTime fecha_fn;
 private String ambient;
+private Byte est_soli;
 
+private Long id_usu;
+private String nom_usu;
+
+private Long id_espa;
+private String nom_espa;
+
+private Long id_elem;
+private String nom_elem;
 
 }
