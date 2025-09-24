@@ -15,4 +15,13 @@ private LocalDateTime fecha_entreg;
 private LocalDateTime fecha_repc;
 private String tipo_pres;
 
+private Long id_usu;
+private String nom_usu;
+
+private Long id_elem;
+private String nom_elem;
+
+private Long id_espac;
+private String nom_espac;
+
 }

@@ -7,13 +7,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class ElementoDto {
+public class ElementosCreateDto {
     private Long id_elemen;
     private String nom_eleme;
     private String obse;
     private Integer num_seri;
     private String componen;
 
-    private Long id_categ;
-    private String tip_catg;
 }
