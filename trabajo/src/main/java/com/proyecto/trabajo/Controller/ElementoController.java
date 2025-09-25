@@ -5,12 +5,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.proyecto.trabajo.Services.ElementosServices;
 import com.proyecto.trabajo.dto.ElementoDto;
+import com.proyecto.trabajo.dto.ElementosCreateDto;
 
 import jakarta.validation.Valid;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,10 +35,25 @@ public class ElementoController {
 
     //Crear elemento
     @PostMapping
-    public ResponseEntity<ElementoDto> crear (@Valid @RequestBody ElementoDto dto){
-        ElementoDto creado = elementosServices.guardar(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(creado);   
+    public ResponseEntity<?> crear(@Valid @RequestBody ElementosCreateDto dto) {
+        try{
+            ElementoDto creado = elementosServices.guardar(dto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("mensaje", "Elemento creado con exito", "data", creado));
+        }catch (IllegalStateException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("errores1", ex.getMessage()));
+        } catch (Exception ex) {
+            String detalle = ex.getMessage();
+            if (detalle != null && detalle.contains("Const_elemento_prestamo")) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
+                    "success",
+                    "Error al crear elemento",
+                    "mensaje", "El elemento ya ha sido asignado a otro prestamo"));
+            }
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("errores2", "Error3 al crear el elemento", "detalle", ex.getMessage()));
+        }
     }
+    
 
     //Obtener por ID
     @GetMapping("/{id}")

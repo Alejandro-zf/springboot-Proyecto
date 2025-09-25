@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.proyecto.trabajo.Services.AccesoriosServices;
+import com.proyecto.trabajo.dto.AccesoriosCreateDtos;
 import com.proyecto.trabajo.dto.AccesoriosDto;
 
 import jakarta.validation.Valid;
@@ -33,12 +34,16 @@ public class AccesoriosController {
     }   
 
     //crear accesorios 
-    @PostMapping
-    public ResponseEntity<AccesoriosDto> crear(@Valid @RequestBody AccesoriosDto dto) {
-        AccesoriosDto nuevoAccesorio = accesoriosServices.guardar(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoAccesorio);
-    }
-    
+    /*@PostMapping
+    public ResponseEntity<?> crear(@Valid @RequestBody AccesoriosCreateDtos dto) {
+        try{
+                AccesoriosDto creado = AccesoriosServices.guardar(dto);
+                return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("mensaje", "Accesorio creado exitosamente", "data", creado));
+        } catch (IllegalStateException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("errores1", ex.getMessage()));
+        } catch (Exception ex)
+    }*/
+     
     //obtener por id 
     @GetMapping("/{id}")
     public ResponseEntity<AccesoriosDto> buscarPorId (@PathVariable Integer id) {
