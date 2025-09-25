@@ -3,6 +3,7 @@ package com.proyecto.trabajo.Controller;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.proyecto.trabajo.Services.PrestamosServices;
+import com.proyecto.trabajo.dto.PrestamosCreateDto;
 import com.proyecto.trabajo.dto.PrestamosDto;
 
 import jakarta.validation.Valid;
@@ -10,9 +11,12 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,10 +40,29 @@ public class PrestamosController {
 
     //Crear prestamo  
     @PostMapping
-    public ResponseEntity<PrestamosDto> crear(@Valid @RequestBody PrestamosDto dto) {
-        PrestamosDto nuevoPrestamo = prestamosServices.guardar(dto);
-        return ResponseEntity.ok(nuevoPrestamo);
-    }
+    public ResponseEntity<?> crear(@Valid @RequestBody PrestamosCreateDto dto) {
+        try{
+            PrestamosDto creado = prestamosServices.guardar(dto);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                .body(Map.of("Mensaje","Prestamo creado exitosamente", "data", creado));
+        }catch (IllegalStateException ex){
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Map.of("errores1", ex.getMessage()));
+        }catch (Exception ex){
+            String detalle = ex.getMessage();
+            if (detalle != null && detalle.contains("Const_prestamos_elementos")) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
+                    "succes",
+                    "Error al crear el prestamo",
+                    "mensaje", "El elemento ya esta asignado a otro prestamo"));
+            } 
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(Map.of("errores2", "Error3 al crear el prestamo", "detalle", ex.getMessage()));
+        }
+}
+        
+
+    
 
     //Obtener prestamos por el id
     @GetMapping("/{id}")
