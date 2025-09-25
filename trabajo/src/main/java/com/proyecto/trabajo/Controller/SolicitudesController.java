@@ -4,13 +4,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.proyecto.trabajo.Services.SolicitudesServices;
+import com.proyecto.trabajo.dto.SolicitudeCreateDto;
 import com.proyecto.trabajo.dto.SolicitudesDto;
 
 import jakarta.validation.Valid;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,9 +35,15 @@ public class SolicitudesController {
 
     //Crear solicitud
     @PostMapping
-    public ResponseEntity<SolicitudesDto> crear(@Valid @RequestBody SolicitudesDto dto){
-        SolicitudesDto creado = solicitudesServices.guardar(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(creado);
+    public ResponseEntity<?> crear (@Valid @RequestBody SolicitudeCreateDto dto){
+        try{
+            SolicitudesDto creado = solicitudesServices.guardar(dto);
+            return ResponseEntity.status(HttpStatus.CREATED)
+            .body(Map.of("mensaje","Solicitud creada exitosamente","data",creado));
+        }catch (IllegalStateException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Map.of("errores1", ex.getMessage()));    
+        }
     }
 
     //Obtener solicitudes por ID
