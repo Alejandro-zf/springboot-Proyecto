@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.proyecto.trabajo.Mapper.ElementosMapper;
 import com.proyecto.trabajo.dto.ElementoDto;
+import com.proyecto.trabajo.dto.ElementosCreateDto;
 import com.proyecto.trabajo.models.Elementos;
 import com.proyecto.trabajo.repository.ElementosRepository;
 
@@ -24,8 +25,8 @@ public class ElementosServicesImple implements ElementosServices {
     }
 
     @Override
-    public ElementoDto guardar(ElementoDto dto) {
-        Elementos elementos = elementosMapper.toElementos(dto);
+    public ElementoDto guardar(ElementosCreateDto dto) {
+        Elementos elementos = elementosMapper.toElementosFromCreateDto(dto);
         Elementos guardado = elementosRepository.save(elementos);
         return elementosMapper.toElementoDto(guardado);
     }

@@ -8,8 +8,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.proyecto.trabajo.Mapper.TicketsMapper;
 import com.proyecto.trabajo.dto.TicketsDtos;
+import com.proyecto.trabajo.dto.TicketsCreateDto;
 import com.proyecto.trabajo.models.Tickets;
+import com.proyecto.trabajo.models.Usuarios;
+import com.proyecto.trabajo.models.Estado_ticket;
 import com.proyecto.trabajo.repository.TicketsRepository;
+import com.proyecto.trabajo.repository.UsuariosRepository;
+import com.proyecto.trabajo.repository.Estado_TicketRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -18,16 +23,21 @@ public class TicketsServicesImple implements TicketsServices {
 
     private final TicketsRepository ticketsRepository;
     private final TicketsMapper ticketsMapper;
+    private final UsuariosRepository usuariosRepository;
+    private final Estado_TicketRepository estadoTicketRepository;
 
-    public TicketsServicesImple(TicketsRepository ticketsRepository, TicketsMapper ticketsMapper) {
+    public TicketsServicesImple(TicketsRepository ticketsRepository, TicketsMapper ticketsMapper,
+            UsuariosRepository usuariosRepository, Estado_TicketRepository estadoTicketRepository) {
         this.ticketsRepository = ticketsRepository;
         this.ticketsMapper = ticketsMapper;
+        this.usuariosRepository = usuariosRepository;
+        this.estadoTicketRepository = estadoTicketRepository;
     }
 
     @Override
     @Transactional
-    public TicketsDtos guardar(TicketsDtos dto) {
-        Tickets tickets = ticketsMapper.toTickets(dto);
+    public TicketsDtos guardar(TicketsCreateDto dto) {
+        Tickets tickets = ticketsMapper.toTicketsFromCreateDto(dto);
         Tickets guardado = ticketsRepository.save(tickets);
         return ticketsMapper.toTicketsDto(guardado);
     }
@@ -66,6 +76,17 @@ public class TicketsServicesImple implements TicketsServices {
         tickets.setFecha_ini(dto.getFecha_in());
         tickets.setFecha_finn(dto.getFecha_fin());
         tickets.setAmbiente(dto.getAmbient());
+
+        if (dto.getId_usuario() != null) {
+            Usuarios usuario = usuariosRepository.findById(dto.getId_usuario())
+                    .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
+            tickets.setUsuario(usuario);
+        }
+        if (dto.getId_est_tick() != null) {
+            Estado_ticket estado = estadoTicketRepository.findById(dto.getId_est_tick().byteValue())
+                    .orElseThrow(() -> new EntityNotFoundException("Estado de ticket no encontrado"));
+            tickets.setEstado_ticket(estado);
+        }
         
         Tickets actualizado = ticketsRepository.save(tickets);
         return ticketsMapper.toTicketsDto(actualizado);

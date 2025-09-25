@@ -2,6 +2,7 @@ package com.proyecto.trabajo.Mapper;
 
 import org.springframework.stereotype.Component;
 
+import com.proyecto.trabajo.dto.AccesoriosCreateDtos;
 import com.proyecto.trabajo.dto.AccesoriosDto;
 import com.proyecto.trabajo.models.Accesorios;
 
@@ -34,5 +35,19 @@ public class AccesoriosMapperImple implements AccesoriosMapper {
         accesoriosDto.setMarc(accesorios.getMarca());
         accesoriosDto.setNum_ser(accesorios.getNum_serie());
         return accesoriosDto;
+    }
+
+    @Override
+    public Accesorios toAccesoriosFromCreateDto(AccesoriosCreateDtos createDto) {
+        if (createDto == null) {
+            return null;
+        }
+        Accesorios accesorios = new Accesorios();
+        accesorios.setId(createDto.getId_accesorio());
+        accesorios.setCant(createDto.getCanti());
+        accesorios.setNom_acce(createDto.getNom_acces());
+        accesorios.setMarca(createDto.getMarc());
+        accesorios.setNum_serie(createDto.getNum_ser());
+        return accesorios;
     }
 }

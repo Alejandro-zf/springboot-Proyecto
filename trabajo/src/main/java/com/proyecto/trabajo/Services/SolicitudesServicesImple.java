@@ -8,8 +8,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.proyecto.trabajo.Mapper.SolicitudesMapper;
 import com.proyecto.trabajo.dto.SolicitudesDto;
+import com.proyecto.trabajo.dto.SolicitudeCreateDto;
 import com.proyecto.trabajo.models.Solicitudes;
+import com.proyecto.trabajo.models.Usuarios;
+import com.proyecto.trabajo.models.Espacio;
 import com.proyecto.trabajo.repository.SolicitudesRepository;
+import com.proyecto.trabajo.repository.UsuariosRepository;
+import com.proyecto.trabajo.repository.EspacioRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -18,16 +23,21 @@ public class SolicitudesServicesImple implements SolicitudesServices {
 
     private final SolicitudesRepository solicitudesRepository;
     private final SolicitudesMapper solicitudesMapper;
+    private final UsuariosRepository usuariosRepository;
+    private final EspacioRepository espacioRepository;
 
-    public SolicitudesServicesImple(SolicitudesRepository solicitudesRepository, SolicitudesMapper solicitudesMapper) {
+    public SolicitudesServicesImple(SolicitudesRepository solicitudesRepository, SolicitudesMapper solicitudesMapper,
+            UsuariosRepository usuariosRepository, EspacioRepository espacioRepository) {
         this.solicitudesRepository = solicitudesRepository;
         this.solicitudesMapper = solicitudesMapper;
+        this.usuariosRepository = usuariosRepository;
+        this.espacioRepository = espacioRepository;
     }
 
     @Override
     @Transactional
-    public SolicitudesDto guardar(SolicitudesDto dto) {
-        Solicitudes solicitudes = solicitudesMapper.toSolicitudes(dto);
+    public SolicitudesDto guardar(SolicitudeCreateDto dto) {
+        Solicitudes solicitudes = solicitudesMapper.toSolicitudesFromCreateDto(dto);
         Solicitudes guardado = solicitudesRepository.save(solicitudes);
         return solicitudesMapper.toSolicitudesDto(guardado);
     }
@@ -67,7 +77,18 @@ public class SolicitudesServicesImple implements SolicitudesServices {
     solicitudes.setFecha_inicio(dto.getFecha_ini());
     solicitudes.setFecha_fin(dto.getFecha_fn());
     solicitudes.setAmbiente(dto.getAmbient());
-    // solicitudes.setEstado(dto.getObse()); // Eliminado porque no existe en el DTO
+    solicitudes.setEstadosolicitud(dto.getEst_soli());
+
+    if (dto.getId_usu() != null) {
+        Usuarios usuario = usuariosRepository.findById(dto.getId_usu())
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
+        solicitudes.setUsuario(usuario);
+    }
+    if (dto.getId_espa() != null) {
+        Espacio espacio = espacioRepository.findById(dto.getId_espa().intValue())
+                .orElseThrow(() -> new EntityNotFoundException("Espacio no encontrado"));
+        solicitudes.setEspacio(espacio);
+    }
         
         Solicitudes actualizado = solicitudesRepository.save(solicitudes);
         return solicitudesMapper.toSolicitudesDto(actualizado);

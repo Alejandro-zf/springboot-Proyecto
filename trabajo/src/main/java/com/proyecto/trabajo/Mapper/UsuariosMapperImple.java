@@ -3,10 +3,21 @@ package com.proyecto.trabajo.Mapper;
 import org.springframework.stereotype.Component;
 
 import com.proyecto.trabajo.dto.UsuariosDto;
+import com.proyecto.trabajo.dto.UsuariosCreateDto;
+import com.proyecto.trabajo.dto.UsuariosUpdateDto;
 import com.proyecto.trabajo.models.Usuarios;
+import com.proyecto.trabajo.models.Tip_documento;
+import com.proyecto.trabajo.repository.Tip_documentoRepository;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @Component
 public class UsuariosMapperImple implements UsuariosMapper {
+    private final Tip_documentoRepository tipDocumentoRepository;
+
+    public UsuariosMapperImple(Tip_documentoRepository tipDocumentoRepository) {
+        this.tipDocumentoRepository = tipDocumentoRepository;
+    }
 
     @Override
     public Usuarios toUsuarios(UsuariosDto usuariosDto) {
@@ -20,6 +31,11 @@ public class UsuariosMapperImple implements UsuariosMapper {
     usuarios.setCorreo(usuariosDto.getCorre());
     usuarios.setNum_doc(usuariosDto.getNum_docu());
     // El DTO UsuariosDto no tiene campo password, así que se omite
+        if (usuariosDto.getId_tip_docu() != null) {
+            Tip_documento tip = tipDocumentoRepository.findById(usuariosDto.getId_tip_docu())
+                .orElseThrow(() -> new EntityNotFoundException("Tipo de documento no encontrado"));
+            usuarios.setTip_documento(tip);
+        }
         return usuarios;
     }
 
@@ -35,11 +51,15 @@ public class UsuariosMapperImple implements UsuariosMapper {
     usuariosDto.setCorre(usuarios.getCorreo());
     usuariosDto.setNum_docu(usuarios.getNum_doc());
     // El DTO UsuariosDto no tiene campo password, así que se omite
+        if (usuarios.getTip_documento() != null) {
+            usuariosDto.setId_tip_docu(usuarios.getTip_documento().getId());
+            usuariosDto.setTip_docu(usuarios.getTip_documento().getTipo_doc());
+        }
         return usuariosDto;
     }
 
     @Override
-    public Usuarios toUsuariosFromCreateDto(com.proyecto.trabajo.dto.UsuariosCreateDto createDto) {
+    public Usuarios toUsuariosFromCreateDto(UsuariosCreateDto createDto) {
         if (createDto == null) {
             return null;
         }
@@ -52,17 +72,15 @@ public class UsuariosMapperImple implements UsuariosMapper {
         return usuarios;
     }
 
-    @Override
-    public Usuarios toUsuariosFromUpdateDto(com.proyecto.trabajo.dto.UsuariosUpdateDto updateDto) {
+    public Usuarios toUsuariosFromUpdateDto(UsuariosUpdateDto updateDto) {
         if (updateDto == null) {
             return null;
         }
         Usuarios usuarios = new Usuarios();
-    usuarios.setId(updateDto.getId_Usu());
-    usuarios.setNom_usu(updateDto.getNom_us());
-    usuarios.setApe_usu(updateDto.getApe_us());
-    usuarios.setCorreo(updateDto.getCorre());
-    usuarios.setPassword(updateDto.getPassword());
+        usuarios.setId(updateDto.getId_Usu());
+        usuarios.setNom_usu(updateDto.getNom_us());
+        usuarios.setApe_usu(updateDto.getApe_us());
+        usuarios.setCorreo(updateDto.getCorre());
         return usuarios;
     }
 }

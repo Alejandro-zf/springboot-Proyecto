@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.proyecto.trabajo.Mapper.AccesoriosMapper;
 import com.proyecto.trabajo.dto.AccesoriosDto;
+import com.proyecto.trabajo.dto.AccesoriosCreateDtos;
 import com.proyecto.trabajo.models.Accesorios;
 import com.proyecto.trabajo.repository.AccesoriosRepository;
 
@@ -24,8 +25,8 @@ public class AccesoriosServicesImple implements AccesoriosServices {
     }
 
     @Override
-    public AccesoriosDto guardar(AccesoriosDto dto) {
-        Accesorios entity = accesoriosMapper.toAccesorios(dto);
+    public AccesoriosDto guardar(AccesoriosCreateDtos dto) {
+        Accesorios entity = accesoriosMapper.toAccesoriosFromCreateDto(dto);
         Accesorios guardado = accesoriosRepository.save(entity);
         return accesoriosMapper.toAccesoriosDto(guardado);
     }
