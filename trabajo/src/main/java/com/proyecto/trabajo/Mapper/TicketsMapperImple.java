@@ -33,8 +33,6 @@ public class TicketsMapperImple implements TicketsMapper {
         tickets.setFecha_ini(ticketsDtos.getFecha_in());
         tickets.setFecha_finn(ticketsDtos.getFecha_fin());
         tickets.setAmbiente(ticketsDtos.getAmbient());
-
-        // Mapear llaves foráneas
         if (ticketsDtos.getId_usuario() != null) {
             Usuarios usuario = usuariosRepository.findById(ticketsDtos.getId_usuario())
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));

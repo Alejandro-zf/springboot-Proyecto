@@ -15,7 +15,7 @@ public class Estado_solicitudesMapperImple implements Estado_solicitudesMapper {
         Long idEstadoAsLong = estado != null ? estado.longValue() : null;
         return new Estado_solicitudesDto(
             idEstadoAsLong,
-            null, // tip_est: sin catálogo de estados, queda opcional
+            null,
             solicitudes.getId()
         );
     }
@@ -26,6 +26,5 @@ public class Estado_solicitudesMapperImple implements Estado_solicitudesMapper {
         if (dto.getId_estad() != null) {
             solicitudes.setEstadosolicitud(dto.getId_estad().byteValue());
         }
-        // tip_est se ignora porque no hay entidad/catalogo para mapearlo
     }
 }

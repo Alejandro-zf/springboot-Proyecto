@@ -33,8 +33,6 @@ public class PrestamosMapperImple implements PrestamosMapper {
         prestamos.setFecha_entre(prestamosDto.getFecha_entreg());
         prestamos.setFecha_recep(prestamosDto.getFecha_repc());
         prestamos.setTipo_prest(prestamosDto.getTipo_pres());
-
-        // Mapear llaves foráneas
         if (prestamosDto.getId_usu() != null) {
             Usuarios usuario = usuariosRepository.findById(prestamosDto.getId_usu())
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
@@ -58,8 +56,6 @@ public class PrestamosMapperImple implements PrestamosMapper {
         prestamosDto.setFecha_entreg(prestamos.getFecha_entre());
         prestamosDto.setFecha_repc(prestamos.getFecha_recep());
         prestamosDto.setTipo_pres(prestamos.getTipo_prest());
-
-        // Completar con información relacionada
         if (prestamos.getUsuario() != null) {
             prestamosDto.setId_usu(prestamos.getUsuario().getId());
             prestamosDto.setNom_usu(prestamos.getUsuario().getNom_usu());
