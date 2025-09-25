@@ -28,7 +28,7 @@ public class Tickets_elementoServiceImple implements Tickets_elementoService {
     @Override
     public Tickets_elementoDto asignar(Tickets_elementoDto dto) {
         Tickets_elemento te = mapper.toTickets_elemento(dto);
-        Tickets_elementoid id = new Tickets_elementoid(dto.getTicketId(), dto.getElementoId());
+        Tickets_elementoid id = new Tickets_elementoid(dto.getId_Ticket(), dto.getId_element());
         if (repository.existsById(id)) {
             throw new IllegalStateException("Ya existe una asignación para ese ticket y elemento");
         }
@@ -69,7 +69,7 @@ public class Tickets_elementoServiceImple implements Tickets_elementoService {
                 Tickets_elementoDto asignado = asignar(dto);
                 elementos.add(asignado);
             } catch (Exception e) {
-                System.out.println("Error al asignar elemento " + dto.getElementoId() + ": " + e.getMessage());
+                System.out.println("Error al asignar elemento " + dto.getId_element() + ": " + e.getMessage());
             }
         }
         return elementos;

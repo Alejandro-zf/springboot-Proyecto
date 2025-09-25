@@ -27,29 +27,21 @@ public class Tickets_elementoMapperImple implements Tickets_elementoMapper {
     public Tickets_elemento toTickets_elemento(Tickets_elementoDto dto) {
         if (dto == null)
             return null;
-        
+
+        Tickets tickets = ticketsRepository.findById(dto.getId_Ticket())
+                .orElseThrow(() -> new EntityNotFoundException("Ticket no encontrado"));
+        Elementos elementos = elementosRepository.findById(dto.getId_element())
+                .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
+
+        Tickets_elementoid id = new Tickets_elementoid(dto.getId_Ticket(), dto.getId_element());
+
         Tickets_elemento te = new Tickets_elemento();
-        
-        try {
-            Tickets tickets = ticketsRepository.findById(1L)
-                    .orElseThrow(() -> new EntityNotFoundException("Ticket no encontrado"));
-            te.setTickets(tickets);
-        } catch (Exception e) {
-            throw new EntityNotFoundException("Ticket no encontrado");
-        }
-        
-        try {
-            Elementos elementos = elementosRepository.findById(1L)
-                    .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
-            te.setElementos(elementos);
-        } catch (Exception e) {
-            throw new EntityNotFoundException("Elemento no encontrado");
-        }
-        
-        Tickets_elementoid id = new Tickets_elementoid(1L, 1L);
         te.setId(id);
+        te.setTickets(tickets);
+        te.setElementos(elementos);
         te.setObser_ticket(dto.getObs_ticket());
         te.setNum_ticket(dto.getNume_ticket());
+        // Si hay campo nom_ele en la entidad, agrégalo aquí
 
         return te;
     }
@@ -60,9 +52,11 @@ public class Tickets_elementoMapperImple implements Tickets_elementoMapper {
             return null;
 
         return new Tickets_elementoDto(
+                entity.getObser_ticket(),
+                entity.getNum_ticket(),
                 entity.getTickets().getId(),
                 entity.getElementos().getId(),
-                entity.getObser_ticket(),
-                entity.getNum_ticket());
+                null // nom_ele no existe en la entidad
+        );
     }
 }

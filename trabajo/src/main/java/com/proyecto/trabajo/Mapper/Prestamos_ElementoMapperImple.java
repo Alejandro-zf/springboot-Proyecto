@@ -1,4 +1,4 @@
-package com.proyecto.trabajo.Mapper;
+ package com.proyecto.trabajo.Mapper;
 
 import org.springframework.stereotype.Component;
 
@@ -24,29 +24,33 @@ public class Prestamos_ElementoMapperImple implements Prestamos_ElementoMapper {
     }
 
     @Override
-    public Prestamos_Elemento toPrestamos_Elemento(Prestamos_ElementoDto dto) {
-        Prestamos prestamos = prestamosRepository.findById(dto.getPrestamosId())
-                .orElseThrow(() -> new EntityNotFoundException("Préstamo no encontrado"));
+        public Prestamos_Elemento toPrestamos_Elemento(Prestamos_ElementoDto dto) {
+        Prestamos prestamos = prestamosRepository.findById(dto.getId_prest())
+            .orElseThrow(() -> new EntityNotFoundException("Préstamo no encontrado"));
 
-        Elementos elementos = elementosRepository.findById(dto.getElementoId())
-                .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
+        Elementos elementos = elementosRepository.findById(dto.getId_element())
+            .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
 
-        Prestamos_Elementoid id = new Prestamos_Elementoid(dto.getPrestamosId(), dto.getElementoId());
+        Prestamos_Elementoid id = new Prestamos_Elementoid(dto.getId_prest(), dto.getId_element());
 
         Prestamos_Elemento pe = new Prestamos_Elemento();
         pe.setId(id);
         pe.setPrestamos(prestamos);
         pe.setElementos(elementos);
-        pe.setObser_prest(dto.getObs_prest());
+        pe.setObser_prest(dto.getObs_pres());
+        // Si hay campos tip_prst, nomb_ele en la entidad, agrégalos aquí
 
         return pe;
-    }
+        }
 
     @Override
     public Prestamos_ElementoDto toDTO(Prestamos_Elemento entity) {
-        return new Prestamos_ElementoDto(
-                entity.getPrestamos().getId(),
-                entity.getElementos().getId(),
-                entity.getObser_prest());
+    return new Prestamos_ElementoDto(
+        entity.getObser_prest(),
+        entity.getPrestamos().getId(),
+        null, // tip_prst no existe en la entidad
+        entity.getElementos().getId(),
+        null // nomb_ele no existe en la entidad
+    );
     }
 }
