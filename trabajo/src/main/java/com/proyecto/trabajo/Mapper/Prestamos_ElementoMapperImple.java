@@ -38,7 +38,6 @@ public class Prestamos_ElementoMapperImple implements Prestamos_ElementoMapper {
         pe.setPrestamos(prestamos);
         pe.setElementos(elementos);
         pe.setObser_prest(dto.getObs_pres());
-        // Si hay campos tip_prst, nomb_ele en la entidad, agrégalos aquí
 
         return pe;
         }
@@ -48,9 +47,9 @@ public class Prestamos_ElementoMapperImple implements Prestamos_ElementoMapper {
     return new Prestamos_ElementoDto(
         entity.getObser_prest(),
         entity.getPrestamos().getId(),
-        null, // tip_prst no existe en la entidad
+        null,
         entity.getElementos().getId(),
-        null // nomb_ele no existe en la entidad
+        null
     );
     }
 }

@@ -41,7 +41,6 @@ public class Tickets_elementoMapperImple implements Tickets_elementoMapper {
         te.setElementos(elementos);
         te.setObser_ticket(dto.getObs_ticket());
         te.setNum_ticket(dto.getNume_ticket());
-        // Si hay campo nom_ele en la entidad, agrégalo aquí
 
         return te;
     }
@@ -56,7 +55,7 @@ public class Tickets_elementoMapperImple implements Tickets_elementoMapper {
                 entity.getNum_ticket(),
                 entity.getTickets().getId(),
                 entity.getElementos().getId(),
-                null // nom_ele no existe en la entidad
+                null
         );
     }
 }
