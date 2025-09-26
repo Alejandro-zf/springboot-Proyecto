@@ -50,4 +50,10 @@ public class Elementos {
 
     @OneToMany(mappedBy = "elementos")
     private List <Prestamos_Elemento> prestamosselemen;
+
+    @ManyToOne 
+    @JoinColumn(name = "accesorios", nullable = false, foreignKey = @ForeignKey(name = "Fk_Id_accesorios"))
+    private Accesorios accesorios;
+
+
 }
