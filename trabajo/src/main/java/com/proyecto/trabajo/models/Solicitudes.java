@@ -46,4 +46,7 @@ public class Solicitudes {
     @OneToMany(mappedBy = "solicitudes", cascade = CascadeType.ALL, orphanRemoval = true)
     private List <Elemento_Solicitudes> elemento = new ArrayList<>();
 
+    @OneToMany(mappedBy = "solicitudes", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Accesorios_solicitudes> solicitudesacce = new ArrayList<>();
+
 }
