@@ -31,4 +31,10 @@ public class Accesorios {
 
     @OneToMany(mappedBy = "accesorios", cascade = CascadeType.ALL, orphanRemoval = true)
     private List <Accesorios_Prestamos> acceprestamooss = new ArrayList<>();
+
+    @OneToMany(mappedBy = "accesorios", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Accesorios_solicitudes> accesolicitudess = new ArrayList<>();
+
+    @OneToMany (mappedBy = "accesorios", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Elementos> elementos = new ArrayList<>();
 }
