@@ -1,5 +1,6 @@
 package com.proyecto.trabajo.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -29,5 +30,5 @@ public class Accesorios {
     private Integer num_serie;
 
     @OneToMany(mappedBy = "accesorios", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Accesorios_solicitudes> accesolicitudess;
+    private List <Accesorios_Prestamos> acceprestamooss = new ArrayList<>();
 }

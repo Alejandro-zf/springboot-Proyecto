@@ -46,4 +46,8 @@ public class Prestamos {
     @ManyToOne
     @JoinColumn(name = "id_espacio", nullable = false, foreignKey = @ForeignKey(name = "FK_Id_espaciio"))
     private Espacio espacio;
+
+
+    @OneToMany(mappedBy = "prestamos", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List <Accesorios_Prestamos> accesoriosprestamo = new ArrayList<>();
 }
