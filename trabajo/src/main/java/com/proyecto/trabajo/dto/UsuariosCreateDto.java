@@ -13,4 +13,9 @@ public class UsuariosCreateDto {
     private String corre;
     private Integer num_docu;
     private String pasword;
+    private Byte estad;
+
+    private Long tip_docu;
+
+    private Long id_role;
 }
