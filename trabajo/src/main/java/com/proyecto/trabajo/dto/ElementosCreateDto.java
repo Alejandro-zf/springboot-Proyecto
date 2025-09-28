@@ -8,10 +8,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class ElementosCreateDto {
-    private Long id_elemen;
+  
     private String nom_eleme;
     private String obse;
     private Integer num_seri;
     private String componen;
+
+    private Long id_categoria;
 
 }

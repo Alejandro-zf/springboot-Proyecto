@@ -10,8 +10,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class TicketsCreateDto {
-    private Long id_tickets;
+
     private LocalDateTime fecha_in;
     private LocalDateTime fecha_fin;
     private String ambient;
+
+    private Long id_usu;
+
+    private Long id_elem;
+
+    private Long est_tick;
 }
