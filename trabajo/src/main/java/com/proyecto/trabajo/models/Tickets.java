@@ -33,13 +33,9 @@ public class Tickets {
     @Column(nullable = false, length = 15)
     private String ambiente;
     
-
     @ManyToOne
     @JoinColumn(name = "id_usu", nullable = false, foreignKey = @ForeignKey(name = "FK_Id_usu"))
     private Usuarios usuario;
-
-    @OneToMany(mappedBy = "tickets", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List <Tickets_elemento> element = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "estado_ticket", nullable = false, foreignKey = @ForeignKey(name = "FK_Id_estado"))

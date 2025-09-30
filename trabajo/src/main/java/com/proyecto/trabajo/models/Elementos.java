@@ -46,9 +46,6 @@ public class Elementos {
     private Categoria categoria;
 
     @OneToMany(mappedBy = "elementos")
-    private List <Tickets_elemento> elementossticket;
-
-    @OneToMany(mappedBy = "elementos")
     private List <Prestamos_Elemento> prestamosselemen;
 
     @ManyToOne 

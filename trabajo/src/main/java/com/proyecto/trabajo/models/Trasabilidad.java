@@ -21,7 +21,7 @@ public class Trasabilidad {
 
     private Long id;
     private LocalDate fecha;
-    private String Observacion;
+    private String observacion;
 
     @ManyToOne
     @JoinColumn(name = "Id_usuario", nullable = false, foreignKey = @ForeignKey(name = "FK_id_usuario"))
