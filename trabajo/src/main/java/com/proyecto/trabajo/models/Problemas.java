@@ -25,6 +25,6 @@ public class Problemas {
     @Column(nullable = false, length=30)
     private String desc_problema; 
 
-    @OneToMany(mappedBy = "tickets", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "problemas", cascade = CascadeType.ALL, orphanRemoval = true)
     private List <Tickets> tickets = new ArrayList<>();
 }
