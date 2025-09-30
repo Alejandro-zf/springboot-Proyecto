@@ -54,4 +54,7 @@ public class Usuarios {
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true )
     private List <Roles_Usuario> role = new ArrayList<>();
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Trasabilidad> trasabilidad = new ArrayList<>();
 }
