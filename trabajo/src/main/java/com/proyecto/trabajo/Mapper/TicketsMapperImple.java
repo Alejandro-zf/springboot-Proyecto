@@ -66,7 +66,6 @@ public class TicketsMapperImple implements TicketsMapper {
             ticketsDtos.setId_est_tick(tickets.getEstado_ticket().getId_estado().longValue());
             ticketsDtos.setTip_est_ticket(tickets.getEstado_ticket().getNom_estado());
         }
-
         return ticketsDtos;
     }
 
@@ -76,10 +75,19 @@ public class TicketsMapperImple implements TicketsMapper {
             return null;
         }
         Tickets tickets = new Tickets();
-        tickets.setId(createDto.getId_tickets());
         tickets.setFecha_ini(createDto.getFecha_in());
         tickets.setFecha_finn(createDto.getFecha_fin());
         tickets.setAmbiente(createDto.getAmbient());
+        if (createDto.getId_usu() != null) {
+            Usuarios usuario = usuariosRepository.findById(createDto.getId_usu())
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
+            tickets.setUsuario(usuario);
+        }
+        if (createDto.getEst_tick() != null) {
+            Estado_ticket estado = estadoTicketRepository.findById(createDto.getEst_tick().byteValue())
+                .orElseThrow(() -> new EntityNotFoundException("Estado de ticket no encontrado"));
+            tickets.setEstado_ticket(estado);
+        }
         return tickets;
     }
 }

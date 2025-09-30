@@ -37,6 +37,12 @@ public class PrestamosServicesImple implements PrestamosServices {
     @Override
     @Transactional
     public PrestamosDto guardar(PrestamosCreateDto dto) {
+        if (dto.getId_usuario() == null) {
+            throw new IllegalArgumentException("id_usuario es obligatorio");
+        }
+        if (dto.getId_esp() == null) {
+            throw new IllegalArgumentException("id_esp es obligatorio");
+        }
         Prestamos prestamos = prestamosMapper.toPrestamosFromCreateDto(dto);
         Prestamos guardado = prestamosRepository.save(prestamos);
         return prestamosMapper.toPrestamosDto(guardado);

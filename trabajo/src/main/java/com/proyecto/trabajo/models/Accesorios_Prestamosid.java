@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Accesorios_Prestamosid implements Serializable{
 
-    private Long accesoriosid;
+    private Integer accesoriosid;
     private Long prestamosid;
     
 }

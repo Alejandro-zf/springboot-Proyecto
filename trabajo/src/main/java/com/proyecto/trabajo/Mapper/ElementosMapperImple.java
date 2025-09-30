@@ -71,11 +71,15 @@ public class ElementosMapperImple implements ElementosMapper {
             return null;
         }
         Elementos elementos = new Elementos();
-        elementos.setId(createDto.getId_elemen());
         elementos.setNom_elemento(createDto.getNom_eleme());
         elementos.setObser(createDto.getObse());
         elementos.setNum_serie(createDto.getNum_seri());
         elementos.setComponentes(createDto.getComponen());
+        if (createDto.getId_categoria() != null) {
+            Categoria categoria = categoriaRepository.findById(createDto.getId_categoria().byteValue())
+                .orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada"));
+            elementos.setCategoria(categoria);
+        }
         return elementos;
     }
 
