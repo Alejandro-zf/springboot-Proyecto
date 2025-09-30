@@ -40,31 +40,30 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
         solicitudes.setEstadosolicitud(solicitudesDto.getEst_soli());
         solicitudes.setUsuario(usuario);
         solicitudes.setEspacio(espacio);
-
         return solicitudes;
     }
 
     @Override
     public SolicitudesDto toSolicitudesDto(Solicitudes entity) {
-        Long idUsu = entity.getUsuario() != null ? entity.getUsuario().getId() : null;
-        String nomUsu = entity.getUsuario() != null ? entity.getUsuario().getNom_usu() : null;
-        Long idEspa = entity.getEspacio() != null ? entity.getEspacio().getId().longValue() : null;
-        String nomEspa = entity.getEspacio() != null ? entity.getEspacio().getNom_espa() : null;
-
-        return new SolicitudesDto(
-                entity.getId(),
-                entity.getCantidad(),
-                entity.getFecha_inicio(),
-                entity.getFecha_fin(),
-                entity.getAmbiente(),
-                entity.getEstadosolicitud(),
-                idUsu,
-                nomUsu,
-                idEspa,
-                nomEspa,
-                null,
-                null
-        );
+        if (entity == null) {
+            return null;
+        }
+        SolicitudesDto dto = new SolicitudesDto();
+        dto.setId_soli(entity.getId());
+        dto.setCant(entity.getCantidad());
+        dto.setFecha_ini(entity.getFecha_inicio());
+        dto.setFecha_fn(entity.getFecha_fin());
+        dto.setAmbient(entity.getAmbiente());
+        dto.setEst_soli(entity.getEstadosolicitud());
+        if (entity.getUsuario() != null) {
+            dto.setId_usu(entity.getUsuario().getId());
+            dto.setNom_usu(entity.getUsuario().getNom_usu());
+        }
+        if (entity.getEspacio() != null) {
+            dto.setId_espa(entity.getEspacio().getId().longValue());
+            dto.setNom_espa(entity.getEspacio().getNom_espa());
+        }
+        return dto;
     }
 
     @Override
@@ -77,6 +76,17 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
         solicitudes.setFecha_inicio(createDto.getFecha_ini());
         solicitudes.setFecha_fin(createDto.getFecha_fn());
         solicitudes.setAmbiente(createDto.getAmbient());
+        solicitudes.setEstadosolicitud(createDto.getEstadosoli());
+        if (createDto.getId_usu() != null) {
+            Usuarios usuario = usuariosRepository.findById(createDto.getId_usu())
+                    .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
+            solicitudes.setUsuario(usuario);
+        }
+        if (createDto.getId_esp() != null) {
+            Espacio espacio = espacioRepository.findById(createDto.getId_esp().intValue())
+                    .orElseThrow(() -> new EntityNotFoundException("Espacio no encontrado"));
+            solicitudes.setEspacio(espacio);
+        }
         return solicitudes;
     }
 }

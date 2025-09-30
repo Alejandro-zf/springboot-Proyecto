@@ -37,6 +37,12 @@ public class TicketsServicesImple implements TicketsServices {
     @Override
     @Transactional
     public TicketsDtos guardar(TicketsCreateDto dto) {
+        if (dto.getId_usu() == null) {
+            throw new IllegalArgumentException("id_usu es obligatorio");
+        }
+        if (dto.getEst_tick() == null) {
+            throw new IllegalArgumentException("est_tick es obligatorio");
+        }
         Tickets tickets = ticketsMapper.toTicketsFromCreateDto(dto);
         Tickets guardado = ticketsRepository.save(tickets);
         return ticketsMapper.toTicketsDto(guardado);

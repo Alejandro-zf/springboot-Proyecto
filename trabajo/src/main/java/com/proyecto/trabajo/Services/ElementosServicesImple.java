@@ -26,6 +26,9 @@ public class ElementosServicesImple implements ElementosServices {
 
     @Override
     public ElementoDto guardar(ElementosCreateDto dto) {
+        if (dto.getId_categoria() == null) {
+            throw new IllegalArgumentException("id_categoria es obligatorio");
+        }
         Elementos elementos = elementosMapper.toElementosFromCreateDto(dto);
         Elementos guardado = elementosRepository.save(elementos);
         return elementosMapper.toElementoDto(guardado);

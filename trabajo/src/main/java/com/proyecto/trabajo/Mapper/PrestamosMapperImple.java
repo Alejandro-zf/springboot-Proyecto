@@ -73,10 +73,19 @@ public class PrestamosMapperImple implements PrestamosMapper {
             return null;
         }
         Prestamos prestamos = new Prestamos();
-        prestamos.setId(createDto.getId_prest());
         prestamos.setFecha_entre(createDto.getFecha_entreg());
         prestamos.setFecha_recep(createDto.getFecha_repc());
         prestamos.setTipo_prest(createDto.getTipo_pres());
+        if (createDto.getId_usuario() != null) {
+            Usuarios usuario = usuariosRepository.findById(createDto.getId_usuario())
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
+            prestamos.setUsuario(usuario);
+        }
+        if (createDto.getId_esp() != null) {
+            Espacio espacio = espacioRepository.findById(createDto.getId_esp().intValue())
+                .orElseThrow(() -> new EntityNotFoundException("Espacio no encontrado"));
+            prestamos.setEspacio(espacio);
+        }
         return prestamos;
     }
 }
