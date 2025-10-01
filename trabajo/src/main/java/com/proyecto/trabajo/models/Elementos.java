@@ -35,7 +35,7 @@ public class Elementos {
 
     private Integer num_serie;
     
-    @Column(nullable = false, length = 25)
+    @Column(nullable = false, length = 255)
     private String componentes;
 
     @OneToMany(mappedBy = "elementos", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -47,10 +47,5 @@ public class Elementos {
 
     @OneToMany(mappedBy = "elementos")
     private List <Prestamos_Elemento> prestamosselemen;
-
-    @ManyToOne 
-    @JoinColumn(name = "accesorios", nullable = false, foreignKey = @ForeignKey(name = "Fk_Id_accesorios"))
-    private Accesorios accesorios;
-
 
 }
