@@ -18,14 +18,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 @Entity
-public class Estado_usuario {
+public class Problemas {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_est_usu;
-    @Column(nullable=false,length=15)
-    private String nombre_estado;
+    private Byte id;
+    @Column(nullable = false, length=30)
+    private String desc_problema; 
 
-    @OneToMany(mappedBy = "estado_usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Usuarios> usuario = new ArrayList<>();    
-
+    @OneToMany(mappedBy = "problemas", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List <Tickets> tickets = new ArrayList<>();
 }

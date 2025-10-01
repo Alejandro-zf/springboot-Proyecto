@@ -12,7 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class Tickets_elementoid implements Serializable {
-    private Long ticketid;
-    private Long elementoid;
+public class Accesorios_solicitudesid implements Serializable {
+
+    private Long solicitudid;
+    private Integer accesorioid;
+    
 }

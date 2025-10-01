@@ -35,7 +35,7 @@ public class Elementos {
 
     private Integer num_serie;
     
-    @Column(nullable = false, length = 25)
+    @Column(nullable = false, length = 255)
     private String componentes;
 
     @OneToMany(mappedBy = "elementos", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -46,8 +46,6 @@ public class Elementos {
     private Categoria categoria;
 
     @OneToMany(mappedBy = "elementos")
-    private List <Tickets_elemento> elementossticket;
-
-    @OneToMany(mappedBy = "elementos")
     private List <Prestamos_Elemento> prestamosselemen;
+
 }

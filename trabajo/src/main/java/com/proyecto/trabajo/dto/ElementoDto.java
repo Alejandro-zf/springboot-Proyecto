@@ -14,4 +14,6 @@ public class ElementoDto {
     private Integer num_seri;
     private String componen;
 
+    private Long id_categ;
+    private String tip_catg;
 }

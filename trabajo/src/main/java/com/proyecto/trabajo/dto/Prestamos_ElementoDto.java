@@ -8,7 +8,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class Prestamos_ElementoDto {
-    private Long prestamosId;
-    private Long elementoId;
-    private String obs_prest;
+    private String obs_pres;
+    private Long id_prest;
+    private String tip_prst;
+
+    private Long id_element;
+    private String nomb_ele;
+
+
 }

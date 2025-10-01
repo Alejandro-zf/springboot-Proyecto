@@ -7,9 +7,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class Tickets_elementoDto {
-    private Long ticketId;
-    private Long elementoId;
-    private String obs_ticket;
-    private Integer nume_ticket;
+public class Elemento_SolicitudesDtos {
+    
+    private Long id_element;
+    private String nom_ele;
+
+    private Long id_Soli;
+    
+
+
+
 }

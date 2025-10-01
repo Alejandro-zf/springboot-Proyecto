@@ -13,5 +13,11 @@ private String nom_usua;
 private String ape_usua;
 private String corre;
 private Integer num_docu;
-private String passwor;
+private Byte nom_est;
+
+private Byte id_tip_docu;
+private String tip_docu;
+
+private Long id_rol;
+private String nomb_rol;
 }
