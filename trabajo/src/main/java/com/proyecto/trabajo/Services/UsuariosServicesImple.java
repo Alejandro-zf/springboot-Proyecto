@@ -68,6 +68,7 @@ public class UsuariosServicesImple implements UsuariosServices {
     public void eliminar(Long id) {
         usuariosRepository.deleteById(id);
     }
+
     @Override
     public UsuariosDto actualizarUsuario(Long id, com.proyecto.trabajo.dto.UsuariosUpdateDto dto) {
         Usuarios usuarios = usuariosRepository.findById(id)
