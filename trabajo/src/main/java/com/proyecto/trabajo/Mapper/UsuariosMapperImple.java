@@ -86,6 +86,7 @@ public class UsuariosMapperImple implements UsuariosMapper {
         return usuarios;
     }
 
+    @Override
     public Usuarios toUsuariosFromUpdateDto(UsuariosUpdateDto updateDto) {
         if (updateDto == null) {
             return null;
@@ -95,6 +96,7 @@ public class UsuariosMapperImple implements UsuariosMapper {
         usuarios.setNom_usu(updateDto.getNom_us());
         usuarios.setApe_usu(updateDto.getApe_us());
         usuarios.setCorreo(updateDto.getCorre());
+        usuarios.setPassword(updateDto.getPassword());
         return usuarios;
     }
 }

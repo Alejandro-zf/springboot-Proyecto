@@ -9,6 +9,10 @@ import com.proyecto.trabajo.Mapper.UsuariosMapper;
 import com.proyecto.trabajo.dto.UsuariosDto;
 import com.proyecto.trabajo.models.Usuarios;
 import com.proyecto.trabajo.repository.UsuariosRepository;
+import com.proyecto.trabajo.repository.RolesRepository;
+import com.proyecto.trabajo.repository.Roles_UsuarioRepository;
+import com.proyecto.trabajo.models.Roles;
+import com.proyecto.trabajo.models.Roles_Usuario;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -17,16 +21,31 @@ public class UsuariosServicesImple implements UsuariosServices {
 
     private final UsuariosRepository usuariosRepository;
     private final UsuariosMapper usuariosMapper;
+    private final RolesRepository rolesRepository;
+    private final Roles_UsuarioRepository rolesUsuarioRepository;
 
-    public UsuariosServicesImple(UsuariosRepository usuariosRepository, UsuariosMapper usuariosMapper) {
+    public UsuariosServicesImple(UsuariosRepository usuariosRepository, UsuariosMapper usuariosMapper,
+            RolesRepository rolesRepository, Roles_UsuarioRepository rolesUsuarioRepository) {
         this.usuariosRepository = usuariosRepository;
         this.usuariosMapper = usuariosMapper;
+        this.rolesRepository = rolesRepository;
+        this.rolesUsuarioRepository = rolesUsuarioRepository;
     }
 
     @Override
     public UsuariosDto guardar(com.proyecto.trabajo.dto.UsuariosCreateDto dto) {
         Usuarios usuarios = usuariosMapper.toUsuariosFromCreateDto(dto);
         Usuarios guardado = usuariosRepository.save(usuarios);
+        // Asociar rol opcionalmente si viene el id_role
+        if (dto.getId_role() != null) {
+            Roles rol = rolesRepository.findById(dto.getId_role())
+                .orElseThrow(() -> new EntityNotFoundException("Rol no encontrado"));
+            Roles_Usuario ru = new Roles_Usuario();
+            ru.setUsuario(guardado);
+            ru.setRoles(rol);
+            rolesUsuarioRepository.save(ru);
+            guardado.getRole().add(ru);
+        }
         return usuariosMapper.toUsuariosDto(guardado);
     }
 
