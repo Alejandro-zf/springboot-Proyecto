@@ -40,9 +40,6 @@ public class SolicitudesServicesImple implements SolicitudesServices {
         if (dto.getId_usu() == null) {
             throw new IllegalArgumentException("id_usu es obligatorio");
         }
-        if (dto.getId_esp() == null) {
-            throw new IllegalArgumentException("id_esp es obligatorio");
-        }
         Solicitudes solicitudes = solicitudesMapper.toSolicitudesFromCreateDto(dto);
         Solicitudes guardado = solicitudesRepository.save(solicitudes);
         return solicitudesMapper.toSolicitudesDto(guardado);
