@@ -12,6 +12,4 @@ public class Estado_solicitudesDto {
     private Long id_estad;
     private String tip_est;
     private Long id_soli;
-
-
 }
