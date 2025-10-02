@@ -59,7 +59,6 @@ public class TicketsController {
             .body(Map.of("errores2","Error3 al crear el ticket", "detalle", ex.getMessage()));
         }
     }
-    
 
     //Obtener ticket por id
     @GetMapping("/{id}")

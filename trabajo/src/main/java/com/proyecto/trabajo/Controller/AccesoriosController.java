@@ -9,6 +9,8 @@ import com.proyecto.trabajo.dto.AccesoriosDto;
 
 import jakarta.validation.Valid;
 
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -34,15 +36,20 @@ public class AccesoriosController {
     }   
 
     //crear accesorios 
-    /*@PostMapping
+    @PostMapping
     public ResponseEntity<?> crear(@Valid @RequestBody AccesoriosCreateDtos dto) {
         try{
-                AccesoriosDto creado = AccesoriosServices.guardar(dto);
-                return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("mensaje", "Accesorio creado exitosamente", "data", creado));
+                AccesoriosDto creado = accesoriosServices.guardar(dto);
+                return ResponseEntity.status(HttpStatus.CREATED)
+                .body(Map.of( "mensaje", "Accesorio creado exitosamente", "data", creado));
         } catch (IllegalStateException ex) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("errores1", ex.getMessage()));
-        } catch (Exception ex)
-    }*/
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+            .body(Map.of("errores1", ex.getMessage()));
+        } catch (Exception ex){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error","Error al crear el accesorio","detalle", ex.getMessage()));
+        }
+    }
      
     //obtener por id 
     @GetMapping("/{id}")
