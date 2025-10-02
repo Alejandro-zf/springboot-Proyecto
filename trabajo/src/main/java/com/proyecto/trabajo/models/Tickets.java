@@ -30,8 +30,11 @@ public class Tickets {
     private LocalDateTime fecha_ini;
     private LocalDateTime fecha_finn;
     
-    @Column(nullable = false, length = 15)
+    @Column(nullable = false, length = 30)
     private String ambiente;
+
+    @Column(nullable = true, length = 255)
+    private String observaciones;
     
     @ManyToOne
     @JoinColumn(name = "id_usu", nullable = false, foreignKey = @ForeignKey(name = "FK_Id_usu"))
