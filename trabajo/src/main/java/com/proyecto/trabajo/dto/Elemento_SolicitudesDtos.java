@@ -14,7 +14,4 @@ public class Elemento_SolicitudesDtos {
 
     private Long id_Soli;
     
-
-
-
 }
