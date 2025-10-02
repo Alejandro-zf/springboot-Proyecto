@@ -30,7 +30,7 @@ public class Solicitudes {
     private LocalDateTime fecha_inicio;
     private LocalDateTime fecha_fin;
 
-    @Column(nullable = false,length = 25)
+    @Column(nullable = false,length = 35)
     private String ambiente;
     
     private Byte estadosolicitud;
@@ -40,7 +40,7 @@ public class Solicitudes {
     private Usuarios usuario;
 
     @ManyToOne
-    @JoinColumn(name = "id_espacio", nullable = false, foreignKey = @ForeignKey(name = "FK_Id_espacio"))
+    @JoinColumn(name = "id_espacio", nullable = true, foreignKey = @ForeignKey(name = "FK_Id_espacio"))
     private Espacio espacio;
 
     @OneToMany(mappedBy = "solicitudes", cascade = CascadeType.ALL, orphanRemoval = true)
