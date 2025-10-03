@@ -14,6 +14,10 @@ public class TicketsDtos {
     private LocalDateTime fecha_in;
     private LocalDateTime fecha_fin;
     private String ambient;
+    private String Obser;
+    
+    private Long probloem_id;
+    private String nom_problm;
 
     private Long id_usuario;
     private String nom_usu;
