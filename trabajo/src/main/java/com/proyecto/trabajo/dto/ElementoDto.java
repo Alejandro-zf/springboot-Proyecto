@@ -13,6 +13,7 @@ public class ElementoDto {
     private String obse;
     private Integer num_seri;
     private String componen;
+    private Byte est_elemn;
 
     private Long id_categ;
     private String tip_catg;
