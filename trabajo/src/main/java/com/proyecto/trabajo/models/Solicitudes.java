@@ -33,8 +33,7 @@ public class Solicitudes {
     @Column(nullable = false,length = 35)
     private String ambiente;
     
-    @Column(nullable = false,length = 35)
-    private String Num_ficha;
+    private Integer Num_ficha;
     
     private Byte estadosolicitud;
 
