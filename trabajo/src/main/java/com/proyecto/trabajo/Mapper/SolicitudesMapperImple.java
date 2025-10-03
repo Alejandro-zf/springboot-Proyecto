@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import com.proyecto.trabajo.dto.SolicitudesDto;
 import com.proyecto.trabajo.dto.SolicitudeCreateDto;
+import com.proyecto.trabajo.dto.SolicitudesUpdateDtos;
 import com.proyecto.trabajo.models.Solicitudes;
 import com.proyecto.trabajo.models.Usuarios;
 import com.proyecto.trabajo.models.Espacio;
@@ -87,5 +88,21 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
             solicitudes.setEspacio(espacio);
         }
         return solicitudes;
+    }
+
+    @Override
+    public void updateSolicitudesFromUpdateDto(SolicitudesUpdateDtos updateDto, Solicitudes entity) {
+        if (updateDto == null || entity == null) {
+            return;
+        }
+        if (updateDto.getFecha_ini() != null) {
+            entity.setFecha_inicio(updateDto.getFecha_ini());
+        }
+        if (updateDto.getFecha_fn() != null) {
+            entity.setFecha_fin(updateDto.getFecha_fn());
+        }
+        if (updateDto.getEst_soli() != null) {
+            entity.setEstadosolicitud(updateDto.getEst_soli());
+        }
     }
 }

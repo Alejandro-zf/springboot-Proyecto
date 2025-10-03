@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.proyecto.trabajo.Mapper.SolicitudesMapper;
 import com.proyecto.trabajo.dto.SolicitudesDto;
 import com.proyecto.trabajo.dto.SolicitudeCreateDto;
+import com.proyecto.trabajo.dto.SolicitudesUpdateDtos;
 import com.proyecto.trabajo.models.Solicitudes;
 import com.proyecto.trabajo.models.Usuarios;
 import com.proyecto.trabajo.models.Espacio;
@@ -80,29 +81,15 @@ public class SolicitudesServicesImple implements SolicitudesServices {
 
     @Override
     @Transactional
-    public SolicitudesDto actualizarSolicitud(SolicitudesDto dto) {
-        Solicitudes solicitudes = solicitudesRepository.findById(dto.getId_soli())
+    public SolicitudesDto actualizarSolicitud(Long id, SolicitudesUpdateDtos dto) {
+        Solicitudes solicitudes = solicitudesRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada"));
-        
-    // actualizar campos según DTO/Entidad
-    solicitudes.setFecha_inicio(dto.getFecha_ini());
-    solicitudes.setFecha_fin(dto.getFecha_fn());
-    solicitudes.setAmbiente(dto.getAmbient());
-    solicitudes.setNum_ficha(dto.getNum_fich());
-    solicitudes.setEstadosolicitud(dto.getEst_soli());
 
-    if (dto.getId_usu() != null) {
-        Usuarios usuario = usuariosRepository.findById(dto.getId_usu())
-                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
-        solicitudes.setUsuario(usuario);
-    }
-    if (dto.getId_espa() != null) {
-        Espacio espacio = espacioRepository.findById(dto.getId_espa().intValue())
-                .orElseThrow(() -> new EntityNotFoundException("Espacio no encontrado"));
-        solicitudes.setEspacio(espacio);
-    }
+        // aplicar actualizaciones parciales usando el mapper
+        solicitudesMapper.updateSolicitudesFromUpdateDto(dto, solicitudes);
+
         // Si la solicitud quedó aprobada y no tiene préstamo, crear uno automáticamente
-        boolean aprobado = dto.getEst_soli() != null && dto.getEst_soli() == ESTADO_APROBADO;
+        boolean aprobado = dto != null && dto.getEst_soli() != null && dto.getEst_soli() == ESTADO_APROBADO;
         boolean sinPrestamo = solicitudes.getPrestamos() == null || solicitudes.getPrestamos().isEmpty();
 
         Solicitudes actualizado = solicitudesRepository.save(solicitudes);
