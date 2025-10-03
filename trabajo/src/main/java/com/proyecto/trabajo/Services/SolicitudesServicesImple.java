@@ -1,5 +1,6 @@
 package com.proyecto.trabajo.Services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,26 +13,33 @@ import com.proyecto.trabajo.dto.SolicitudeCreateDto;
 import com.proyecto.trabajo.models.Solicitudes;
 import com.proyecto.trabajo.models.Usuarios;
 import com.proyecto.trabajo.models.Espacio;
+import com.proyecto.trabajo.models.Prestamos;
 import com.proyecto.trabajo.repository.SolicitudesRepository;
 import com.proyecto.trabajo.repository.UsuariosRepository;
 import com.proyecto.trabajo.repository.EspacioRepository;
+import com.proyecto.trabajo.repository.PrestamosRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class SolicitudesServicesImple implements SolicitudesServices {
 
+    private static final byte ESTADO_APROBADO = 1;
+
     private final SolicitudesRepository solicitudesRepository;
     private final SolicitudesMapper solicitudesMapper;
     private final UsuariosRepository usuariosRepository;
     private final EspacioRepository espacioRepository;
+    private final PrestamosRepository prestamosRepository;
 
     public SolicitudesServicesImple(SolicitudesRepository solicitudesRepository, SolicitudesMapper solicitudesMapper,
-            UsuariosRepository usuariosRepository, EspacioRepository espacioRepository) {
+            UsuariosRepository usuariosRepository, EspacioRepository espacioRepository,
+            PrestamosRepository prestamosRepository) {
         this.solicitudesRepository = solicitudesRepository;
         this.solicitudesMapper = solicitudesMapper;
         this.usuariosRepository = usuariosRepository;
         this.espacioRepository = espacioRepository;
+        this.prestamosRepository = prestamosRepository;
     }
 
     @Override
@@ -76,10 +84,11 @@ public class SolicitudesServicesImple implements SolicitudesServices {
         Solicitudes solicitudes = solicitudesRepository.findById(dto.getId_soli())
                 .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada"));
         
-    solicitudes.setCantidad(dto.getCant());
+    // actualizar campos según DTO/Entidad
     solicitudes.setFecha_inicio(dto.getFecha_ini());
     solicitudes.setFecha_fin(dto.getFecha_fn());
     solicitudes.setAmbiente(dto.getAmbient());
+    solicitudes.setNum_ficha(dto.getNum_fich());
     solicitudes.setEstadosolicitud(dto.getEst_soli());
 
     if (dto.getId_usu() != null) {
@@ -92,8 +101,21 @@ public class SolicitudesServicesImple implements SolicitudesServices {
                 .orElseThrow(() -> new EntityNotFoundException("Espacio no encontrado"));
         solicitudes.setEspacio(espacio);
     }
-        
+        // Si la solicitud quedó aprobada y no tiene préstamo, crear uno automáticamente
+        boolean aprobado = dto.getEst_soli() != null && dto.getEst_soli() == ESTADO_APROBADO;
+        boolean sinPrestamo = solicitudes.getPrestamos() == null || solicitudes.getPrestamos().isEmpty();
+
         Solicitudes actualizado = solicitudesRepository.save(solicitudes);
+
+        if (aprobado && sinPrestamo) {
+            Prestamos p = new Prestamos();
+            p.setFecha_entre(LocalDateTime.now());
+            p.setTipo_prest("AUTO");
+            p.setUsuario(actualizado.getUsuario());
+            p.setEspacio(actualizado.getEspacio());
+            p.setSolicitudes(actualizado);
+            prestamosRepository.save(p);
+        }
         return solicitudesMapper.toSolicitudesDto(actualizado);
     }
 }
