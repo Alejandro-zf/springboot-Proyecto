@@ -25,10 +25,6 @@ public class Espacio {
     private Integer id;
     @Column(nullable = false,length = 25)
     private String nom_espa;
-    
-    private LocalDateTime tiem_uso;
-    private LocalDateTime  hora_soli;
-    private Integer num_ficha;
 
 
     @OneToMany(mappedBy = "espacio", cascade = CascadeType.ALL, orphanRemoval = true)
