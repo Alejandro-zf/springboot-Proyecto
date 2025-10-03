@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PutMapping;
 
 
@@ -35,7 +34,7 @@ public class UsuariosController {
     public UsuariosController(UsuariosServices usuariosServices){
         this.usuariosServices= usuariosServices;
     }
- 
+
 
     //Crear usuario
     @PostMapping
@@ -68,25 +67,22 @@ public ResponseEntity<List<UsuariosDto>> listarTodos() {
     return ResponseEntity.ok(usuarios);
 }
 
-/* 
+
 //Actualizar al usuario
 @PutMapping("/{id}")
-public ResponseEntity<UsuariosDto>actualizar(@PathVariable Long id, @Valid @RequestBody UsuariosUpdateDto dto){
-    dto.setid
+public ResponseEntity<UsuariosDto> actualizar(@PathVariable Long id,
+        @Valid @RequestBody UsuariosUpdateDto dto) {
+        dto.setId_Usu(id);
+    UsuariosDto actualizado = usuariosServices.actualizarUsuario(id, dto);
+    return ResponseEntity.ok(actualizado);
 } 
-    
-    return entity;
-*/
 
 
-//Eliminar empleado
+
+//Eliminar usuario por id
 @DeleteMapping("/{id}")
 public ResponseEntity<Void> eliminar(@PathVariable Long id){
     usuariosServices.eliminar(id);
     return ResponseEntity.noContent().build();
 }
     }
-
-
-
-
