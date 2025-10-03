@@ -24,4 +24,7 @@ private String nom_elem;
 private Long id_espac;
 private String nom_espac;
 
+private Long id_acceso;
+private String nom_aces;
+
 }
