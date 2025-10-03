@@ -33,6 +33,8 @@ public class Elementos {
     @Column(nullable = false, length = 150)
     private String obser;
 
+    private Byte estadosoelement;
+
     private Integer num_serie;
     
     @Column(nullable = false, length = 255)
