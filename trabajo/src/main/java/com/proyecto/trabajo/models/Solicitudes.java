@@ -26,12 +26,15 @@ public class Solicitudes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Integer cantidad;
+    
     private LocalDateTime fecha_inicio;
     private LocalDateTime fecha_fin;
 
     @Column(nullable = false,length = 35)
     private String ambiente;
+    
+    @Column(nullable = false,length = 35)
+    private String Num_ficha;
     
     private Byte estadosolicitud;
 
@@ -49,4 +52,6 @@ public class Solicitudes {
     @OneToMany(mappedBy = "solicitudes", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Accesorios_solicitudes> solicitudesacce = new ArrayList<>();
 
+    @OneToMany(mappedBy = "solicitudes", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List <Prestamos> prestamos = new ArrayList<>();
 }

@@ -22,7 +22,6 @@ public class Accesorios {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private Integer cant;
     @Column(nullable = false,length = 30)
     private String nom_acce;
     @Column(nullable = false,length = 20)
@@ -34,5 +33,4 @@ public class Accesorios {
 
     @OneToMany(mappedBy = "accesorios", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Accesorios_solicitudes> accesolicitudess = new ArrayList<>();
-
 }
