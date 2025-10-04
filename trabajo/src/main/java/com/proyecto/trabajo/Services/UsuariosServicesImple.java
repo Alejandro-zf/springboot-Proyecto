@@ -63,6 +63,7 @@ public class UsuariosServicesImple implements UsuariosServices {
                 .map(usuariosMapper::toUsuariosDto)
                 .collect(Collectors.toList());
     }
+
     @Override
     public void eliminar(Long id) {
         usuariosRepository.deleteById(id);
@@ -89,6 +90,10 @@ public class UsuariosServicesImple implements UsuariosServices {
         if (dto.getPassword() != null) {
             // En un entorno de producción, DEBES encriptar la contraseña aquí.
             usuarios.setPassword(dto.getPassword());
+        }
+
+        if (dto.getEst_usu() != null) {
+            usuarios.setEstado(dto.getEst_usu());
         }
 
         Usuarios actualizado = usuariosRepository.save(usuarios);
