@@ -63,7 +63,6 @@ public class UsuariosServicesImple implements UsuariosServices {
                 .map(usuariosMapper::toUsuariosDto)
                 .collect(Collectors.toList());
     }
-
     @Override
     public void eliminar(Long id) {
         usuariosRepository.deleteById(id);
@@ -72,12 +71,26 @@ public class UsuariosServicesImple implements UsuariosServices {
     @Override
     public UsuariosDto actualizarUsuario(Long id, com.proyecto.trabajo.dto.UsuariosUpdateDto dto) {
         Usuarios usuarios = usuariosRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
-        Usuarios datosActualizados = usuariosMapper.toUsuariosFromUpdateDto(dto);
-        usuarios.setNom_usu(datosActualizados.getNom_usu());
-        usuarios.setApe_usu(datosActualizados.getApe_usu());
-        usuarios.setCorreo(datosActualizados.getCorreo());
-        usuarios.setPassword(datosActualizados.getPassword());
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
+
+        // Actualizar solo los campos que no son nulos en el DTO
+        if (dto.getNom_us() != null) {
+            usuarios.setNom_usu(dto.getNom_us());
+        }
+
+        if (dto.getApe_us() != null) {
+            usuarios.setApe_usu(dto.getApe_us());
+        }
+
+        if (dto.getCorre() != null) {
+            usuarios.setCorreo(dto.getCorre());
+        }
+
+        if (dto.getPassword() != null) {
+            // En un entorno de producción, DEBES encriptar la contraseña aquí.
+            usuarios.setPassword(dto.getPassword());
+        }
+
         Usuarios actualizado = usuariosRepository.save(usuarios);
         return usuariosMapper.toUsuariosDto(actualizado);
     }
