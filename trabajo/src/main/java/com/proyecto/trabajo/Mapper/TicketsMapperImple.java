@@ -57,15 +57,32 @@ public class TicketsMapperImple implements TicketsMapper {
         ticketsDtos.setFecha_in(tickets.getFecha_ini());
         ticketsDtos.setFecha_fin(tickets.getFecha_finn());
         ticketsDtos.setAmbient(tickets.getAmbiente());
+        ticketsDtos.setObser(tickets.getObservaciones() != null ? tickets.getObservaciones() : "");
 
         if (tickets.getUsuario() != null) {
             ticketsDtos.setId_usuario(tickets.getUsuario().getId());
             ticketsDtos.setNom_usu(tickets.getUsuario().getNom_usu());
+        } else {
+            ticketsDtos.setId_usuario(0L);
+            ticketsDtos.setNom_usu("");
         }
         if (tickets.getEstado_ticket() != null) {
             ticketsDtos.setId_est_tick(tickets.getEstado_ticket().getId_estado().longValue());
             ticketsDtos.setTip_est_ticket(tickets.getEstado_ticket().getNom_estado());
+        } else {
+            ticketsDtos.setId_est_tick(0L);
+            ticketsDtos.setTip_est_ticket("");
         }
+        if (tickets.getProblemas() != null) {
+            ticketsDtos.setProbloem_id(tickets.getProblemas().getId().longValue());
+            ticketsDtos.setNom_problm(tickets.getProblemas().getDesc_problema());
+        } else {
+            ticketsDtos.setProbloem_id(0L);
+            ticketsDtos.setNom_problm("");
+        }
+        // No existe relación de elemento en Tickets entity, por lo que devolvemos defaults
+        ticketsDtos.setId_eleme(0L);
+        ticketsDtos.setNom_elem("");
         return ticketsDtos;
     }
 
