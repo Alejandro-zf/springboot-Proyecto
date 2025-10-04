@@ -31,7 +31,8 @@ import jakarta.persistence.EntityNotFoundException;
 @Service
 public class SolicitudesServicesImple implements SolicitudesServices {
 
-    private static final byte ESTADO_APROBADO = 1;
+    private static final byte ESTADO_NO_APROBADO = 1;
+    private static final byte ESTADO_APROBADO = 2; // 2 es aprobado
 
     private final SolicitudesRepository solicitudesRepository;
     private final SolicitudesMapper solicitudesMapper;
@@ -59,6 +60,12 @@ public class SolicitudesServicesImple implements SolicitudesServices {
         if (dto.getId_usu() == null) {
             throw new IllegalArgumentException("id_usu es obligatorio");
         }
+        // Validar/normalizar estado: 1 = No aprobado, 2 = Aprobado
+        if (dto.getEstadosoli() == null) {
+            dto.setEstadosoli(ESTADO_NO_APROBADO);
+        } else if (dto.getEstadosoli() != ESTADO_NO_APROBADO && dto.getEstadosoli() != ESTADO_APROBADO) {
+            throw new IllegalArgumentException("estadosoli inválido: debe ser 1 (No aprobado) o 2 (Aprobado)");
+        }
         Solicitudes solicitudes = solicitudesMapper.toSolicitudesFromCreateDto(dto);
         // Enlazar Elemento si el mapper no lo hizo
         if (dto.getId_elem() != null && (solicitudes.getElemento() == null || solicitudes.getElemento().isEmpty())) {
@@ -79,6 +86,19 @@ public class SolicitudesServicesImple implements SolicitudesServices {
             solicitudes.getSolicitudesacce().add(as);
         }
         Solicitudes guardado = solicitudesRepository.save(solicitudes);
+        // Si se crea aprobado, generar préstamo automáticamente
+        if (guardado.getEstadosolicitud() != null && guardado.getEstadosolicitud() == ESTADO_APROBADO) {
+            boolean sinPrestamo = guardado.getPrestamos() == null || guardado.getPrestamos().isEmpty();
+            if (sinPrestamo) {
+                Prestamos p = new Prestamos();
+                p.setFecha_entre(LocalDateTime.now());
+                p.setTipo_prest("AUTO");
+                p.setUsuario(guardado.getUsuario());
+                p.setEspacio(guardado.getEspacio());
+                p.setSolicitudes(guardado);
+                prestamosRepository.save(p);
+            }
+        }
         return solicitudesMapper.toSolicitudesDto(guardado);
     }
 
@@ -112,6 +132,13 @@ public class SolicitudesServicesImple implements SolicitudesServices {
     public SolicitudesDto actualizarSolicitud(Long id, SolicitudesUpdateDtos dto) {
         Solicitudes solicitudes = solicitudesRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada"));
+
+        // Validar estado si viene en el DTO
+        if (dto != null && dto.getEst_soli() != null) {
+            if (dto.getEst_soli() != ESTADO_NO_APROBADO && dto.getEst_soli() != ESTADO_APROBADO) {
+                throw new IllegalArgumentException("est_soli inválido: debe ser 1 (No aprobado) o 2 (Aprobado)");
+            }
+        }
 
         // aplicar actualizaciones parciales usando el mapper
         solicitudesMapper.updateSolicitudesFromUpdateDto(dto, solicitudes);
