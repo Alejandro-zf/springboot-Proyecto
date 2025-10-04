@@ -50,4 +50,8 @@ public class Tickets {
 
     @OneToMany(mappedBy = "tickets", cascade = CascadeType.ALL, orphanRemoval  = true)
     private List <Trasabilidad> trasabilidad = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "elementos", nullable = false, foreignKey = @ForeignKey(name = "FK_Id_elementos"))
+    private Elementos elementos;
 }
