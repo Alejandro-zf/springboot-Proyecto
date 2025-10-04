@@ -8,8 +8,14 @@ import com.proyecto.trabajo.dto.SolicitudesUpdateDtos;
 import com.proyecto.trabajo.models.Solicitudes;
 import com.proyecto.trabajo.models.Usuarios;
 import com.proyecto.trabajo.models.Espacio;
+import com.proyecto.trabajo.models.Elementos;
+import com.proyecto.trabajo.models.Elemento_Solicitudes;
+import com.proyecto.trabajo.models.Accesorios;
+import com.proyecto.trabajo.models.Accesorios_solicitudes;
 import com.proyecto.trabajo.repository.EspacioRepository;
 import com.proyecto.trabajo.repository.UsuariosRepository;
+import com.proyecto.trabajo.repository.ElementosRepository;
+import com.proyecto.trabajo.repository.AccesoriosRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -18,9 +24,13 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
 
     private final UsuariosRepository usuariosRepository;
     private final EspacioRepository espacioRepository;
-    public SolicitudesMapperImple(UsuariosRepository usuariosRepository, EspacioRepository espacioRepository) {
+    private final ElementosRepository elementosRepository;
+    private final AccesoriosRepository accesoriosRepository;
+    public SolicitudesMapperImple(UsuariosRepository usuariosRepository, EspacioRepository espacioRepository, ElementosRepository elementosRepository, AccesoriosRepository accesoriosRepository) {
         this.usuariosRepository = usuariosRepository;
         this.espacioRepository = espacioRepository;
+        this.elementosRepository = elementosRepository;
+        this.accesoriosRepository = accesoriosRepository;
     }
 
     @Override
@@ -63,6 +73,22 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
             dto.setId_espa(entity.getEspacio().getId().longValue());
             dto.setNom_espa(entity.getEspacio().getNom_espa());
         }
+        // Mapear primer elemento asociado si existe
+        if (entity.getElemento() != null && !entity.getElemento().isEmpty()) {
+            Elemento_Solicitudes es = entity.getElemento().get(0);
+            if (es.getElementos() != null) {
+                dto.setId_elem(es.getElementos().getId());
+                dto.setNom_elem(es.getElementos().getNom_elemento());
+            }
+        }
+        // Mapear primer accesorio asociado si existe
+        if (entity.getSolicitudesacce() != null && !entity.getSolicitudesacce().isEmpty()) {
+            Accesorios_solicitudes as = entity.getSolicitudesacce().get(0);
+            if (as.getAccesorios() != null) {
+                dto.setAcces_id(as.getAccesorios().getId().longValue());
+                dto.setNom_acces(as.getAccesorios().getNom_acce());
+            }
+        }
         return dto;
     }
 
@@ -86,6 +112,24 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
             Espacio espacio = espacioRepository.findById(createDto.getId_esp().intValue())
                     .orElseThrow(() -> new EntityNotFoundException("Espacio no encontrado"));
             solicitudes.setEspacio(espacio);
+        }
+        // Asociar Elemento si viene en el DTO
+        if (createDto.getId_elem() != null) {
+            Elementos elemento = elementosRepository.findById(createDto.getId_elem())
+                    .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
+            Elemento_Solicitudes es = new Elemento_Solicitudes();
+            es.setSolicitudes(solicitudes);
+            es.setElementos(elemento);
+            solicitudes.getElemento().add(es);
+        }
+        // Asociar Accesorio si viene en el DTO
+        if (createDto.getId_acces() != null) {
+            Accesorios accesorio = accesoriosRepository.findById(createDto.getId_acces().intValue())
+                    .orElseThrow(() -> new EntityNotFoundException("Accesorio no encontrado"));
+            Accesorios_solicitudes as = new Accesorios_solicitudes();
+            as.setSolicitudes(solicitudes);
+            as.setAccesorios(accesorio);
+            solicitudes.getSolicitudesacce().add(as);
         }
         return solicitudes;
     }

@@ -15,10 +15,16 @@ import com.proyecto.trabajo.models.Solicitudes;
 import com.proyecto.trabajo.models.Usuarios;
 import com.proyecto.trabajo.models.Espacio;
 import com.proyecto.trabajo.models.Prestamos;
+import com.proyecto.trabajo.models.Elementos;
+import com.proyecto.trabajo.models.Elemento_Solicitudes;
+import com.proyecto.trabajo.models.Accesorios;
+import com.proyecto.trabajo.models.Accesorios_solicitudes;
 import com.proyecto.trabajo.repository.SolicitudesRepository;
 import com.proyecto.trabajo.repository.UsuariosRepository;
 import com.proyecto.trabajo.repository.EspacioRepository;
 import com.proyecto.trabajo.repository.PrestamosRepository;
+import com.proyecto.trabajo.repository.ElementosRepository;
+import com.proyecto.trabajo.repository.AccesoriosRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -32,15 +38,19 @@ public class SolicitudesServicesImple implements SolicitudesServices {
     private final UsuariosRepository usuariosRepository;
     private final EspacioRepository espacioRepository;
     private final PrestamosRepository prestamosRepository;
+    private final ElementosRepository elementosRepository;
+    private final AccesoriosRepository accesoriosRepository;
 
     public SolicitudesServicesImple(SolicitudesRepository solicitudesRepository, SolicitudesMapper solicitudesMapper,
             UsuariosRepository usuariosRepository, EspacioRepository espacioRepository,
-            PrestamosRepository prestamosRepository) {
+            PrestamosRepository prestamosRepository, ElementosRepository elementosRepository, AccesoriosRepository accesoriosRepository) {
         this.solicitudesRepository = solicitudesRepository;
         this.solicitudesMapper = solicitudesMapper;
         this.usuariosRepository = usuariosRepository;
         this.espacioRepository = espacioRepository;
         this.prestamosRepository = prestamosRepository;
+        this.elementosRepository = elementosRepository;
+        this.accesoriosRepository = accesoriosRepository;
     }
 
     @Override
@@ -50,6 +60,24 @@ public class SolicitudesServicesImple implements SolicitudesServices {
             throw new IllegalArgumentException("id_usu es obligatorio");
         }
         Solicitudes solicitudes = solicitudesMapper.toSolicitudesFromCreateDto(dto);
+        // Enlazar Elemento si el mapper no lo hizo
+        if (dto.getId_elem() != null && (solicitudes.getElemento() == null || solicitudes.getElemento().isEmpty())) {
+            Elementos elemento = elementosRepository.findById(dto.getId_elem())
+                .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
+            Elemento_Solicitudes es = new Elemento_Solicitudes();
+            es.setSolicitudes(solicitudes);
+            es.setElementos(elemento);
+            solicitudes.getElemento().add(es);
+        }
+        // Enlazar Accesorio si el mapper no lo hizo
+        if (dto.getId_acces() != null && (solicitudes.getSolicitudesacce() == null || solicitudes.getSolicitudesacce().isEmpty())) {
+            Accesorios accesorio = accesoriosRepository.findById(dto.getId_acces().intValue())
+                .orElseThrow(() -> new EntityNotFoundException("Accesorio no encontrado"));
+            Accesorios_solicitudes as = new Accesorios_solicitudes();
+            as.setSolicitudes(solicitudes);
+            as.setAccesorios(accesorio);
+            solicitudes.getSolicitudesacce().add(as);
+        }
         Solicitudes guardado = solicitudesRepository.save(solicitudes);
         return solicitudesMapper.toSolicitudesDto(guardado);
     }
