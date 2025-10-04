@@ -22,4 +22,6 @@ public class PrestamosCreateDto {
     private Long id_acces;
 
     private Long id_esp;
+
+    
 }

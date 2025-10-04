@@ -9,20 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class SolicitudeCreateDto {
- 
+public class SolicitudesUpdateDtos {
+    private Byte est_soli;
 
     private LocalDateTime fecha_ini;
     private LocalDateTime fecha_fn;
-    private String ambient;
-    private Integer num_fich;
-    private Byte estadosoli;
-
-    private Long id_usu;
-
-    private Long id_esp;
-
-    private Long id_elem;
-
-    private Long id_acces;
 }

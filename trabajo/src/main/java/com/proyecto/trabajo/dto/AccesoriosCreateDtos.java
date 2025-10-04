@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @Data
 public class AccesoriosCreateDtos {
     private Integer id_accesorio;
-    private Integer canti;
     private String nom_acces;
     private String marc;
     private Integer num_ser;

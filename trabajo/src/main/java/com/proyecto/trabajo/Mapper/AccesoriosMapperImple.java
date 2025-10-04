@@ -16,7 +16,6 @@ public class AccesoriosMapperImple implements AccesoriosMapper {
         }
         Accesorios accesorios = new Accesorios();
         accesorios.setId(accesoriosDto.getId_accesorio());
-        accesorios.setCant(accesoriosDto.getCanti());
         accesorios.setNom_acce(accesoriosDto.getNom_acces());
         accesorios.setMarca(accesoriosDto.getMarc());
         accesorios.setNum_serie(accesoriosDto.getNum_ser());
@@ -30,7 +29,6 @@ public class AccesoriosMapperImple implements AccesoriosMapper {
         }
         AccesoriosDto accesoriosDto = new AccesoriosDto();
         accesoriosDto.setId_accesorio(accesorios.getId());
-        accesoriosDto.setCanti(accesorios.getCant());
         accesoriosDto.setNom_acces(accesorios.getNom_acce());
         accesoriosDto.setMarc(accesorios.getMarca());
         accesoriosDto.setNum_ser(accesorios.getNum_serie());
@@ -44,7 +42,6 @@ public class AccesoriosMapperImple implements AccesoriosMapper {
         }
         Accesorios accesorios = new Accesorios();
         accesorios.setId(createDto.getId_accesorio());
-        accesorios.setCant(createDto.getCanti());
         accesorios.setNom_acce(createDto.getNom_acces());
         accesorios.setMarca(createDto.getMarc());
         accesorios.setNum_serie(createDto.getNum_ser());

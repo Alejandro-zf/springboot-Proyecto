@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import com.proyecto.trabajo.dto.SolicitudesDto;
 import com.proyecto.trabajo.dto.SolicitudeCreateDto;
+import com.proyecto.trabajo.dto.SolicitudesUpdateDtos;
 import com.proyecto.trabajo.models.Solicitudes;
 import com.proyecto.trabajo.models.Usuarios;
 import com.proyecto.trabajo.models.Espacio;
@@ -17,7 +18,6 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
 
     private final UsuariosRepository usuariosRepository;
     private final EspacioRepository espacioRepository;
-
     public SolicitudesMapperImple(UsuariosRepository usuariosRepository, EspacioRepository espacioRepository) {
         this.usuariosRepository = usuariosRepository;
         this.espacioRepository = espacioRepository;
@@ -33,10 +33,10 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
 
         Solicitudes solicitudes = new Solicitudes();
         solicitudes.setId(solicitudesDto.getId_soli());
-        solicitudes.setCantidad(solicitudesDto.getCant());
         solicitudes.setFecha_inicio(solicitudesDto.getFecha_ini());
         solicitudes.setFecha_fin(solicitudesDto.getFecha_fn());
         solicitudes.setAmbiente(solicitudesDto.getAmbient());
+        solicitudes.setNum_ficha(solicitudesDto.getNum_fich());
         solicitudes.setEstadosolicitud(solicitudesDto.getEst_soli());
         solicitudes.setUsuario(usuario);
         solicitudes.setEspacio(espacio);
@@ -50,10 +50,10 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
         }
         SolicitudesDto dto = new SolicitudesDto();
         dto.setId_soli(entity.getId());
-        dto.setCant(entity.getCantidad());
         dto.setFecha_ini(entity.getFecha_inicio());
         dto.setFecha_fn(entity.getFecha_fin());
         dto.setAmbient(entity.getAmbiente());
+        dto.setNum_fich(entity.getNum_ficha());
         dto.setEst_soli(entity.getEstadosolicitud());
         if (entity.getUsuario() != null) {
             dto.setId_usu(entity.getUsuario().getId());
@@ -72,10 +72,10 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
             return null;
         }
         Solicitudes solicitudes = new Solicitudes();
-        solicitudes.setCantidad(createDto.getCant());
         solicitudes.setFecha_inicio(createDto.getFecha_ini());
         solicitudes.setFecha_fin(createDto.getFecha_fn());
         solicitudes.setAmbiente(createDto.getAmbient());
+        solicitudes.setNum_ficha(createDto.getNum_fich());
         solicitudes.setEstadosolicitud(createDto.getEstadosoli());
         if (createDto.getId_usu() != null) {
             Usuarios usuario = usuariosRepository.findById(createDto.getId_usu())
@@ -88,5 +88,21 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
             solicitudes.setEspacio(espacio);
         }
         return solicitudes;
+    }
+
+    @Override
+    public void updateSolicitudesFromUpdateDto(SolicitudesUpdateDtos updateDto, Solicitudes entity) {
+        if (updateDto == null || entity == null) {
+            return;
+        }
+        if (updateDto.getFecha_ini() != null) {
+            entity.setFecha_inicio(updateDto.getFecha_ini());
+        }
+        if (updateDto.getFecha_fn() != null) {
+            entity.setFecha_fin(updateDto.getFecha_fn());
+        }
+        if (updateDto.getEst_soli() != null) {
+            entity.setEstadosolicitud(updateDto.getEst_soli());
+        }
     }
 }
