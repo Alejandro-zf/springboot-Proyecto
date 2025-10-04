@@ -97,6 +97,7 @@ public class UsuariosMapperImple implements UsuariosMapper {
         usuarios.setApe_usu(updateDto.getApe_us());
         usuarios.setCorreo(updateDto.getCorre());
         usuarios.setPassword(updateDto.getPassword());
+        usuarios.setEstado(updateDto.getEst_usu());
         return usuarios;
     }
 }
