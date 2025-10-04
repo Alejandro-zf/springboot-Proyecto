@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.proyecto.trabajo.Mapper.ElementosMapper;
 import com.proyecto.trabajo.dto.ElementoDto;
 import com.proyecto.trabajo.dto.ElementosCreateDto;
+import com.proyecto.trabajo.dto.ElementoUpdateDtos;
 import com.proyecto.trabajo.models.Elementos;
 import com.proyecto.trabajo.repository.ElementosRepository;
 
@@ -55,9 +56,11 @@ public class ElementosServicesImple implements ElementosServices {
     }
 
     @Override
-    public ElementoDto actualizarElemento(ElementoDto dto) {
-        Elementos elementos = elementosMapper.toElementos(dto);
-        Elementos actualizado = elementosRepository.save(elementos);
+    public ElementoDto actualizarElemento(Long id, ElementoUpdateDtos dto) {
+        Elementos entity = elementosRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
+        elementosMapper.updateElementosFromUpdateDto(dto, entity);
+        Elementos actualizado = elementosRepository.save(entity);
         return elementosMapper.toElementoDto(actualizado);
     }
 }

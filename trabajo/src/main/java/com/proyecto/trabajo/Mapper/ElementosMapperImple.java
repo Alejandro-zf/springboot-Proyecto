@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.proyecto.trabajo.dto.ElementoDto;
 import com.proyecto.trabajo.dto.ElementosCreateDto;
+import com.proyecto.trabajo.dto.ElementoUpdateDtos;
 import com.proyecto.trabajo.models.Elementos;
 import com.proyecto.trabajo.models.Categoria;
 import com.proyecto.trabajo.repository.CategoriaRepository;
@@ -35,6 +36,7 @@ public class ElementosMapperImple implements ElementosMapper {
         elementos.setObser(elementoDto.getObse());
         elementos.setNum_serie(elementoDto.getNum_seri());
         elementos.setComponentes(elementoDto.getComponen());
+        elementos.setEstadosoelement(elementoDto.getEst_elemn());
 
         if (elementoDto.getId_categ() != null) {
             Categoria categoria = categoriaRepository.findById(elementoDto.getId_categ().byteValue())
@@ -57,6 +59,7 @@ public class ElementosMapperImple implements ElementosMapper {
         elementoDto.setObse(elementos.getObser());
         elementoDto.setNum_seri(elementos.getNum_serie());
         elementoDto.setComponen(elementos.getComponentes());
+        elementoDto.setEst_elemn(elementos.getEstadosoelement());
         if (elementos.getCategoria() != null) {
             elementoDto.setId_categ(elementos.getCategoria().getId().longValue());
             elementoDto.setTip_catg(elementos.getCategoria().getNom_categoria());
@@ -81,6 +84,16 @@ public class ElementosMapperImple implements ElementosMapper {
             elementos.setCategoria(categoria);
         }
         return elementos;
+    }
+
+    @Override
+    public void updateElementosFromUpdateDto(ElementoUpdateDtos updateDto, Elementos entity) {
+        if (updateDto == null || entity == null) {
+            return;
+        }
+        if (updateDto.getEst_elem() != null) {
+            entity.setEstadosoelement(updateDto.getEst_elem());
+        }
     }
 
     public List<ElementoDto> toElementoDtoList(List<Elementos> elementos) {
