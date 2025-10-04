@@ -8,4 +8,6 @@ public interface PrestamosMapper {
     Prestamos toPrestamos(PrestamosDto prestamosDto);
     PrestamosDto toPrestamosDto(Prestamos prestamos);
     Prestamos toPrestamosFromCreateDto(PrestamosCreateDto createDto);
+        Prestamos fromSolicitudAprobada(com.proyecto.trabajo.models.Solicitudes solicitud);
+
 }

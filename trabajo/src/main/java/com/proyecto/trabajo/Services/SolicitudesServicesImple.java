@@ -31,8 +31,7 @@ import jakarta.persistence.EntityNotFoundException;
 @Service
 public class SolicitudesServicesImple implements SolicitudesServices {
 
-    private static final byte ESTADO_NO_APROBADO = 1;
-    private static final byte ESTADO_APROBADO = 2; // 2 es aprobado
+    private static final byte ESTADO_APROBADO = 2;
 
     private final SolicitudesRepository solicitudesRepository;
     private final SolicitudesMapper solicitudesMapper;
@@ -41,10 +40,12 @@ public class SolicitudesServicesImple implements SolicitudesServices {
     private final PrestamosRepository prestamosRepository;
     private final ElementosRepository elementosRepository;
     private final AccesoriosRepository accesoriosRepository;
+    private final com.proyecto.trabajo.Mapper.PrestamosMapper prestamosMapper;
 
     public SolicitudesServicesImple(SolicitudesRepository solicitudesRepository, SolicitudesMapper solicitudesMapper,
             UsuariosRepository usuariosRepository, EspacioRepository espacioRepository,
-            PrestamosRepository prestamosRepository, ElementosRepository elementosRepository, AccesoriosRepository accesoriosRepository) {
+            PrestamosRepository prestamosRepository, ElementosRepository elementosRepository, AccesoriosRepository accesoriosRepository,
+            com.proyecto.trabajo.Mapper.PrestamosMapper prestamosMapper) {
         this.solicitudesRepository = solicitudesRepository;
         this.solicitudesMapper = solicitudesMapper;
         this.usuariosRepository = usuariosRepository;
@@ -52,6 +53,7 @@ public class SolicitudesServicesImple implements SolicitudesServices {
         this.prestamosRepository = prestamosRepository;
         this.elementosRepository = elementosRepository;
         this.accesoriosRepository = accesoriosRepository;
+        this.prestamosMapper = prestamosMapper;
     }
 
     @Override
@@ -59,12 +61,6 @@ public class SolicitudesServicesImple implements SolicitudesServices {
     public SolicitudesDto guardar(SolicitudeCreateDto dto) {
         if (dto.getId_usu() == null) {
             throw new IllegalArgumentException("id_usu es obligatorio");
-        }
-        // Validar/normalizar estado: 1 = No aprobado, 2 = Aprobado
-        if (dto.getEstadosoli() == null) {
-            dto.setEstadosoli(ESTADO_NO_APROBADO);
-        } else if (dto.getEstadosoli() != ESTADO_NO_APROBADO && dto.getEstadosoli() != ESTADO_APROBADO) {
-            throw new IllegalArgumentException("estadosoli inválido: debe ser 1 (No aprobado) o 2 (Aprobado)");
         }
         Solicitudes solicitudes = solicitudesMapper.toSolicitudesFromCreateDto(dto);
         // Enlazar Elemento si el mapper no lo hizo
@@ -85,17 +81,32 @@ public class SolicitudesServicesImple implements SolicitudesServices {
             as.setAccesorios(accesorio);
             solicitudes.getSolicitudesacce().add(as);
         }
+        // Validar y asignar usuario antes de guardar y antes de crear préstamo
+        if (solicitudes.getUsuario() == null && dto.getId_usu() != null) {
+            Usuarios usuario = usuariosRepository.findById(dto.getId_usu())
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
+            solicitudes.setUsuario(usuario);
+        }
+        if (solicitudes.getEspacio() == null && dto.getId_esp() != null) {
+            Espacio espacio = espacioRepository.findById(dto.getId_esp().intValue())
+                .orElseThrow(() -> new EntityNotFoundException("Espacio no encontrado"));
+            solicitudes.setEspacio(espacio);
+        }
+        if (solicitudes.getUsuario() == null) {
+            throw new IllegalArgumentException("El usuario no puede ser null para la solicitud");
+        }
         Solicitudes guardado = solicitudesRepository.save(solicitudes);
-        // Si se crea aprobado, generar préstamo automáticamente
+        // Si la solicitud es aprobada (estado 2), crear préstamo automáticamente con los datos de la solicitud
         if (guardado.getEstadosolicitud() != null && guardado.getEstadosolicitud() == ESTADO_APROBADO) {
             boolean sinPrestamo = guardado.getPrestamos() == null || guardado.getPrestamos().isEmpty();
             if (sinPrestamo) {
-                Prestamos p = new Prestamos();
-                p.setFecha_entre(LocalDateTime.now());
-                p.setTipo_prest("AUTO");
-                p.setUsuario(guardado.getUsuario());
-                p.setEspacio(guardado.getEspacio());
-                p.setSolicitudes(guardado);
+                // Recargar entidad para asegurar usuario no null
+                Solicitudes solicitudFull = solicitudesRepository.findById(guardado.getId())
+                    .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada tras guardar"));
+                if (solicitudFull.getUsuario() == null) {
+                    throw new IllegalArgumentException("No se puede crear préstamo: usuario null en solicitud aprobada");
+                }
+                Prestamos p = prestamosMapper.fromSolicitudAprobada(solicitudFull);
                 prestamosRepository.save(p);
             }
         }
@@ -133,13 +144,6 @@ public class SolicitudesServicesImple implements SolicitudesServices {
         Solicitudes solicitudes = solicitudesRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada"));
 
-        // Validar estado si viene en el DTO
-        if (dto != null && dto.getEst_soli() != null) {
-            if (dto.getEst_soli() != ESTADO_NO_APROBADO && dto.getEst_soli() != ESTADO_APROBADO) {
-                throw new IllegalArgumentException("est_soli inválido: debe ser 1 (No aprobado) o 2 (Aprobado)");
-            }
-        }
-
         // aplicar actualizaciones parciales usando el mapper
         solicitudesMapper.updateSolicitudesFromUpdateDto(dto, solicitudes);
 
@@ -150,14 +154,22 @@ public class SolicitudesServicesImple implements SolicitudesServices {
         Solicitudes actualizado = solicitudesRepository.save(solicitudes);
 
         if (aprobado && sinPrestamo) {
-            Prestamos p = new Prestamos();
-            p.setFecha_entre(LocalDateTime.now());
-            p.setTipo_prest("AUTO");
-            p.setUsuario(actualizado.getUsuario());
-            p.setEspacio(actualizado.getEspacio());
-            p.setSolicitudes(actualizado);
-            prestamosRepository.save(p);
+            boolean crearPrestamo = solicitudes.getEstadosolicitud() != null && solicitudes.getEstadosolicitud() == 2;
+            if (crearPrestamo && solicitudes.getUsuario() == null) {
+                throw new IllegalArgumentException("No se puede crear el préstamo automáticamente porque la solicitud no tiene usuario asignado. Asigna un usuario antes de aprobar la solicitud.");
+            }
+            if (crearPrestamo) {
+                Prestamos p = new Prestamos();
+                p.setFecha_entre(LocalDateTime.now());
+                p.setTipo_prest("AUTO");
+                p.setUsuario(solicitudes.getUsuario());
+                // Espacio puede ser null
+                p.setEspacio(solicitudes.getEspacio());
+                p.setSolicitudes(solicitudes);
+                prestamosRepository.save(p);
+            }
         }
         return solicitudesMapper.toSolicitudesDto(actualizado);
     }
 }
+

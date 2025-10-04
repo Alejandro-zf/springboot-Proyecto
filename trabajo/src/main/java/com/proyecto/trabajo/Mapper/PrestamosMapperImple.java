@@ -1,3 +1,4 @@
+
 package com.proyecto.trabajo.Mapper;
 
 import org.springframework.stereotype.Component;
@@ -14,6 +15,18 @@ import jakarta.persistence.EntityNotFoundException;
 
 @Component
 public class PrestamosMapperImple implements PrestamosMapper {
+
+    @Override
+    public Prestamos fromSolicitudAprobada(com.proyecto.trabajo.models.Solicitudes solicitud) {
+        if (solicitud == null) return null;
+        Prestamos p = new Prestamos();
+        p.setFecha_entre(java.time.LocalDateTime.now());
+        p.setTipo_prest("AUTO");
+        p.setUsuario(solicitud.getUsuario());
+        p.setEspacio(solicitud.getEspacio());
+        p.setSolicitudes(solicitud);
+        return p;
+    }
 
     private final UsuariosRepository usuariosRepository;
     private final EspacioRepository espacioRepository;
