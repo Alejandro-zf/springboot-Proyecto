@@ -7,8 +7,10 @@ import com.proyecto.trabajo.dto.TicketsCreateDto;
 import com.proyecto.trabajo.models.Tickets;
 import com.proyecto.trabajo.models.Usuarios;
 import com.proyecto.trabajo.models.Estado_ticket;
+import com.proyecto.trabajo.models.Elementos;
 import com.proyecto.trabajo.repository.UsuariosRepository;
 import com.proyecto.trabajo.repository.Estado_TicketRepository;
+import com.proyecto.trabajo.repository.ElementosRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -17,10 +19,12 @@ public class TicketsMapperImple implements TicketsMapper {
     
     private final UsuariosRepository usuariosRepository;
     private final Estado_TicketRepository estadoTicketRepository;
+    private final ElementosRepository elementosRepository;
 
-    public TicketsMapperImple(UsuariosRepository usuariosRepository, Estado_TicketRepository estadoTicketRepository) {
+    public TicketsMapperImple(UsuariosRepository usuariosRepository, Estado_TicketRepository estadoTicketRepository, ElementosRepository elementosRepository) {
         this.usuariosRepository = usuariosRepository;
         this.estadoTicketRepository = estadoTicketRepository;
+        this.elementosRepository = elementosRepository;
     }
     
     @Override
@@ -42,6 +46,11 @@ public class TicketsMapperImple implements TicketsMapper {
             Estado_ticket estado = estadoTicketRepository.findById(ticketsDtos.getId_est_tick().byteValue())
                 .orElseThrow(() -> new EntityNotFoundException("Estado de ticket no encontrado"));
             tickets.setEstado_ticket(estado);
+        }
+        if (ticketsDtos.getId_eleme() != null) {
+            Elementos elemento = elementosRepository.findById(ticketsDtos.getId_eleme())
+                .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
+            tickets.setElementos(elemento);
         }
 
         return tickets;
@@ -80,9 +89,13 @@ public class TicketsMapperImple implements TicketsMapper {
             ticketsDtos.setProbloem_id(0L);
             ticketsDtos.setNom_problm("");
         }
-        // No existe relación de elemento en Tickets entity, por lo que devolvemos defaults
-        ticketsDtos.setId_eleme(0L);
-        ticketsDtos.setNom_elem("");
+        if (tickets.getElementos() != null) {
+            ticketsDtos.setId_eleme(tickets.getElementos().getId());
+            ticketsDtos.setNom_elem(tickets.getElementos().getNom_elemento());
+        } else {
+            ticketsDtos.setId_eleme(0L);
+            ticketsDtos.setNom_elem("");
+        }
         return ticketsDtos;
     }
 
@@ -104,6 +117,11 @@ public class TicketsMapperImple implements TicketsMapper {
             Estado_ticket estado = estadoTicketRepository.findById(createDto.getEst_tick().byteValue())
                 .orElseThrow(() -> new EntityNotFoundException("Estado de ticket no encontrado"));
             tickets.setEstado_ticket(estado);
+        }
+        if (createDto.getId_elem() != null) {
+            Elementos elemento = elementosRepository.findById(createDto.getId_elem())
+                .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
+            tickets.setElementos(elemento);
         }
         return tickets;
     }
