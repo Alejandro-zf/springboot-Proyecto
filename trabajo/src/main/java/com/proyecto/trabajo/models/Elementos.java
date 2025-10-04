@@ -48,4 +48,6 @@ public class Elementos {
     @OneToMany(mappedBy = "elementos")
     private List <Prestamos_Elemento> prestamosselemen;
 
+    @OneToMany(mappedBy = "tickets")
+    private List <Tickets> ticketss;
 }
