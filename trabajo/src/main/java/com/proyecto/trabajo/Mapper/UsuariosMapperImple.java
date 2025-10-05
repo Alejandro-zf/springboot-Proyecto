@@ -31,6 +31,9 @@ public class UsuariosMapperImple implements UsuariosMapper {
     usuarios.setApe_usu(usuariosDto.getApe_usua());
     usuarios.setCorreo(usuariosDto.getCorre());
     usuarios.setNum_doc(usuariosDto.getNum_docu());
+        // Mapear estado si viene en el DTO (nom_est), por defecto 2
+        Byte est = usuariosDto.getNom_est();
+        usuarios.setEstado(est != null ? est : 2);
         if (usuariosDto.getId_tip_docu() != null) {
             Tip_documento tip = tipDocumentoRepository.findById(usuariosDto.getId_tip_docu())
                 .orElseThrow(() -> new EntityNotFoundException("Tipo de documento no encontrado"));
@@ -50,6 +53,8 @@ public class UsuariosMapperImple implements UsuariosMapper {
     usuariosDto.setApe_usua(usuarios.getApe_usu());
     usuariosDto.setCorre(usuarios.getCorreo());
     usuariosDto.setNum_docu(usuarios.getNum_doc());
+        Byte estOut = usuarios.getEstado();
+        usuariosDto.setNom_est(estOut != null ? estOut : 2);
         if (usuarios.getTip_documento() != null) {
             usuariosDto.setId_tip_docu(usuarios.getTip_documento().getId());
             usuariosDto.setTip_docu(usuarios.getTip_documento().getTipo_doc());
@@ -75,7 +80,15 @@ public class UsuariosMapperImple implements UsuariosMapper {
     usuarios.setCorreo(createDto.getCorre());
     usuarios.setNum_doc(createDto.getNum_docu());
     usuarios.setPassword(createDto.getPasword());
-    usuarios.setEstado(createDto.getEstad());
+        // Validar estado obligatorio y rango permitido [1,2]
+        Byte estado = createDto.getEstad();
+        if (estado == null) {
+            throw new IllegalArgumentException("El id del estado es obligatorio");
+        }
+        if (estado < 1 || estado > 2) {
+            throw new IllegalArgumentException("Estado inválido. Debe ser 1 (desactivado) o 2 (activado)");
+        }
+        usuarios.setEstado(estado);
     // Tip_documento es obligatorio
         if (createDto.getTip_docu() == null) {
             throw new EntityNotFoundException("El id del tipo de documento es obligatorio");
@@ -97,7 +110,14 @@ public class UsuariosMapperImple implements UsuariosMapper {
         usuarios.setApe_usu(updateDto.getApe_us());
         usuarios.setCorreo(updateDto.getCorre());
         usuarios.setPassword(updateDto.getPassword());
-        usuarios.setEstado(updateDto.getEst_usu());
+        // El estado es opcional en update, pero si viene, debe estar en [1,2]
+        if (updateDto.getEst_usu() != null) {
+            Byte est = updateDto.getEst_usu();
+            if (est < 1 || est > 2) {
+                throw new IllegalArgumentException("Estado inválido. Debe ser 1 (desactivado) o 2 (activado)");
+            }
+            usuarios.setEstado(est);
+        }
         return usuarios;
     }
 }

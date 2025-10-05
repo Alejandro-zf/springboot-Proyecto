@@ -24,8 +24,10 @@ public class UsuariosServicesImple implements UsuariosServices {
     private final RolesRepository rolesRepository;
     private final Roles_UsuarioRepository rolesUsuarioRepository;
 
-    public UsuariosServicesImple(UsuariosRepository usuariosRepository, UsuariosMapper usuariosMapper,
-            RolesRepository rolesRepository, Roles_UsuarioRepository rolesUsuarioRepository) {
+    public UsuariosServicesImple(UsuariosRepository usuariosRepository,
+                                 UsuariosMapper usuariosMapper,
+                                 RolesRepository rolesRepository,
+                                 Roles_UsuarioRepository rolesUsuarioRepository) {
         this.usuariosRepository = usuariosRepository;
         this.usuariosMapper = usuariosMapper;
         this.rolesRepository = rolesRepository;
@@ -39,7 +41,7 @@ public class UsuariosServicesImple implements UsuariosServices {
         // Asociar rol opcionalmente si viene el id_role
         if (dto.getId_role() != null) {
             Roles rol = rolesRepository.findById(dto.getId_role())
-                .orElseThrow(() -> new EntityNotFoundException("Rol no encontrado"));
+                    .orElseThrow(() -> new EntityNotFoundException("Rol no encontrado"));
             Roles_Usuario ru = new Roles_Usuario();
             ru.setUsuario(guardado);
             ru.setRoles(rol);
@@ -74,26 +76,26 @@ public class UsuariosServicesImple implements UsuariosServices {
         Usuarios usuarios = usuariosRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
 
-        // Actualizar solo los campos que no son nulos en el DTO
+        // Actualizar solo campos no nulos
         if (dto.getNom_us() != null) {
             usuarios.setNom_usu(dto.getNom_us());
         }
-
         if (dto.getApe_us() != null) {
             usuarios.setApe_usu(dto.getApe_us());
         }
-
         if (dto.getCorre() != null) {
             usuarios.setCorreo(dto.getCorre());
         }
-
         if (dto.getPassword() != null) {
-            // En un entorno de producción, DEBES encriptar la contraseña aquí.
+            // En producción, encriptar contraseña
             usuarios.setPassword(dto.getPassword());
         }
-
         if (dto.getEst_usu() != null) {
-            usuarios.setEstado(dto.getEst_usu());
+            Byte est = dto.getEst_usu();
+            if (est < 1 || est > 2) {
+                throw new IllegalArgumentException("Estado inválido. Debe ser 1 (desactivado) o 2 (activado)");
+            }
+            usuarios.setEstado(est);
         }
 
         Usuarios actualizado = usuariosRepository.save(usuarios);
