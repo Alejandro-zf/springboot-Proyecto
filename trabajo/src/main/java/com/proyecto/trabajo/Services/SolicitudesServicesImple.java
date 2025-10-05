@@ -63,7 +63,7 @@ public class SolicitudesServicesImple implements SolicitudesServices {
             throw new IllegalArgumentException("id_usu es obligatorio");
         }
         Solicitudes solicitudes = solicitudesMapper.toSolicitudesFromCreateDto(dto);
-        // Enlazar Elemento si el mapper no lo hizo
+
         if (dto.getId_elem() != null && (solicitudes.getElemento() == null || solicitudes.getElemento().isEmpty())) {
             Elementos elemento = elementosRepository.findById(dto.getId_elem())
                 .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
@@ -72,7 +72,6 @@ public class SolicitudesServicesImple implements SolicitudesServices {
             es.setElementos(elemento);
             solicitudes.getElemento().add(es);
         }
-        // Enlazar Accesorio si el mapper no lo hizo
         if (dto.getId_acces() != null && (solicitudes.getSolicitudesacce() == null || solicitudes.getSolicitudesacce().isEmpty())) {
             Accesorios accesorio = accesoriosRepository.findById(dto.getId_acces().intValue())
                 .orElseThrow(() -> new EntityNotFoundException("Accesorio no encontrado"));
@@ -81,7 +80,6 @@ public class SolicitudesServicesImple implements SolicitudesServices {
             as.setAccesorios(accesorio);
             solicitudes.getSolicitudesacce().add(as);
         }
-        // Validar y asignar usuario antes de guardar y antes de crear préstamo
         if (solicitudes.getUsuario() == null && dto.getId_usu() != null) {
             Usuarios usuario = usuariosRepository.findById(dto.getId_usu())
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
@@ -96,11 +94,9 @@ public class SolicitudesServicesImple implements SolicitudesServices {
             throw new IllegalArgumentException("El usuario no puede ser null para la solicitud");
         }
         Solicitudes guardado = solicitudesRepository.save(solicitudes);
-        // Si la solicitud es aprobada (estado 2), crear préstamo automáticamente con los datos de la solicitud
         if (guardado.getEstadosolicitud() != null && guardado.getEstadosolicitud() == ESTADO_APROBADO) {
             boolean sinPrestamo = guardado.getPrestamos() == null || guardado.getPrestamos().isEmpty();
             if (sinPrestamo) {
-                // Recargar entidad para asegurar usuario no null
                 Solicitudes solicitudFull = solicitudesRepository.findById(guardado.getId())
                     .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada tras guardar"));
                 if (solicitudFull.getUsuario() == null) {
@@ -144,8 +140,8 @@ public class SolicitudesServicesImple implements SolicitudesServices {
         Solicitudes solicitudes = solicitudesRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada"));
 
-        // aplicar actualizaciones parciales usando el mapper
-        solicitudesMapper.updateSolicitudesFromUpdateDto(dto, solicitudes);
+    solicitudesMapper.updateSolicitudesFromUpdateDto(dto, solicitudes);
+
 
         // Si la solicitud quedó aprobada y no tiene préstamo, crear uno automáticamente
         boolean aprobado = dto != null && dto.getEst_soli() != null && dto.getEst_soli() == ESTADO_APROBADO;
@@ -163,7 +159,6 @@ public class SolicitudesServicesImple implements SolicitudesServices {
                 p.setFecha_entre(LocalDateTime.now());
                 p.setTipo_prest("AUTO");
                 p.setUsuario(solicitudes.getUsuario());
-                // Espacio puede ser null
                 p.setEspacio(solicitudes.getEspacio());
                 p.setSolicitudes(solicitudes);
                 prestamosRepository.save(p);
