@@ -60,4 +60,10 @@ public class AccesoriosController {
         return ResponseEntity.noContent().build();
     }
 
+    //Listar todos los accesorios
+    @GetMapping
+    public ResponseEntity<List<AccesoriosDto>> listarTodos() {
+        List<AccesoriosDto> accesorios = accesoriosServices.listarTodos();
+        return ResponseEntity.ok(accesorios);
+    }
 }
