@@ -8,5 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class ElementoUpdateDtos {
+    private Long id_elem;
     private Byte est_elem;
 }

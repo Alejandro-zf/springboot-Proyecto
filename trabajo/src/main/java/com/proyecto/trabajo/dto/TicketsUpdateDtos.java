@@ -9,10 +9,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class SolicitudesUpdateDtos {
-    private Long id_soli;
-    private Byte est_soli;
+public class TicketsUpdateDtos {
+    private Long id_ticke;
+    private LocalDateTime fecha_in;
+    private LocalDateTime fecha_fin;
 
-    private LocalDateTime fecha_ini;
-    private LocalDateTime fecha_fn;
+    private Long id_est_tick;
+    
 }
