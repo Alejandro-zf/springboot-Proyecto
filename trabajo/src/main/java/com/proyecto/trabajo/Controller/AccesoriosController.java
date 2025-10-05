@@ -19,8 +19,6 @@ import com.proyecto.trabajo.dto.AccesoriosDto;
 
 import jakarta.validation.Valid;
 
-
-
 @RestController
 @RequestMapping("/api/accesorios")
 
@@ -66,5 +64,12 @@ public class AccesoriosController {
     public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
         accesoriosServices.eliminar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    //Listar todos los accesorios
+    @GetMapping
+    public ResponseEntity<List<AccesoriosDto>> listar() {
+        List<AccesoriosDto> accesorios = accesoriosServices.listarTodos();
+        return ResponseEntity.ok(accesorios);
     }
 }
