@@ -46,12 +46,6 @@ public class AccesoriosController {
         }
     }
     
-    @GetMapping
-    public ResponseEntity<List<AccesoriosDto>> listarTodos() {
-        List<AccesoriosDto> accesorios = accesoriosServices.listarTodos();
-        return ResponseEntity.ok(accesorios);
-    }
-    
     //obtener por id 
     @GetMapping("/{id}")
     public ResponseEntity<AccesoriosDto> buscarPorId (@PathVariable Integer id) {
