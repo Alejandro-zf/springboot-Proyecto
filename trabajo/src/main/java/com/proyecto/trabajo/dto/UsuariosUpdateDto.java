@@ -13,6 +13,5 @@ public class UsuariosUpdateDto {
     private String ape_us;
     private String corre;
     private String password;
-
     private Byte est_usu;
 }
