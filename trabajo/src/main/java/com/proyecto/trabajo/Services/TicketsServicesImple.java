@@ -42,6 +42,19 @@ public class TicketsServicesImple implements TicketsServices {
         this.problemasRepository = problemasRepository;
         this.elementosRepository = elementosRepository;
     }
+    private void sincronizarEstadoElementoPorTicket(Tickets ticket) {
+        if (ticket == null) return;
+        Elementos elemento = ticket.getElementos();
+        Estado_ticket estado = ticket.getEstado_ticket();
+        if (elemento == null || estado == null || estado.getId_estado() == null) return;
+
+        final byte nuevoEstadoElemento = (estado.getId_estado() == 1) ? (byte) 2 : (byte) 1;
+
+        if (elemento.getEstadosoelement() == null || elemento.getEstadosoelement() != nuevoEstadoElemento) {
+            elemento.setEstadosoelement(nuevoEstadoElemento);
+            elementosRepository.save(elemento);
+        }
+    }
 
     @Override
     @Transactional
@@ -49,9 +62,7 @@ public class TicketsServicesImple implements TicketsServices {
         if (dto.getId_usu() == null) {
             throw new IllegalStateException("id_usu es obligatorio");
         }
-        if (dto.getEst_tick() == null) {
-            throw new IllegalStateException("est_tick es obligatorio");
-        }
+        // est_tick puede ser null; por defecto será 'pendiente' (ID 3)
         if (dto.getId_problem() == null) {
             throw new IllegalStateException("id_problem es obligatorio");
         }
@@ -67,7 +78,12 @@ public class TicketsServicesImple implements TicketsServices {
 
         Tickets tickets = ticketsMapper.toTicketsFromCreateDto(dto);
 
-        // Asegurar que problemas y observaciones no queden null aunque el mapper no los setee
+        if (tickets.getEstado_ticket() == null) {
+            Estado_ticket estadoPendiente = estadoTicketRepository.findById((byte)3)
+                .orElseThrow(() -> new EntityNotFoundException("Estado de ticket 'pendiente' (3) no encontrado"));
+            tickets.setEstado_ticket(estadoPendiente);
+        }
+
         if (tickets.getProblemas() == null && dto.getId_problem() != null) {
             Problemas problema = problemasRepository.findById(dto.getId_problem().byteValue())
                 .orElseThrow(() -> new EntityNotFoundException("Problema no encontrado"));
@@ -76,7 +92,6 @@ public class TicketsServicesImple implements TicketsServices {
         if (tickets.getObservaciones() == null) {
             tickets.setObservaciones(dto.getObser());
         }
-        // Establecer elemento si viene en el DTO
         if (tickets.getElementos() == null && dto.getId_elem() != null) {
             Elementos elemento = elementosRepository.findById(dto.getId_elem())
                 .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
@@ -84,6 +99,7 @@ public class TicketsServicesImple implements TicketsServices {
         }
 
         Tickets guardado = ticketsRepository.save(tickets);
+        sincronizarEstadoElementoPorTicket(guardado);
         return ticketsMapper.toTicketsDto(guardado);
     }
 
@@ -121,7 +137,6 @@ public class TicketsServicesImple implements TicketsServices {
         tickets.setFecha_ini(dto.getFecha_in());
         tickets.setFecha_finn(dto.getFecha_fin());
         tickets.setAmbiente(dto.getAmbient());
-        // Asegurar que observaciones no quede null en actualización
         if (dto.getObser() == null) {
             tickets.setObservaciones("");
         } else {
@@ -138,13 +153,11 @@ public class TicketsServicesImple implements TicketsServices {
                     .orElseThrow(() -> new EntityNotFoundException("Estado de ticket no encontrado"));
             tickets.setEstado_ticket(estado);
         }
-        // Actualizar problema si viene en el DTO
         if (dto.getProbloem_id() != null) {
             Problemas problema = problemasRepository.findById(dto.getProbloem_id().byteValue())
                 .orElseThrow(() -> new EntityNotFoundException("Problema no encontrado"));
             tickets.setProblemas(problema);
         }
-        // Actualizar elemento si viene en el DTO
         if (dto.getId_eleme() != null) {
             Elementos elemento = elementosRepository.findById(dto.getId_eleme())
                 .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
@@ -152,6 +165,8 @@ public class TicketsServicesImple implements TicketsServices {
         }
         
         Tickets actualizado = ticketsRepository.save(tickets);
+        sincronizarEstadoElementoPorTicket(actualizado);
         return ticketsMapper.toTicketsDto(actualizado);
     }
 }
+

@@ -24,6 +24,14 @@ public class ElementosMapperImple implements ElementosMapper {
         this.categoriaRepository = categoriaRepository;
     }
 
+    private static byte validarEstado(Byte estado) {
+        if (estado == null) return 2; 
+        if (estado < 1 || estado > 2) {
+            throw new IllegalArgumentException("Estado de elemento inválido. Use 1 (no disponible) o 2 (disponible)");
+        }
+        return estado;
+    }
+
     @Override
     public Elementos toElementos(ElementoDto elementoDto) {
         if (elementoDto == null) {
@@ -36,7 +44,7 @@ public class ElementosMapperImple implements ElementosMapper {
         elementos.setObser(elementoDto.getObse());
         elementos.setNum_serie(elementoDto.getNum_seri());
         elementos.setComponentes(elementoDto.getComponen());
-        elementos.setEstadosoelement(elementoDto.getEst_elemn());
+        elementos.setEstadosoelement(validarEstado(elementoDto.getEst_elemn()));
 
         if (elementoDto.getId_categ() != null) {
             Categoria categoria = categoriaRepository.findById(elementoDto.getId_categ().byteValue())
@@ -78,6 +86,7 @@ public class ElementosMapperImple implements ElementosMapper {
         elementos.setObser(createDto.getObse());
         elementos.setNum_serie(createDto.getNum_seri());
         elementos.setComponentes(createDto.getComponen());
+        elementos.setEstadosoelement(validarEstado(createDto.getEst_elem()));
         if (createDto.getId_categoria() != null) {
             Categoria categoria = categoriaRepository.findById(createDto.getId_categoria().byteValue())
                 .orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada"));
@@ -92,7 +101,7 @@ public class ElementosMapperImple implements ElementosMapper {
             return;
         }
         if (updateDto.getEst_elem() != null) {
-            entity.setEstadosoelement(updateDto.getEst_elem());
+            entity.setEstadosoelement(validarEstado(updateDto.getEst_elem()));
         }
     }
 

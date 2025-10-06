@@ -47,7 +47,8 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
         solicitudes.setFecha_fin(solicitudesDto.getFecha_fn());
         solicitudes.setAmbiente(solicitudesDto.getAmbient());
         solicitudes.setNum_ficha(solicitudesDto.getNum_fich());
-        solicitudes.setEstadosolicitud(solicitudesDto.getEst_soli());
+        Byte est = solicitudesDto.getEst_soli();
+        solicitudes.setEstadosolicitud(est != null ? est : 1);
         solicitudes.setUsuario(usuario);
         solicitudes.setEspacio(espacio);
         return solicitudes;
@@ -73,7 +74,6 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
             dto.setId_espa(entity.getEspacio().getId().longValue());
             dto.setNom_espa(entity.getEspacio().getNom_espa());
         }
-        // Mapear primer elemento asociado si existe
         if (entity.getElemento() != null && !entity.getElemento().isEmpty()) {
             Elemento_Solicitudes es = entity.getElemento().get(0);
             if (es.getElementos() != null) {
@@ -81,7 +81,6 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
                 dto.setNom_elem(es.getElementos().getNom_elemento());
             }
         }
-        // Mapear primer accesorio asociado si existe
         if (entity.getSolicitudesacce() != null && !entity.getSolicitudesacce().isEmpty()) {
             Accesorios_solicitudes as = entity.getSolicitudesacce().get(0);
             if (as.getAccesorios() != null) {
@@ -102,7 +101,8 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
         solicitudes.setFecha_fin(createDto.getFecha_fn());
         solicitudes.setAmbiente(createDto.getAmbient());
         solicitudes.setNum_ficha(createDto.getNum_fich());
-        solicitudes.setEstadosolicitud(createDto.getEstadosoli());
+        Byte est = createDto.getEstadosoli();
+        solicitudes.setEstadosolicitud(est != null ? est : 1);
         if (createDto.getId_usu() != null) {
             Usuarios usuario = usuariosRepository.findById(createDto.getId_usu())
                     .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
@@ -113,7 +113,6 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
                     .orElseThrow(() -> new EntityNotFoundException("Espacio no encontrado"));
             solicitudes.setEspacio(espacio);
         }
-        // Asociar Elemento si viene en el DTO
         if (createDto.getId_elem() != null) {
             Elementos elemento = elementosRepository.findById(createDto.getId_elem())
                     .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
@@ -122,7 +121,6 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
             es.setElementos(elemento);
             solicitudes.getElemento().add(es);
         }
-        // Asociar Accesorio si viene en el DTO
         if (createDto.getId_acces() != null) {
             Accesorios accesorio = accesoriosRepository.findById(createDto.getId_acces().intValue())
                     .orElseThrow(() -> new EntityNotFoundException("Accesorio no encontrado"));

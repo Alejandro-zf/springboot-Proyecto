@@ -31,7 +31,6 @@ import jakarta.persistence.EntityNotFoundException;
 @Service
 public class SolicitudesServicesImple implements SolicitudesServices {
 
-    private static final byte ESTADO_APROBADO = 2;
 
     private final SolicitudesRepository solicitudesRepository;
     private final SolicitudesMapper solicitudesMapper;
@@ -56,6 +55,21 @@ public class SolicitudesServicesImple implements SolicitudesServices {
         this.prestamosMapper = prestamosMapper;
     }
 
+    private void sincronizarEstadoElementos(Solicitudes solicitud) {
+        if (solicitud == null || solicitud.getElemento() == null) return;
+        Byte estadoSolicitud = solicitud.getEstadosolicitud();
+        if (estadoSolicitud == null) return;
+
+        final byte estadoFinal = (estadoSolicitud == 1) ? (byte) 2 : (byte) 1;
+        solicitud.getElemento().forEach(es -> {
+            Elementos elem = es.getElementos();
+            if (elem != null && (elem.getEstadosoelement() == null || elem.getEstadosoelement() != estadoFinal)) {
+                elem.setEstadosoelement(estadoFinal);
+                elementosRepository.save(elem);
+            }
+        });
+    }
+
     @Override
     @Transactional
     public SolicitudesDto guardar(SolicitudeCreateDto dto) {
@@ -63,6 +77,7 @@ public class SolicitudesServicesImple implements SolicitudesServices {
             throw new IllegalArgumentException("id_usu es obligatorio");
         }
         Solicitudes solicitudes = solicitudesMapper.toSolicitudesFromCreateDto(dto);
+        solicitudes.setEstadosolicitud((byte) 2);
 
         if (dto.getId_elem() != null && (solicitudes.getElemento() == null || solicitudes.getElemento().isEmpty())) {
             Elementos elemento = elementosRepository.findById(dto.getId_elem())
@@ -94,7 +109,11 @@ public class SolicitudesServicesImple implements SolicitudesServices {
             throw new IllegalArgumentException("El usuario no puede ser null para la solicitud");
         }
         Solicitudes guardado = solicitudesRepository.save(solicitudes);
-        if (guardado.getEstadosolicitud() != null && guardado.getEstadosolicitud() == ESTADO_APROBADO) {
+        // Sincronizar estado de elementos según estado de la solicitud
+        sincronizarEstadoElementos(guardado);
+
+        if (guardado.getEstadosolicitud() != null && guardado.getEstadosolicitud() == 1) {
+            // Crear préstamo automático si aplica
             boolean sinPrestamo = guardado.getPrestamos() == null || guardado.getPrestamos().isEmpty();
             if (sinPrestamo) {
                 Solicitudes solicitudFull = solicitudesRepository.findById(guardado.getId())
@@ -141,27 +160,27 @@ public class SolicitudesServicesImple implements SolicitudesServices {
                 .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada"));
 
     solicitudesMapper.updateSolicitudesFromUpdateDto(dto, solicitudes);
-
-
-        // Si la solicitud quedó aprobada y no tiene préstamo, crear uno automáticamente
-        boolean aprobado = dto != null && dto.getEst_soli() != null && dto.getEst_soli() == ESTADO_APROBADO;
+        boolean aprobado = dto != null && dto.getEst_soli() != null && dto.getEst_soli() == 1;
         boolean sinPrestamo = solicitudes.getPrestamos() == null || solicitudes.getPrestamos().isEmpty();
 
         Solicitudes actualizado = solicitudesRepository.save(solicitudes);
+        sincronizarEstadoElementos(actualizado);
 
-        if (aprobado && sinPrestamo) {
-            boolean crearPrestamo = solicitudes.getEstadosolicitud() != null && solicitudes.getEstadosolicitud() == 2;
-            if (crearPrestamo && solicitudes.getUsuario() == null) {
-                throw new IllegalArgumentException("No se puede crear el préstamo automáticamente porque la solicitud no tiene usuario asignado. Asigna un usuario antes de aprobar la solicitud.");
-            }
-            if (crearPrestamo) {
-                Prestamos p = new Prestamos();
-                p.setFecha_entre(LocalDateTime.now());
-                p.setTipo_prest("AUTO");
-                p.setUsuario(solicitudes.getUsuario());
-                p.setEspacio(solicitudes.getEspacio());
-                p.setSolicitudes(solicitudes);
-                prestamosRepository.save(p);
+        if (aprobado) {
+            if (sinPrestamo) {
+                boolean crearPrestamo = actualizado.getEstadosolicitud() != null && actualizado.getEstadosolicitud() == 1;
+                if (crearPrestamo && actualizado.getUsuario() == null) {
+                    throw new IllegalArgumentException("No se puede crear el préstamo automáticamente porque la solicitud no tiene usuario asignado. Asigna un usuario antes de aprobar la solicitud.");
+                }
+                if (crearPrestamo) {
+                    Prestamos p = new Prestamos();
+                    p.setFecha_entre(LocalDateTime.now());
+                    p.setTipo_prest("AUTO");
+                    p.setUsuario(actualizado.getUsuario());
+                    p.setEspacio(actualizado.getEspacio());
+                    p.setSolicitudes(actualizado);
+                    prestamosRepository.save(p);
+                }
             }
         }
         return solicitudesMapper.toSolicitudesDto(actualizado);

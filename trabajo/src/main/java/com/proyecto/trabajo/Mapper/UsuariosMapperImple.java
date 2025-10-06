@@ -31,7 +31,6 @@ public class UsuariosMapperImple implements UsuariosMapper {
     usuarios.setApe_usu(usuariosDto.getApe_usua());
     usuarios.setCorreo(usuariosDto.getCorre());
     usuarios.setNum_doc(usuariosDto.getNum_docu());
-        // Mapear estado si viene en el DTO (nom_est), por defecto 2
         Byte est = usuariosDto.getNom_est();
         usuarios.setEstado(est != null ? est : 2);
         if (usuariosDto.getId_tip_docu() != null) {
@@ -62,7 +61,6 @@ public class UsuariosMapperImple implements UsuariosMapper {
         if (usuarios.getRole() != null && !usuarios.getRole().isEmpty()) {
             Roles_Usuario ru = usuarios.getRole().get(0);
             if (ru.getRoles() != null) {
-                usuariosDto.setId_rol(ru.getRoles().getId());
                 usuariosDto.setNomb_rol(ru.getRoles().getNom_rol());
             }
         }
@@ -75,27 +73,17 @@ public class UsuariosMapperImple implements UsuariosMapper {
             return null;
         }
         Usuarios usuarios = new Usuarios();
-    usuarios.setNom_usu(createDto.getNom_su());
-    usuarios.setApe_usu(createDto.getApe_su());
-    usuarios.setCorreo(createDto.getCorre());
-    usuarios.setNum_doc(createDto.getNum_docu());
-    usuarios.setPassword(createDto.getPasword());
-        // Validar estado obligatorio y rango permitido [1,2]
-        Byte estado = createDto.getEstad();
-        if (estado == null) {
-            throw new IllegalArgumentException("El id del estado es obligatorio");
+        usuarios.setNom_usu(createDto.getNom_su());
+        usuarios.setApe_usu(createDto.getApe_su());
+        usuarios.setCorreo(createDto.getCorre());
+        usuarios.setNum_doc(createDto.getNum_docu());
+        usuarios.setPassword(createDto.getPasword());
+        if (createDto.getTip_docu() != null) {
+            Byte tipId = createDto.getTip_docu().byteValue();
+            Tip_documento tip = tipDocumentoRepository.findById(tipId)
+                .orElseThrow(() -> new EntityNotFoundException("Tipo de documento no encontrado"));
+            usuarios.setTip_documento(tip);
         }
-        if (estado < 1 || estado > 2) {
-            throw new IllegalArgumentException("Estado inválido. Debe ser 1 (desactivado) o 2 (activado)");
-        }
-        usuarios.setEstado(estado);
-    // Tip_documento es obligatorio
-        if (createDto.getTip_docu() == null) {
-            throw new EntityNotFoundException("El id del tipo de documento es obligatorio");
-        }
-        Tip_documento tip = tipDocumentoRepository.findById(createDto.getTip_docu().byteValue())
-            .orElseThrow(() -> new EntityNotFoundException("Tipo de documento no encontrado"));
-        usuarios.setTip_documento(tip);
         return usuarios;
     }
 
@@ -105,19 +93,9 @@ public class UsuariosMapperImple implements UsuariosMapper {
             return null;
         }
         Usuarios usuarios = new Usuarios();
-        usuarios.setId(updateDto.getId_Usu());
-        usuarios.setNom_usu(updateDto.getNom_us());
         usuarios.setApe_usu(updateDto.getApe_us());
         usuarios.setCorreo(updateDto.getCorre());
         usuarios.setPassword(updateDto.getPassword());
-        // El estado es opcional en update, pero si viene, debe estar en [1,2]
-        if (updateDto.getEst_usu() != null) {
-            Byte est = updateDto.getEst_usu();
-            if (est < 1 || est > 2) {
-                throw new IllegalArgumentException("Estado inválido. Debe ser 1 (desactivado) o 2 (activado)");
-            }
-            usuarios.setEstado(est);
-        }
         return usuarios;
     }
 }
