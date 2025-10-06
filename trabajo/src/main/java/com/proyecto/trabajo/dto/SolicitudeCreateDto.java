@@ -1,6 +1,7 @@
 package com.proyecto.trabajo.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,7 +23,8 @@ public class SolicitudeCreateDto {
 
     private Long id_esp;
 
-    private Long id_elem;
+    // Aceptar múltiples elementos en la solicitud
+    private List<Long> ids_elem;
 
     private Long id_acces;
 }

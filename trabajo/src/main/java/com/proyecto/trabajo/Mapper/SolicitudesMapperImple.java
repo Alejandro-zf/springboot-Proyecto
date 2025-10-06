@@ -126,13 +126,16 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
                     .orElseThrow(() -> new EntityNotFoundException("Espacio no encontrado"));
             solicitudes.setEspacio(espacio);
         }
-        if (createDto.getId_elem() != null) {
-            Elementos elemento = elementosRepository.findById(createDto.getId_elem())
-                    .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
-            Elemento_Solicitudes es = new Elemento_Solicitudes();
-            es.setSolicitudes(solicitudes);
-            es.setElementos(elemento);
-            solicitudes.getElemento().add(es);
+        if (createDto.getIds_elem() != null && !createDto.getIds_elem().isEmpty()) {
+            for (Long idElem : createDto.getIds_elem()) {
+                if (idElem == null) continue;
+                Elementos elemento = elementosRepository.findById(idElem)
+                        .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
+                Elemento_Solicitudes es = new Elemento_Solicitudes();
+                es.setSolicitudes(solicitudes);
+                es.setElementos(elemento);
+                solicitudes.getElemento().add(es);
+            }
         }
         if (createDto.getId_acces() != null) {
             Accesorios accesorio = accesoriosRepository.findById(createDto.getId_acces().intValue())

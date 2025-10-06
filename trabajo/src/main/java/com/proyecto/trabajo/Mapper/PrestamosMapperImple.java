@@ -11,12 +11,16 @@ import com.proyecto.trabajo.repository.UsuariosRepository;
 import com.proyecto.trabajo.repository.EspacioRepository;
 
 import jakarta.persistence.EntityNotFoundException;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.Arrays;
 
 @Component
 public class PrestamosMapperImple implements PrestamosMapper {
 
-    private static final Set<String> TIPOS_VALIDOS = Set.of("Portátiles", "Equipo de mesa", "Televisores");
+    private static final Set<String> TIPOS_VALIDOS = new HashSet<>(
+        Arrays.asList("Portátiles", "Equipo de mesa", "Televisores")
+    );
 
     private static void validarTipo(String tipo) {
         if (tipo == null || !TIPOS_VALIDOS.contains(tipo)) {
@@ -70,6 +74,34 @@ public class PrestamosMapperImple implements PrestamosMapper {
     }
 
     @Override
+    public Prestamos toPrestamosFromCreateDto(PrestamosCreateDto createDto) {
+        if (createDto == null) return null;
+        Prestamos prestamos = new Prestamos();
+        prestamos.setFecha_entre(createDto.getFecha_entreg());
+        prestamos.setFecha_recep(createDto.getFecha_repc());
+        validarTipo(createDto.getTipo_pres());
+        prestamos.setTipo_prest(createDto.getTipo_pres());
+
+        if (createDto.getId_usuario() != null) {
+            Usuarios usuario = usuariosRepository.findById(createDto.getId_usuario())
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
+            prestamos.setUsuario(usuario);
+        }
+
+        if (createDto.getId_esp() != null) {
+            Espacio espacio = espacioRepository.findById(createDto.getId_esp().intValue())
+                .orElseThrow(() -> new EntityNotFoundException("Espacio no encontrado"));
+            prestamos.setEspacio(espacio);
+        }
+
+        // Note: mapping of elementos and accesorios by id (id_elem, id_acces) is outside
+        // the responsibilities of this mapper in the original code. If needed, add
+        // repositories and map them here similar to usuario/espacio lookup.
+
+        return prestamos;
+    }
+
+    @Override
     public PrestamosDto toPrestamosDto(Prestamos prestamos) {
         if (prestamos == null) {
             return null;
@@ -87,29 +119,22 @@ public class PrestamosMapperImple implements PrestamosMapper {
             prestamosDto.setId_espac(prestamos.getEspacio().getId().longValue());
             prestamosDto.setNom_espac(prestamos.getEspacio().getNom_espa());
         }
+        // Mapear elemento asociado (primer elemento) si existe
+        if (prestamos.getPrestamoss() != null && !prestamos.getPrestamoss().isEmpty()) {
+            com.proyecto.trabajo.models.Prestamos_Elemento pe = prestamos.getPrestamoss().get(0);
+            if (pe != null && pe.getElementos() != null) {
+                prestamosDto.setId_elem(pe.getElementos().getId());
+                prestamosDto.setNom_elem(pe.getElementos().getNom_elemento());
+            }
+        }
+        // Mapear accesorio asociado (primer accesorio) si existe
+        if (prestamos.getAccesoriosprestamo() != null && !prestamos.getAccesoriosprestamo().isEmpty()) {
+            com.proyecto.trabajo.models.Accesorios_Prestamos ap = prestamos.getAccesoriosprestamo().get(0);
+            if (ap != null && ap.getAccesorios() != null) {
+                prestamosDto.setId_acceso(ap.getAccesorios().getId().longValue());
+                prestamosDto.setNom_aces(ap.getAccesorios().getNom_acce());
+            }
+        }
         return prestamosDto;
-    }
-
-    @Override
-    public Prestamos toPrestamosFromCreateDto(PrestamosCreateDto createDto) {
-        if (createDto == null) {
-            return null;
-        }
-        Prestamos prestamos = new Prestamos();
-        prestamos.setFecha_entre(createDto.getFecha_entreg());
-        prestamos.setFecha_recep(createDto.getFecha_repc());
-        validarTipo(createDto.getTipo_pres());
-        prestamos.setTipo_prest(createDto.getTipo_pres());
-        if (createDto.getId_usuario() != null) {
-            Usuarios usuario = usuariosRepository.findById(createDto.getId_usuario())
-                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
-            prestamos.setUsuario(usuario);
-        }
-        if (createDto.getId_esp() != null) {
-            Espacio espacio = espacioRepository.findById(createDto.getId_esp().intValue())
-                .orElseThrow(() -> new EntityNotFoundException("Espacio no encontrado"));
-            prestamos.setEspacio(espacio);
-        }
-        return prestamos;
     }
 }
