@@ -1,4 +1,3 @@
-
 package com.proyecto.trabajo.Mapper;
 
 import org.springframework.stereotype.Component;
@@ -12,16 +11,26 @@ import com.proyecto.trabajo.repository.UsuariosRepository;
 import com.proyecto.trabajo.repository.EspacioRepository;
 
 import jakarta.persistence.EntityNotFoundException;
+import java.util.Set;
 
 @Component
 public class PrestamosMapperImple implements PrestamosMapper {
+
+    private static final Set<String> TIPOS_VALIDOS = Set.of("Portátiles", "Equipo de mesa", "Televisores");
+
+    private static void validarTipo(String tipo) {
+        if (tipo == null || !TIPOS_VALIDOS.contains(tipo)) {
+            throw new IllegalArgumentException(
+                "Tipo de préstamo inválido. Debe ser uno de: Portátiles, Equipo de mesa, Televisores");
+        }
+    }
 
     @Override
     public Prestamos fromSolicitudAprobada(com.proyecto.trabajo.models.Solicitudes solicitud) {
         if (solicitud == null) return null;
         Prestamos p = new Prestamos();
         p.setFecha_entre(java.time.LocalDateTime.now());
-        p.setTipo_prest("AUTO");
+        p.setTipo_prest("Portátiles");
         p.setUsuario(solicitud.getUsuario());
         p.setEspacio(solicitud.getEspacio());
         p.setSolicitudes(solicitud);
@@ -45,6 +54,7 @@ public class PrestamosMapperImple implements PrestamosMapper {
         prestamos.setId(prestamosDto.getId_prest());
         prestamos.setFecha_entre(prestamosDto.getFecha_entreg());
         prestamos.setFecha_recep(prestamosDto.getFecha_repc());
+        validarTipo(prestamosDto.getTipo_pres());
         prestamos.setTipo_prest(prestamosDto.getTipo_pres());
         if (prestamosDto.getId_usu() != null) {
             Usuarios usuario = usuariosRepository.findById(prestamosDto.getId_usu())
@@ -88,6 +98,7 @@ public class PrestamosMapperImple implements PrestamosMapper {
         Prestamos prestamos = new Prestamos();
         prestamos.setFecha_entre(createDto.getFecha_entreg());
         prestamos.setFecha_recep(createDto.getFecha_repc());
+        validarTipo(createDto.getTipo_pres());
         prestamos.setTipo_prest(createDto.getTipo_pres());
         if (createDto.getId_usuario() != null) {
             Usuarios usuario = usuariosRepository.findById(createDto.getId_usuario())
