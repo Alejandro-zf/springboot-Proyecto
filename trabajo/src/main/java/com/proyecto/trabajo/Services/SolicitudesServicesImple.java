@@ -19,12 +19,16 @@ import com.proyecto.trabajo.models.Elementos;
 import com.proyecto.trabajo.models.Elemento_Solicitudes;
 import com.proyecto.trabajo.models.Accesorios;
 import com.proyecto.trabajo.models.Accesorios_solicitudes;
+import com.proyecto.trabajo.models.Prestamos_Elemento;
+import com.proyecto.trabajo.models.Accesorios_Prestamos;
 import com.proyecto.trabajo.repository.SolicitudesRepository;
 import com.proyecto.trabajo.repository.UsuariosRepository;
 import com.proyecto.trabajo.repository.EspacioRepository;
 import com.proyecto.trabajo.repository.PrestamosRepository;
 import com.proyecto.trabajo.repository.ElementosRepository;
 import com.proyecto.trabajo.repository.AccesoriosRepository;
+import com.proyecto.trabajo.repository.PrestamosElementoRepository;
+import com.proyecto.trabajo.repository.Accesorios_PrestamosRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -40,11 +44,15 @@ public class SolicitudesServicesImple implements SolicitudesServices {
     private final ElementosRepository elementosRepository;
     private final AccesoriosRepository accesoriosRepository;
     private final com.proyecto.trabajo.Mapper.PrestamosMapper prestamosMapper;
+    private final PrestamosElementoRepository prestamosElementoRepository;
+    private final Accesorios_PrestamosRepository accesoriosPrestamosRepository;
 
     public SolicitudesServicesImple(SolicitudesRepository solicitudesRepository, SolicitudesMapper solicitudesMapper,
             UsuariosRepository usuariosRepository, EspacioRepository espacioRepository,
             PrestamosRepository prestamosRepository, ElementosRepository elementosRepository, AccesoriosRepository accesoriosRepository,
-            com.proyecto.trabajo.Mapper.PrestamosMapper prestamosMapper) {
+            com.proyecto.trabajo.Mapper.PrestamosMapper prestamosMapper,
+            PrestamosElementoRepository prestamosElementoRepository,
+            Accesorios_PrestamosRepository accesoriosPrestamosRepository) {
         this.solicitudesRepository = solicitudesRepository;
         this.solicitudesMapper = solicitudesMapper;
         this.usuariosRepository = usuariosRepository;
@@ -53,6 +61,8 @@ public class SolicitudesServicesImple implements SolicitudesServices {
         this.elementosRepository = elementosRepository;
         this.accesoriosRepository = accesoriosRepository;
         this.prestamosMapper = prestamosMapper;
+        this.prestamosElementoRepository = prestamosElementoRepository;
+        this.accesoriosPrestamosRepository = accesoriosPrestamosRepository;
     }
 
     private void sincronizarEstadoElementos(Solicitudes solicitud) {
@@ -77,15 +87,22 @@ public class SolicitudesServicesImple implements SolicitudesServices {
             throw new IllegalArgumentException("id_usu es obligatorio");
         }
         Solicitudes solicitudes = solicitudesMapper.toSolicitudesFromCreateDto(dto);
-        solicitudes.setEstadosolicitud((byte) 2);
+        // Respetar el estado si viene; por defecto = 2 si es null
+        if (solicitudes.getEstadosolicitud() == null) {
+            solicitudes.setEstadosolicitud((byte) 2);
+        }
 
-        if (dto.getId_elem() != null && (solicitudes.getElemento() == null || solicitudes.getElemento().isEmpty())) {
-            Elementos elemento = elementosRepository.findById(dto.getId_elem())
-                .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
-            Elemento_Solicitudes es = new Elemento_Solicitudes();
-            es.setSolicitudes(solicitudes);
-            es.setElementos(elemento);
-            solicitudes.getElemento().add(es);
+        if (dto.getIds_elem() != null && !dto.getIds_elem().isEmpty()
+            && (solicitudes.getElemento() == null || solicitudes.getElemento().isEmpty())) {
+            for (Long idElem : dto.getIds_elem()) {
+                if (idElem == null) continue;
+                Elementos elemento = elementosRepository.findById(idElem)
+                    .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
+                Elemento_Solicitudes es = new Elemento_Solicitudes();
+                es.setSolicitudes(solicitudes);
+                es.setElementos(elemento);
+                solicitudes.getElemento().add(es);
+            }
         }
         if (dto.getId_acces() != null && (solicitudes.getSolicitudesacce() == null || solicitudes.getSolicitudesacce().isEmpty())) {
             Accesorios accesorio = accesoriosRepository.findById(dto.getId_acces().intValue())
@@ -109,8 +126,11 @@ public class SolicitudesServicesImple implements SolicitudesServices {
             throw new IllegalArgumentException("El usuario no puede ser null para la solicitud");
         }
         Solicitudes guardado = solicitudesRepository.save(solicitudes);
+        // Recargar la entidad para asegurar que las relaciones se reflejen en la respuesta
+        Solicitudes solicitudFullPostSave = solicitudesRepository.findById(guardado.getId())
+            .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada tras guardar"));
         // Sincronizar estado de elementos según estado de la solicitud
-        sincronizarEstadoElementos(guardado);
+        sincronizarEstadoElementos(solicitudFullPostSave);
 
         if (guardado.getEstadosolicitud() != null && guardado.getEstadosolicitud() == 1) {
             // Crear préstamo automático si aplica
@@ -122,10 +142,36 @@ public class SolicitudesServicesImple implements SolicitudesServices {
                     throw new IllegalArgumentException("No se puede crear préstamo: usuario null en solicitud aprobada");
                 }
                 Prestamos p = prestamosMapper.fromSolicitudAprobada(solicitudFull);
-                prestamosRepository.save(p);
+                Prestamos prestamoGuardado = prestamosRepository.save(p);
+                // Asociar todos los elementos de la solicitud al préstamo
+                if (solicitudFull.getElemento() != null) {
+                    for (Elemento_Solicitudes es : solicitudFull.getElemento()) {
+                        if (es != null && es.getElementos() != null) {
+                            Prestamos_Elemento pe = new Prestamos_Elemento();
+                            pe.setPrestamos(prestamoGuardado);
+                            pe.setElementos(es.getElementos());
+                            pe.setObser_prest("AUTO");
+                            prestamosElementoRepository.save(pe);
+                        }
+                    }
+                }
+                // Asociar accesorios de la solicitud al préstamo
+                if (solicitudFull.getSolicitudesacce() != null) {
+                    for (Accesorios_solicitudes as : solicitudFull.getSolicitudesacce()) {
+                        if (as != null && as.getAccesorios() != null) {
+                            Accesorios_Prestamos ap = new Accesorios_Prestamos();
+                            ap.setPrestamos(prestamoGuardado);
+                            ap.setAccesorios(as.getAccesorios());
+                            accesoriosPrestamosRepository.save(ap);
+                        }
+                    }
+                }
             }
         }
-        return solicitudesMapper.toSolicitudesDto(guardado);
+        // Volver a cargar si se creó préstamo o cambió estado podría modificar asociaciones
+        Solicitudes toReturn = solicitudesRepository.findById(solicitudFullPostSave.getId())
+            .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada al preparar respuesta"));
+        return solicitudesMapper.toSolicitudesDto(toReturn);
     }
 
     @Override

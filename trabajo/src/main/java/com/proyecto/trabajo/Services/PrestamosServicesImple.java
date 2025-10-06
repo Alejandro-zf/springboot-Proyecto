@@ -12,9 +12,17 @@ import com.proyecto.trabajo.dto.PrestamosCreateDto;
 import com.proyecto.trabajo.models.Prestamos;
 import com.proyecto.trabajo.models.Usuarios;
 import com.proyecto.trabajo.models.Espacio;
+import com.proyecto.trabajo.models.Elementos;
+import com.proyecto.trabajo.models.Prestamos_Elemento;
+import com.proyecto.trabajo.models.Accesorios;
+import com.proyecto.trabajo.models.Accesorios_Prestamos;
 import com.proyecto.trabajo.repository.PrestamosRepository;
 import com.proyecto.trabajo.repository.UsuariosRepository;
 import com.proyecto.trabajo.repository.EspacioRepository;
+import com.proyecto.trabajo.repository.ElementosRepository;
+import com.proyecto.trabajo.repository.AccesoriosRepository;
+import com.proyecto.trabajo.repository.PrestamosElementoRepository;
+import com.proyecto.trabajo.repository.Accesorios_PrestamosRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -25,13 +33,23 @@ public class PrestamosServicesImple implements PrestamosServices {
     private final PrestamosMapper prestamosMapper;
     private final UsuariosRepository usuariosRepository;
     private final EspacioRepository espacioRepository;
+    private final ElementosRepository elementosRepository;
+    private final AccesoriosRepository accesoriosRepository;
+    private final PrestamosElementoRepository prestamosElementoRepository;
+    private final Accesorios_PrestamosRepository accesoriosPrestamosRepository;
 
     public PrestamosServicesImple(PrestamosRepository prestamosRepository, PrestamosMapper prestamosMapper,
-            UsuariosRepository usuariosRepository, EspacioRepository espacioRepository) {
+            UsuariosRepository usuariosRepository, EspacioRepository espacioRepository,
+            ElementosRepository elementosRepository, AccesoriosRepository accesoriosRepository,
+            PrestamosElementoRepository prestamosElementoRepository, Accesorios_PrestamosRepository accesoriosPrestamosRepository) {
         this.prestamosRepository = prestamosRepository;
         this.prestamosMapper = prestamosMapper;
         this.usuariosRepository = usuariosRepository;
         this.espacioRepository = espacioRepository;
+        this.elementosRepository = elementosRepository;
+        this.accesoriosRepository = accesoriosRepository;
+        this.prestamosElementoRepository = prestamosElementoRepository;
+        this.accesoriosPrestamosRepository = accesoriosPrestamosRepository;
     }
 
     @Override
@@ -45,7 +63,31 @@ public class PrestamosServicesImple implements PrestamosServices {
         }
         Prestamos prestamos = prestamosMapper.toPrestamosFromCreateDto(dto);
         Prestamos guardado = prestamosRepository.save(prestamos);
-        return prestamosMapper.toPrestamosDto(guardado);
+
+        // Asociar elemento si viene en el DTO
+        if (dto.getId_elem() != null) {
+            Elementos elemento = elementosRepository.findById(dto.getId_elem())
+                .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
+            Prestamos_Elemento pe = new Prestamos_Elemento();
+            pe.setPrestamos(guardado);
+            pe.setElementos(elemento);
+            pe.setObser_prest("AUTO");
+            prestamosElementoRepository.save(pe);
+        }
+        // Asociar accesorio si viene en el DTO
+        if (dto.getId_acces() != null) {
+            Accesorios accesorio = accesoriosRepository.findById(dto.getId_acces().intValue())
+                .orElseThrow(() -> new EntityNotFoundException("Accesorio no encontrado"));
+            Accesorios_Prestamos ap = new Accesorios_Prestamos();
+            ap.setPrestamos(guardado);
+            ap.setAccesorios(accesorio);
+            accesoriosPrestamosRepository.save(ap);
+        }
+
+        // Recargar para asegurar relaciones presentes y evitar nulls al mapear
+        Prestamos full = prestamosRepository.findById(guardado.getId())
+            .orElseThrow(() -> new EntityNotFoundException("Préstamo no encontrado tras guardar"));
+        return prestamosMapper.toPrestamosDto(full);
     }
 
     @Override
