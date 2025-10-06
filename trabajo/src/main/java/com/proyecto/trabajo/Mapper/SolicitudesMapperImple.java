@@ -16,6 +16,8 @@ import com.proyecto.trabajo.repository.EspacioRepository;
 import com.proyecto.trabajo.repository.UsuariosRepository;
 import com.proyecto.trabajo.repository.ElementosRepository;
 import com.proyecto.trabajo.repository.AccesoriosRepository;
+import java.util.ArrayList;
+import java.util.List;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -81,6 +83,16 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
                 dto.setNom_elem(es.getElementos().getNom_elemento());
             }
         }
+        // Mapear todos los IDs de elementos
+        if (entity.getElemento() != null && !entity.getElemento().isEmpty()) {
+            List<Long> ids = new ArrayList<>();
+            for (Elemento_Solicitudes es : entity.getElemento()) {
+                if (es != null && es.getElementos() != null && es.getElementos().getId() != null) {
+                    ids.add(es.getElementos().getId());
+                }
+            }
+            dto.setIds_elem(ids);
+        }
         if (entity.getSolicitudesacce() != null && !entity.getSolicitudesacce().isEmpty()) {
             Accesorios_solicitudes as = entity.getSolicitudesacce().get(0);
             if (as.getAccesorios() != null) {
@@ -102,7 +114,8 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
         solicitudes.setAmbiente(createDto.getAmbient());
         solicitudes.setNum_ficha(createDto.getNum_fich());
         Byte est = createDto.getEstadosoli();
-        solicitudes.setEstadosolicitud(est != null ? est : 1);
+        // Por defecto = 2 (no aprobado) si no viene en el DTO
+        solicitudes.setEstadosolicitud(est != null ? est : 2);
         if (createDto.getId_usu() != null) {
             Usuarios usuario = usuariosRepository.findById(createDto.getId_usu())
                     .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));

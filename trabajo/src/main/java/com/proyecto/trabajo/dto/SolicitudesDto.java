@@ -1,6 +1,7 @@
 package com.proyecto.trabajo.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,6 +26,9 @@ private String nom_espa;
 
 private Long id_elem;
 private String nom_elem;
+
+ // Nuevo: lista de IDs de elementos asociados
+ private List<Long> ids_elem;
 
 private Long acces_id;
 private String nom_acces;
