@@ -64,24 +64,30 @@ public class PrestamosServicesImple implements PrestamosServices {
         Prestamos prestamos = prestamosMapper.toPrestamosFromCreateDto(dto);
         Prestamos guardado = prestamosRepository.save(prestamos);
 
-        // Asociar elemento si viene en el DTO
-        if (dto.getId_elem() != null) {
-            Elementos elemento = elementosRepository.findById(dto.getId_elem())
-                .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
-            Prestamos_Elemento pe = new Prestamos_Elemento();
-            pe.setPrestamos(guardado);
-            pe.setElementos(elemento);
-            pe.setObser_prest("AUTO");
-            prestamosElementoRepository.save(pe);
+        // Asociar elementos si vienen en el DTO
+        if (dto.getIds_elem() != null && !dto.getIds_elem().isEmpty()) {
+            for (Long idElem : dto.getIds_elem()) {
+                if (idElem == null) continue;
+                Elementos elemento = elementosRepository.findById(idElem)
+                    .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
+                Prestamos_Elemento pe = new Prestamos_Elemento();
+                pe.setPrestamos(guardado);
+                pe.setElementos(elemento);
+                pe.setObser_prest("AUTO");
+                prestamosElementoRepository.save(pe);
+            }
         }
-        // Asociar accesorio si viene en el DTO
-        if (dto.getId_acces() != null) {
-            Accesorios accesorio = accesoriosRepository.findById(dto.getId_acces().intValue())
-                .orElseThrow(() -> new EntityNotFoundException("Accesorio no encontrado"));
-            Accesorios_Prestamos ap = new Accesorios_Prestamos();
-            ap.setPrestamos(guardado);
-            ap.setAccesorios(accesorio);
-            accesoriosPrestamosRepository.save(ap);
+        // Asociar accesorios si vienen en el DTO
+        if (dto.getIds_acces() != null && !dto.getIds_acces().isEmpty()) {
+            for (Long idAcc : dto.getIds_acces()) {
+                if (idAcc == null) continue;
+                Accesorios accesorio = accesoriosRepository.findById(idAcc.intValue())
+                    .orElseThrow(() -> new EntityNotFoundException("Accesorio no encontrado"));
+                Accesorios_Prestamos ap = new Accesorios_Prestamos();
+                ap.setPrestamos(guardado);
+                ap.setAccesorios(accesorio);
+                accesoriosPrestamosRepository.save(ap);
+            }
         }
 
         // Recargar para asegurar relaciones presentes y evitar nulls al mapear

@@ -119,21 +119,55 @@ public class PrestamosMapperImple implements PrestamosMapper {
             prestamosDto.setId_espac(prestamos.getEspacio().getId().longValue());
             prestamosDto.setNom_espac(prestamos.getEspacio().getNom_espa());
         }
-        // Mapear elemento asociado (primer elemento) si existe
+        // Mapear elementos asociados como strings concatenados ("2,3,4")
         if (prestamos.getPrestamoss() != null && !prestamos.getPrestamoss().isEmpty()) {
-            com.proyecto.trabajo.models.Prestamos_Elemento pe = prestamos.getPrestamoss().get(0);
-            if (pe != null && pe.getElementos() != null) {
-                prestamosDto.setId_elem(pe.getElementos().getId());
-                prestamosDto.setNom_elem(pe.getElementos().getNom_elemento());
+            StringBuilder idsJoin = new StringBuilder();
+            StringBuilder namesJoin = new StringBuilder();
+            boolean first = true;
+            for (com.proyecto.trabajo.models.Prestamos_Elemento pe : prestamos.getPrestamoss()) {
+                if (pe != null && pe.getElementos() != null) {
+                    var el = pe.getElementos();
+                    if (!first) {
+                        idsJoin.append(",");
+                        namesJoin.append(", ");
+                    }
+                    if (el.getId() != null) {
+                        idsJoin.append(el.getId());
+                    }
+                    if (el.getNom_elemento() != null) {
+                        namesJoin.append(el.getNom_elemento());
+                    }
+                    first = false;
+                }
             }
+            prestamosDto.setId_elem(idsJoin.toString());
+            prestamosDto.setNom_elem(namesJoin.toString());
         }
-        // Mapear accesorio asociado (primer accesorio) si existe
+        // Mapear accesorios asociados como strings concatenados ("1,5")
         if (prestamos.getAccesoriosprestamo() != null && !prestamos.getAccesoriosprestamo().isEmpty()) {
-            com.proyecto.trabajo.models.Accesorios_Prestamos ap = prestamos.getAccesoriosprestamo().get(0);
-            if (ap != null && ap.getAccesorios() != null) {
-                prestamosDto.setId_acceso(ap.getAccesorios().getId().longValue());
-                prestamosDto.setNom_aces(ap.getAccesorios().getNom_acce());
+            StringBuilder accIds = new StringBuilder();
+            StringBuilder accNames = new StringBuilder();
+            boolean firstAcc = true;
+            for (com.proyecto.trabajo.models.Accesorios_Prestamos ap : prestamos.getAccesoriosprestamo()) {
+                if (ap != null && ap.getAccesorios() != null) {
+                    if (!firstAcc) {
+                        accIds.append(",");
+                        accNames.append(", ");
+                    }
+                    if (ap.getAccesorios().getId() != null) {
+                        accIds.append(ap.getAccesorios().getId());
+                    }
+                    if (ap.getAccesorios().getNom_acce() != null) {
+                        accNames.append(ap.getAccesorios().getNom_acce());
+                    }
+                    firstAcc = false;
+                }
             }
+            prestamosDto.setId_acceso(accIds.toString());
+            prestamosDto.setNom_aces(accNames.toString());
+        } else {
+            prestamosDto.setId_acceso("");
+            prestamosDto.setNom_aces("");
         }
         return prestamosDto;
     }

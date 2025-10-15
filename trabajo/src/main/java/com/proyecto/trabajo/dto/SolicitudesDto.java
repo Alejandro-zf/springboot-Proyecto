@@ -1,7 +1,6 @@
 package com.proyecto.trabajo.dto;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,13 +23,12 @@ private String nom_usu;
 private Long id_espa;
 private String nom_espa;
 
-private Long id_elem;
+// Opción B: concatenado en un solo String cuando hay múltiples
+private String id_elem;
 private String nom_elem;
 
- // Nuevo: lista de IDs de elementos asociados
- private List<Long> ids_elem;
-
-private Long acces_id;
+// Opción B: concatenado en un solo String cuando hay múltiples
+private String acces_id;
 private String nom_acces;
 
 }
