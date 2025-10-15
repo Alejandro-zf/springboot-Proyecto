@@ -6,10 +6,13 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SolicitudeCreateDto {
  
 
@@ -26,5 +29,16 @@ public class SolicitudeCreateDto {
     // Aceptar múltiples elementos en la solicitud
     private List<Long> ids_elem;
 
-    private Long id_acces;
+    // Aceptar múltiples accesorios en la solicitud
+    @JsonAlias({"id_acces"})
+    private List<Long> ids_acces;
+
+    // Permitir que id_esp llegue como "" y se convierta a null
+    public void setId_esp(String idEsp) {
+        if (idEsp == null || idEsp.isBlank()) {
+            this.id_esp = null;
+        } else {
+            this.id_esp = Long.valueOf(idEsp);
+        }
+    }
 }

@@ -104,13 +104,18 @@ public class SolicitudesServicesImple implements SolicitudesServices {
                 solicitudes.getElemento().add(es);
             }
         }
-        if (dto.getId_acces() != null && (solicitudes.getSolicitudesacce() == null || solicitudes.getSolicitudesacce().isEmpty())) {
-            Accesorios accesorio = accesoriosRepository.findById(dto.getId_acces().intValue())
-                .orElseThrow(() -> new EntityNotFoundException("Accesorio no encontrado"));
-            Accesorios_solicitudes as = new Accesorios_solicitudes();
-            as.setSolicitudes(solicitudes);
-            as.setAccesorios(accesorio);
-            solicitudes.getSolicitudesacce().add(as);
+        // Evitar duplicados: solo agregar aquí si el mapper no los agregó
+        if (dto.getIds_acces() != null && !dto.getIds_acces().isEmpty()
+            && (solicitudes.getSolicitudesacce() == null || solicitudes.getSolicitudesacce().isEmpty())) {
+            for (Long idAcc : dto.getIds_acces()) {
+                if (idAcc == null) continue;
+                Accesorios accesorio = accesoriosRepository.findById(idAcc.intValue())
+                    .orElseThrow(() -> new EntityNotFoundException("Accesorio no encontrado"));
+                Accesorios_solicitudes as = new Accesorios_solicitudes();
+                as.setSolicitudes(solicitudes);
+                as.setAccesorios(accesorio);
+                solicitudes.getSolicitudesacce().add(as);
+            }
         }
         if (solicitudes.getUsuario() == null && dto.getId_usu() != null) {
             Usuarios usuario = usuariosRepository.findById(dto.getId_usu())

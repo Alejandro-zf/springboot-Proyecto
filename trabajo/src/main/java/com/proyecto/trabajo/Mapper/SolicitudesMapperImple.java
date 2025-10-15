@@ -18,6 +18,8 @@ import com.proyecto.trabajo.repository.ElementosRepository;
 import com.proyecto.trabajo.repository.AccesoriosRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.LinkedHashSet;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -76,29 +78,54 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
             dto.setId_espa(entity.getEspacio().getId().longValue());
             dto.setNom_espa(entity.getEspacio().getNom_espa());
         }
+        // Mapear IDs y nombres de elementos como strings concatenados ("2,3,4")
         if (entity.getElemento() != null && !entity.getElemento().isEmpty()) {
-            Elemento_Solicitudes es = entity.getElemento().get(0);
-            if (es.getElementos() != null) {
-                dto.setId_elem(es.getElementos().getId());
-                dto.setNom_elem(es.getElementos().getNom_elemento());
-            }
-        }
-        // Mapear todos los IDs de elementos
-        if (entity.getElemento() != null && !entity.getElemento().isEmpty()) {
-            List<Long> ids = new ArrayList<>();
+            StringBuilder idsJoin = new StringBuilder();
+            StringBuilder namesJoin = new StringBuilder();
+            boolean first = true;
             for (Elemento_Solicitudes es : entity.getElemento()) {
-                if (es != null && es.getElementos() != null && es.getElementos().getId() != null) {
-                    ids.add(es.getElementos().getId());
+                if (es != null && es.getElementos() != null) {
+                    Elementos el = es.getElementos();
+                    if (!first) {
+                        idsJoin.append(",");
+                        namesJoin.append(", ");
+                    }
+                    if (el.getId() != null) {
+                        idsJoin.append(el.getId());
+                    }
+                    if (el.getNom_elemento() != null) {
+                        namesJoin.append(el.getNom_elemento());
+                    }
+                    first = false;
                 }
             }
-            dto.setIds_elem(ids);
+            dto.setId_elem(idsJoin.toString());
+            dto.setNom_elem(namesJoin.toString());
         }
         if (entity.getSolicitudesacce() != null && !entity.getSolicitudesacce().isEmpty()) {
-            Accesorios_solicitudes as = entity.getSolicitudesacce().get(0);
-            if (as.getAccesorios() != null) {
-                dto.setAcces_id(as.getAccesorios().getId().longValue());
-                dto.setNom_acces(as.getAccesorios().getNom_acce());
+            StringBuilder accesIds = new StringBuilder();
+            StringBuilder accesNames = new StringBuilder();
+            boolean firstAcc = true;
+            for (Accesorios_solicitudes as : entity.getSolicitudesacce()) {
+                if (as != null && as.getAccesorios() != null) {
+                    if (!firstAcc) {
+                        accesIds.append(",");
+                        accesNames.append(", ");
+                    }
+                    if (as.getAccesorios().getId() != null) {
+                        accesIds.append(as.getAccesorios().getId());
+                    }
+                    if (as.getAccesorios().getNom_acce() != null) {
+                        accesNames.append(as.getAccesorios().getNom_acce());
+                    }
+                    firstAcc = false;
+                }
             }
+            dto.setAcces_id(accesIds.toString());
+            dto.setNom_acces(accesNames.toString());
+        } else {
+            dto.setAcces_id("");
+            dto.setNom_acces("");
         }
         return dto;
     }
@@ -127,7 +154,8 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
             solicitudes.setEspacio(espacio);
         }
         if (createDto.getIds_elem() != null && !createDto.getIds_elem().isEmpty()) {
-            for (Long idElem : createDto.getIds_elem()) {
+            Set<Long> uniqueElemIds = new LinkedHashSet<>(createDto.getIds_elem());
+            for (Long idElem : uniqueElemIds) {
                 if (idElem == null) continue;
                 Elementos elemento = elementosRepository.findById(idElem)
                         .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
@@ -137,13 +165,17 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
                 solicitudes.getElemento().add(es);
             }
         }
-        if (createDto.getId_acces() != null) {
-            Accesorios accesorio = accesoriosRepository.findById(createDto.getId_acces().intValue())
-                    .orElseThrow(() -> new EntityNotFoundException("Accesorio no encontrado"));
-            Accesorios_solicitudes as = new Accesorios_solicitudes();
-            as.setSolicitudes(solicitudes);
-            as.setAccesorios(accesorio);
-            solicitudes.getSolicitudesacce().add(as);
+        if (createDto.getIds_acces() != null && !createDto.getIds_acces().isEmpty()) {
+            Set<Long> uniqueAccIds = new LinkedHashSet<>(createDto.getIds_acces());
+            for (Long idAcc : uniqueAccIds) {
+                if (idAcc == null) continue;
+                Accesorios accesorio = accesoriosRepository.findById(idAcc.intValue())
+                        .orElseThrow(() -> new EntityNotFoundException("Accesorio no encontrado"));
+                Accesorios_solicitudes as = new Accesorios_solicitudes();
+                as.setSolicitudes(solicitudes);
+                as.setAccesorios(accesorio);
+                solicitudes.getSolicitudesacce().add(as);
+            }
         }
         return solicitudes;
     }
