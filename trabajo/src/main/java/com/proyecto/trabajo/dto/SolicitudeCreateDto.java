@@ -20,7 +20,7 @@ public class SolicitudeCreateDto {
     private LocalDateTime fecha_fn;
     private String ambient;
     private Integer num_fich;
-    private Byte estadosoli;
+    private Integer id_estado_soli;
 
     private Long id_usu;
 

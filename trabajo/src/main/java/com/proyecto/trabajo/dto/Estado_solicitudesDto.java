@@ -12,5 +12,5 @@ public class Estado_solicitudesDto {
     private Long id_estad;
     private String nom_est;
     private String mensaj;
-    private Long id_soli;
+    private Integer id_soli;
 }

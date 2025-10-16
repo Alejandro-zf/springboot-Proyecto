@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class SolicitudesUpdateDtos {
     private Long id_soli;
-    private Byte est_soli;
+    private Integer id_est_soli;
 
     private LocalDateTime fecha_ini;
     private LocalDateTime fecha_fn;
