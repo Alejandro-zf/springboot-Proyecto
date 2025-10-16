@@ -33,6 +33,9 @@ public class Solicitudes {
     @Column(nullable = false,length = 35)
     private String ambiente;
 
+    @Column(nullable = true,length=255)
+    private String mensaje;
+
     private Integer num_ficha;    
 
     @ManyToOne

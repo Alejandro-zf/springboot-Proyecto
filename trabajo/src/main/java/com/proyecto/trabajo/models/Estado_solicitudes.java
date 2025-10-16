@@ -27,9 +27,6 @@ public class Estado_solicitudes {
     @Column(nullable = false,length=25)
     private String nom_esta;
 
-    @Column(nullable = false,length=255)
-    private String mensaje;
-
     @OneToMany(mappedBy = "solicitudes", cascade = CascadeType.ALL, orphanRemoval = true)
     private List <Solicitudes> solicitudes = new ArrayList<>();
 }
