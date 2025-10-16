@@ -38,7 +38,7 @@ public class Usuarios {
     private String password;
 
     @Column(nullable = false)
-    private Byte estado; // 1 = desactivado, 2 = activado
+    private Byte estado; // 1 = activado, 2 = desactivado
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Solicitudes> solicitudes = new ArrayList<>();
