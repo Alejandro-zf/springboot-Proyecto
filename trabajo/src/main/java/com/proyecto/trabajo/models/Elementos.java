@@ -45,8 +45,8 @@ public class Elementos {
     private List <Elemento_Solicitudes> solicitud = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "categoria", nullable = false, foreignKey = @ForeignKey(name = "FK_Id_categoria"))
-    private Categoria categoria;
+    @JoinColumn(name = "sub_categoria", nullable = false, foreignKey = @ForeignKey(name = "FK_Id_subcategoria"))
+    private Sub_categoria sub_categoria;
 
     @OneToMany(mappedBy = "elementos")
     private List <Prestamos_Elemento> prestamosselemen;

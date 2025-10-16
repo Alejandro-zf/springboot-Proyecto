@@ -26,5 +26,6 @@ public class Categoria {
     private String nom_categoria;
 
     @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List <Elementos> elementoss = new ArrayList<>();
+    private List <Sub_categoria> sub_categoria = new ArrayList<>();
 }
+

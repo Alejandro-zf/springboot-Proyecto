@@ -35,6 +35,9 @@ public class Solicitudes {
 
     private Integer num_ficha;    
 
+    @Column(nullable = true,length=255)
+    private String mensaje;
+
     @ManyToOne
     @JoinColumn(name = "id_usuari", nullable = false, foreignKey = @ForeignKey(name = "FK_Id_usuari"))
     private Usuarios usuario;
