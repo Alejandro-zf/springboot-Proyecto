@@ -24,22 +24,29 @@ public class UsuariosServicesImple implements UsuariosServices {
     private final RolesRepository rolesRepository;
     private final Roles_UsuarioRepository rolesUsuarioRepository;
 
-    public UsuariosServicesImple(UsuariosRepository usuariosRepository, UsuariosMapper usuariosMapper,
-            RolesRepository rolesRepository, Roles_UsuarioRepository rolesUsuarioRepository) {
+    public UsuariosServicesImple(UsuariosRepository usuariosRepository,
+                                 UsuariosMapper usuariosMapper,
+                                 RolesRepository rolesRepository,
+                                 Roles_UsuarioRepository rolesUsuarioRepository) {
         this.usuariosRepository = usuariosRepository;
         this.usuariosMapper = usuariosMapper;
         this.rolesRepository = rolesRepository;
         this.rolesUsuarioRepository = rolesUsuarioRepository;
     }
 
-    @Override
     public UsuariosDto guardar(com.proyecto.trabajo.dto.UsuariosCreateDto dto) {
         Usuarios usuarios = usuariosMapper.toUsuariosFromCreateDto(dto);
+
+        usuarios.setEstado((byte) 1);
+
+        if (usuarios.getTip_documento() == null) {
+            throw new IllegalArgumentException("El campo tip_document (tipo de documento) es obligatorio");
+        }
+
         Usuarios guardado = usuariosRepository.save(usuarios);
-        // Asociar rol opcionalmente si viene el id_role
         if (dto.getId_role() != null) {
             Roles rol = rolesRepository.findById(dto.getId_role())
-                .orElseThrow(() -> new EntityNotFoundException("Rol no encontrado"));
+                    .orElseThrow(() -> new EntityNotFoundException("Rol no encontrado"));
             Roles_Usuario ru = new Roles_Usuario();
             ru.setUsuario(guardado);
             ru.setRoles(rol);
@@ -48,7 +55,6 @@ public class UsuariosServicesImple implements UsuariosServices {
         }
         return usuariosMapper.toUsuariosDto(guardado);
     }
-
     @Override
     public UsuariosDto buscarPorId(Long id) {
         return usuariosRepository.findById(id)
@@ -63,6 +69,7 @@ public class UsuariosServicesImple implements UsuariosServices {
                 .map(usuariosMapper::toUsuariosDto)
                 .collect(Collectors.toList());
     }
+
     @Override
     public void eliminar(Long id) {
         usuariosRepository.deleteById(id);
@@ -73,22 +80,24 @@ public class UsuariosServicesImple implements UsuariosServices {
         Usuarios usuarios = usuariosRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
 
-        // Actualizar solo los campos que no son nulos en el DTO
         if (dto.getNom_us() != null) {
             usuarios.setNom_usu(dto.getNom_us());
         }
-
         if (dto.getApe_us() != null) {
             usuarios.setApe_usu(dto.getApe_us());
         }
-
         if (dto.getCorre() != null) {
             usuarios.setCorreo(dto.getCorre());
         }
-
         if (dto.getPassword() != null) {
-            // En un entorno de producción, DEBES encriptar la contraseña aquí.
             usuarios.setPassword(dto.getPassword());
+        }
+        if (dto.getEst_usu() != null) {
+            Byte est = dto.getEst_usu();
+            if (est < 1 || est > 2) {
+                throw new IllegalArgumentException("Estado inválido. Debe ser 1 (activado) o 2 (desactivado)");
+            }
+            usuarios.setEstado(est);
         }
 
         Usuarios actualizado = usuariosRepository.save(usuarios);

@@ -31,6 +31,8 @@ public class UsuariosMapperImple implements UsuariosMapper {
     usuarios.setApe_usu(usuariosDto.getApe_usua());
     usuarios.setCorreo(usuariosDto.getCorre());
     usuarios.setNum_doc(usuariosDto.getNum_docu());
+        Byte est = usuariosDto.getNom_est();
+        usuarios.setEstado(est != null ? est : 2);
         if (usuariosDto.getId_tip_docu() != null) {
             Tip_documento tip = tipDocumentoRepository.findById(usuariosDto.getId_tip_docu())
                 .orElseThrow(() -> new EntityNotFoundException("Tipo de documento no encontrado"));
@@ -50,6 +52,8 @@ public class UsuariosMapperImple implements UsuariosMapper {
     usuariosDto.setApe_usua(usuarios.getApe_usu());
     usuariosDto.setCorre(usuarios.getCorreo());
     usuariosDto.setNum_docu(usuarios.getNum_doc());
+        Byte estOut = usuarios.getEstado();
+        usuariosDto.setNom_est(estOut != null ? estOut : 2);
         if (usuarios.getTip_documento() != null) {
             usuariosDto.setId_tip_docu(usuarios.getTip_documento().getId());
             usuariosDto.setTip_docu(usuarios.getTip_documento().getTipo_doc());
@@ -57,7 +61,6 @@ public class UsuariosMapperImple implements UsuariosMapper {
         if (usuarios.getRole() != null && !usuarios.getRole().isEmpty()) {
             Roles_Usuario ru = usuarios.getRole().get(0);
             if (ru.getRoles() != null) {
-                usuariosDto.setId_rol(ru.getRoles().getId());
                 usuariosDto.setNomb_rol(ru.getRoles().getNom_rol());
             }
         }
@@ -70,19 +73,17 @@ public class UsuariosMapperImple implements UsuariosMapper {
             return null;
         }
         Usuarios usuarios = new Usuarios();
-    usuarios.setNom_usu(createDto.getNom_su());
-    usuarios.setApe_usu(createDto.getApe_su());
-    usuarios.setCorreo(createDto.getCorre());
-    usuarios.setNum_doc(createDto.getNum_docu());
-    usuarios.setPassword(createDto.getPasword());
-    usuarios.setEstado(createDto.getEstad());
-    // Tip_documento es obligatorio
-        if (createDto.getTip_docu() == null) {
-            throw new EntityNotFoundException("El id del tipo de documento es obligatorio");
+        usuarios.setNom_usu(createDto.getNom_su());
+        usuarios.setApe_usu(createDto.getApe_su());
+        usuarios.setCorreo(createDto.getCorre());
+        usuarios.setNum_doc(createDto.getNum_docu());
+        usuarios.setPassword(createDto.getPasword());
+        if (createDto.getTip_docu() != null) {
+            Byte tipId = createDto.getTip_docu().byteValue();
+            Tip_documento tip = tipDocumentoRepository.findById(tipId)
+                .orElseThrow(() -> new EntityNotFoundException("Tipo de documento no encontrado"));
+            usuarios.setTip_documento(tip);
         }
-        Tip_documento tip = tipDocumentoRepository.findById(createDto.getTip_docu().byteValue())
-            .orElseThrow(() -> new EntityNotFoundException("Tipo de documento no encontrado"));
-        usuarios.setTip_documento(tip);
         return usuarios;
     }
 
@@ -92,8 +93,6 @@ public class UsuariosMapperImple implements UsuariosMapper {
             return null;
         }
         Usuarios usuarios = new Usuarios();
-        usuarios.setId(updateDto.getId_Usu());
-        usuarios.setNom_usu(updateDto.getNom_us());
         usuarios.setApe_usu(updateDto.getApe_us());
         usuarios.setCorreo(updateDto.getCorre());
         usuarios.setPassword(updateDto.getPassword());

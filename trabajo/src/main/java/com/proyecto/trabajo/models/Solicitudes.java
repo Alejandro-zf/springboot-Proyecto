@@ -32,7 +32,7 @@ public class Solicitudes {
 
     @Column(nullable = false,length = 35)
     private String ambiente;
-    
+
     private Integer num_ficha;    
 
     @ManyToOne

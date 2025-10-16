@@ -44,7 +44,7 @@ public class Prestamos {
     private List<Prestamos_Elemento> prestamoss;
 
     @ManyToOne
-    @JoinColumn(name = "id_espacio", nullable = false, foreignKey = @ForeignKey(name = "FK_Id_espaciio"))
+    @JoinColumn(name = "id_espacio", nullable = true, foreignKey = @ForeignKey(name = "FK_Id_espaciio"))
     private Espacio espacio;
 
 

@@ -18,13 +18,15 @@ private String tipo_pres;
 private Long id_usu;
 private String nom_usu;
 
-private Long id_elem;
+// Concatenado cuando hay múltiples elementos, ej: "2,3,4"
+private String id_elem;
 private String nom_elem;
 
 private Long id_espac;
 private String nom_espac;
 
-private Long id_acceso;
+// Concatenado cuando hay múltiples accesorios, ej: "1,5"
+private String id_acceso;
 private String nom_aces;
 
 }
