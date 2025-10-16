@@ -32,11 +32,8 @@ public class Solicitudes {
 
     @Column(nullable = false,length = 35)
     private String ambiente;
-    
-    private Integer num_ficha;
-    
-    @Column(nullable = false)
-    private Byte estadosolicitud = 2;
+
+    private Integer num_ficha;    
 
     @ManyToOne
     @JoinColumn(name = "id_usuari", nullable = false, foreignKey = @ForeignKey(name = "FK_Id_usuari"))
@@ -54,4 +51,8 @@ public class Solicitudes {
 
     @OneToMany(mappedBy = "solicitudes", cascade = CascadeType.ALL, orphanRemoval = true)
     private List <Prestamos> prestamos = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "id_estado_solicitud", nullable = true, foreignKey = @ForeignKey(name = "FK_Id_estado_solicitud"))
+    private Estado_solicitudes estado_solicitudes;
 }
