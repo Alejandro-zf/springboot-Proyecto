@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class ProblemasCreateDtos {
-    private Byte id;
+
     private String descr_problem;
 
     private Long id_tick;

@@ -16,6 +16,7 @@ private LocalDateTime fecha_fn;
 private String ambient;
 private Integer num_fich;
 private Integer id_est_soli;
+private String mensaj;
 
 private Long id_usu;
 private String nom_usu;
@@ -26,6 +27,4 @@ private String nom_espa;
 private String id_elem;
 private String nom_elem;
 
-private String acces_id;
-private String nom_acces;
 }

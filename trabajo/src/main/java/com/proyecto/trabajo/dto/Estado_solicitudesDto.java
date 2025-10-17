@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 public class Estado_solicitudesDto {
     private Long id_estad;
     private String nom_est;
-    private String mensaj;
+    
     private Integer id_soli;
 }

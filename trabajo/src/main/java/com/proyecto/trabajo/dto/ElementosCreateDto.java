@@ -14,7 +14,10 @@ public class ElementosCreateDto {
     private Integer num_seri;
     private String componen;
     private Byte est_elem;
+    private String marc;
 
-    private Long id_categoria;
+    private Long id_categ;
+
+    private Long id_subcat;
 
 }
