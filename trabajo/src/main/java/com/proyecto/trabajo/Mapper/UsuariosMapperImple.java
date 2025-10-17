@@ -32,7 +32,7 @@ public class UsuariosMapperImple implements UsuariosMapper {
     usuarios.setCorreo(usuariosDto.getCorre());
     usuarios.setNum_doc(usuariosDto.getNum_docu());
         Byte est = usuariosDto.getNom_est();
-        usuarios.setEstado(est != null ? est : 2);
+        usuarios.setEstado(est != null ? est : 1);
         if (usuariosDto.getId_tip_docu() != null) {
             Tip_documento tip = tipDocumentoRepository.findById(usuariosDto.getId_tip_docu())
                 .orElseThrow(() -> new EntityNotFoundException("Tipo de documento no encontrado"));
@@ -53,7 +53,7 @@ public class UsuariosMapperImple implements UsuariosMapper {
     usuariosDto.setCorre(usuarios.getCorreo());
     usuariosDto.setNum_docu(usuarios.getNum_doc());
         Byte estOut = usuarios.getEstado();
-        usuariosDto.setNom_est(estOut != null ? estOut : 2);
+        usuariosDto.setNom_est(estOut != null ? estOut : 1);
         if (usuarios.getTip_documento() != null) {
             usuariosDto.setId_tip_docu(usuarios.getTip_documento().getId());
             usuariosDto.setTip_docu(usuarios.getTip_documento().getTipo_doc());
@@ -78,8 +78,8 @@ public class UsuariosMapperImple implements UsuariosMapper {
         usuarios.setCorreo(createDto.getCorre());
         usuarios.setNum_doc(createDto.getNum_docu());
         usuarios.setPassword(createDto.getPasword());
-        if (createDto.getTip_docu() != null) {
-            Byte tipId = createDto.getTip_docu().byteValue();
+        if (createDto.getId_tip_docu() != null) {
+            Byte tipId = createDto.getId_tip_docu().byteValue();
             Tip_documento tip = tipDocumentoRepository.findById(tipId)
                 .orElseThrow(() -> new EntityNotFoundException("Tipo de documento no encontrado"));
             usuarios.setTip_documento(tip);

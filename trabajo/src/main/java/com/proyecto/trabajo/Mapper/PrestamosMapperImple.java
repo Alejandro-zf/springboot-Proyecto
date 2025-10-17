@@ -60,6 +60,7 @@ public class PrestamosMapperImple implements PrestamosMapper {
         prestamos.setFecha_recep(prestamosDto.getFecha_repc());
         validarTipo(prestamosDto.getTipo_pres());
         prestamos.setTipo_prest(prestamosDto.getTipo_pres());
+        prestamos.setEstado(prestamosDto.getEstado());
         if (prestamosDto.getId_usu() != null) {
             Usuarios usuario = usuariosRepository.findById(prestamosDto.getId_usu())
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
@@ -81,6 +82,9 @@ public class PrestamosMapperImple implements PrestamosMapper {
         prestamos.setFecha_recep(createDto.getFecha_repc());
         validarTipo(createDto.getTipo_pres());
         prestamos.setTipo_prest(createDto.getTipo_pres());
+        if (createDto.getEstado() != null) {
+            prestamos.setEstado(createDto.getEstado());
+        }
 
         if (createDto.getId_usuario() != null) {
             Usuarios usuario = usuariosRepository.findById(createDto.getId_usuario())
@@ -94,9 +98,6 @@ public class PrestamosMapperImple implements PrestamosMapper {
             prestamos.setEspacio(espacio);
         }
 
-        // Note: mapping of elementos and accesorios by id (id_elem, id_acces) is outside
-        // the responsibilities of this mapper in the original code. If needed, add
-        // repositories and map them here similar to usuario/espacio lookup.
 
         return prestamos;
     }
@@ -111,6 +112,7 @@ public class PrestamosMapperImple implements PrestamosMapper {
         prestamosDto.setFecha_entreg(prestamos.getFecha_entre());
         prestamosDto.setFecha_repc(prestamos.getFecha_recep());
         prestamosDto.setTipo_pres(prestamos.getTipo_prest());
+        prestamosDto.setEstado(prestamos.getEstado());
         if (prestamos.getUsuario() != null) {
             prestamosDto.setId_usu(prestamos.getUsuario().getId());
             prestamosDto.setNom_usu(prestamos.getUsuario().getNom_usu());
@@ -142,32 +144,6 @@ public class PrestamosMapperImple implements PrestamosMapper {
             }
             prestamosDto.setId_elem(idsJoin.toString());
             prestamosDto.setNom_elem(namesJoin.toString());
-        }
-        // Mapear accesorios asociados como strings concatenados ("1,5")
-        if (prestamos.getAccesoriosprestamo() != null && !prestamos.getAccesoriosprestamo().isEmpty()) {
-            StringBuilder accIds = new StringBuilder();
-            StringBuilder accNames = new StringBuilder();
-            boolean firstAcc = true;
-            for (com.proyecto.trabajo.models.Accesorios_Prestamos ap : prestamos.getAccesoriosprestamo()) {
-                if (ap != null && ap.getAccesorios() != null) {
-                    if (!firstAcc) {
-                        accIds.append(",");
-                        accNames.append(", ");
-                    }
-                    if (ap.getAccesorios().getId() != null) {
-                        accIds.append(ap.getAccesorios().getId());
-                    }
-                    if (ap.getAccesorios().getNom_acce() != null) {
-                        accNames.append(ap.getAccesorios().getNom_acce());
-                    }
-                    firstAcc = false;
-                }
-            }
-            prestamosDto.setId_acceso(accIds.toString());
-            prestamosDto.setNom_aces(accNames.toString());
-        } else {
-            prestamosDto.setId_acceso("");
-            prestamosDto.setNom_aces("");
         }
         return prestamosDto;
     }

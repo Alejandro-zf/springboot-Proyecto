@@ -17,18 +17,13 @@ import com.proyecto.trabajo.models.Espacio;
 import com.proyecto.trabajo.models.Prestamos;
 import com.proyecto.trabajo.models.Elementos;
 import com.proyecto.trabajo.models.Elemento_Solicitudes;
-import com.proyecto.trabajo.models.Accesorios;
-import com.proyecto.trabajo.models.Accesorios_solicitudes;
 import com.proyecto.trabajo.models.Prestamos_Elemento;
-import com.proyecto.trabajo.models.Accesorios_Prestamos;
 import com.proyecto.trabajo.repository.SolicitudesRepository;
 import com.proyecto.trabajo.repository.UsuariosRepository;
 import com.proyecto.trabajo.repository.EspacioRepository;
 import com.proyecto.trabajo.repository.PrestamosRepository;
 import com.proyecto.trabajo.repository.ElementosRepository;
-import com.proyecto.trabajo.repository.AccesoriosRepository;
 import com.proyecto.trabajo.repository.PrestamosElementoRepository;
-import com.proyecto.trabajo.repository.Accesorios_PrestamosRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -42,27 +37,22 @@ public class SolicitudesServicesImple implements SolicitudesServices {
     private final EspacioRepository espacioRepository;
     private final PrestamosRepository prestamosRepository;
     private final ElementosRepository elementosRepository;
-    private final AccesoriosRepository accesoriosRepository;
     private final com.proyecto.trabajo.Mapper.PrestamosMapper prestamosMapper;
     private final PrestamosElementoRepository prestamosElementoRepository;
-    private final Accesorios_PrestamosRepository accesoriosPrestamosRepository;
 
     public SolicitudesServicesImple(SolicitudesRepository solicitudesRepository, SolicitudesMapper solicitudesMapper,
             UsuariosRepository usuariosRepository, EspacioRepository espacioRepository,
-            PrestamosRepository prestamosRepository, ElementosRepository elementosRepository, AccesoriosRepository accesoriosRepository,
+            PrestamosRepository prestamosRepository, ElementosRepository elementosRepository,
             com.proyecto.trabajo.Mapper.PrestamosMapper prestamosMapper,
-            PrestamosElementoRepository prestamosElementoRepository,
-            Accesorios_PrestamosRepository accesoriosPrestamosRepository) {
+            PrestamosElementoRepository prestamosElementoRepository) {
         this.solicitudesRepository = solicitudesRepository;
         this.solicitudesMapper = solicitudesMapper;
         this.usuariosRepository = usuariosRepository;
         this.espacioRepository = espacioRepository;
         this.prestamosRepository = prestamosRepository;
         this.elementosRepository = elementosRepository;
-        this.accesoriosRepository = accesoriosRepository;
         this.prestamosMapper = prestamosMapper;
         this.prestamosElementoRepository = prestamosElementoRepository;
-        this.accesoriosPrestamosRepository = accesoriosPrestamosRepository;
     }
 
     private void sincronizarEstadoElementos(Solicitudes solicitud) {
@@ -102,19 +92,6 @@ public class SolicitudesServicesImple implements SolicitudesServices {
                 es.setSolicitudes(solicitudes);
                 es.setElementos(elemento);
                 solicitudes.getElemento().add(es);
-            }
-        }
-        // Evitar duplicados: solo agregar aquí si el mapper no los agregó
-        if (dto.getIds_acces() != null && !dto.getIds_acces().isEmpty()
-            && (solicitudes.getSolicitudesacce() == null || solicitudes.getSolicitudesacce().isEmpty())) {
-            for (Long idAcc : dto.getIds_acces()) {
-                if (idAcc == null) continue;
-                Accesorios accesorio = accesoriosRepository.findById(idAcc.intValue())
-                    .orElseThrow(() -> new EntityNotFoundException("Accesorio no encontrado"));
-                Accesorios_solicitudes as = new Accesorios_solicitudes();
-                as.setSolicitudes(solicitudes);
-                as.setAccesorios(accesorio);
-                solicitudes.getSolicitudesacce().add(as);
             }
         }
         if (solicitudes.getUsuario() == null && dto.getId_usu() != null) {
@@ -160,17 +137,6 @@ public class SolicitudesServicesImple implements SolicitudesServices {
                         }
                     }
                 }
-                // Asociar accesorios de la solicitud al préstamo
-                if (solicitudFull.getSolicitudesacce() != null) {
-                    for (Accesorios_solicitudes as : solicitudFull.getSolicitudesacce()) {
-                        if (as != null && as.getAccesorios() != null) {
-                            Accesorios_Prestamos ap = new Accesorios_Prestamos();
-                            ap.setPrestamos(prestamoGuardado);
-                            ap.setAccesorios(as.getAccesorios());
-                            accesoriosPrestamosRepository.save(ap);
-                        }
-                    }
-                }
             }
         }
         // Volver a cargar si se creó préstamo o cambió estado podría modificar asociaciones
@@ -211,7 +177,7 @@ public class SolicitudesServicesImple implements SolicitudesServices {
                 .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada"));
 
     solicitudesMapper.updateSolicitudesFromUpdateDto(dto, solicitudes);
-        boolean aprobado = dto != null && dto.getEst_soli() != null && dto.getEst_soli() == 1;
+        boolean aprobado = dto != null && dto.getId_est_soli() != null && dto.getId_est_soli() == 1;
         boolean sinPrestamo = solicitudes.getPrestamos() == null || solicitudes.getPrestamos().isEmpty();
 
         Solicitudes actualizado = solicitudesRepository.save(solicitudes);

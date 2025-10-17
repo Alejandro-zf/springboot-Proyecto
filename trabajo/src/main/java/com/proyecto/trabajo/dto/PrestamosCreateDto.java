@@ -15,6 +15,7 @@ public class PrestamosCreateDto {
     private LocalDateTime fecha_entreg;
     private LocalDateTime fecha_repc;
     private String tipo_pres;
+    private Byte estado;
 
     private Long id_usuario;
 

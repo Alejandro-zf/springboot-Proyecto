@@ -52,6 +52,9 @@ public class Solicitudes {
     @OneToMany(mappedBy = "solicitudes", cascade = CascadeType.ALL, orphanRemoval = true)
     private List <Prestamos> prestamos = new ArrayList<>();
 
+    @Column(name = "estadosolicitud", nullable = false)
+    private Byte estadosolicitud = 2; // 0=No aprobado, 1=Aprobado, 2=Denegado
+
     @ManyToOne
     @JoinColumn(name = "id_estado_solicitud", nullable = true, foreignKey = @ForeignKey(name = "FK_Id_estado_solicitud"))
     private Estado_solicitudes estado_solicitudes;

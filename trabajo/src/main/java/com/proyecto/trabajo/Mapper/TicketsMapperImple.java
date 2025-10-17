@@ -37,6 +37,9 @@ public class TicketsMapperImple implements TicketsMapper {
         tickets.setFecha_ini(ticketsDtos.getFecha_in());
         tickets.setFecha_finn(ticketsDtos.getFecha_fin());
         tickets.setAmbiente(ticketsDtos.getAmbient());
+        if (ticketsDtos.getEstado() != null) {
+            tickets.setEstado(ticketsDtos.getEstado());
+        }
         if (ticketsDtos.getId_usuario() != null) {
             Usuarios usuario = usuariosRepository.findById(ticketsDtos.getId_usuario())
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
@@ -67,6 +70,7 @@ public class TicketsMapperImple implements TicketsMapper {
         ticketsDtos.setFecha_fin(tickets.getFecha_finn());
         ticketsDtos.setAmbient(tickets.getAmbiente());
         ticketsDtos.setObser(tickets.getObservaciones() != null ? tickets.getObservaciones() : "");
+        ticketsDtos.setEstado(tickets.getEstado());
 
         if (tickets.getUsuario() != null) {
             ticketsDtos.setId_usuario(tickets.getUsuario().getId());
@@ -108,6 +112,10 @@ public class TicketsMapperImple implements TicketsMapper {
         tickets.setFecha_ini(createDto.getFecha_in());
         tickets.setFecha_finn(createDto.getFecha_fin());
         tickets.setAmbiente(createDto.getAmbient());
+        tickets.setObservaciones(createDto.getObser());
+        if (createDto.getEstado() != null) {
+            tickets.setEstado(createDto.getEstado());
+        }
         if (createDto.getId_usu() != null) {
             Usuarios usuario = usuariosRepository.findById(createDto.getId_usu())
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));

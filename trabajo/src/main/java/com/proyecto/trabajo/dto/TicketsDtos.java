@@ -15,6 +15,7 @@ public class TicketsDtos {
     private LocalDateTime fecha_fin;
     private String ambient;
     private String Obser;
+    private Byte estado;
     
     private Long probloem_id;
     private String nom_problm;

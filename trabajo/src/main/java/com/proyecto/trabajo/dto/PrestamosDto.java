@@ -14,6 +14,7 @@ private Long id_prest;
 private LocalDateTime fecha_entreg;
 private LocalDateTime fecha_repc;
 private String tipo_pres;
+private Byte estado;
 
 private Long id_usu;
 private String nom_usu;

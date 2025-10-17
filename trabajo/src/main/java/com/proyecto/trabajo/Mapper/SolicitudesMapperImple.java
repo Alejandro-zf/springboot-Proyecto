@@ -10,14 +10,11 @@ import com.proyecto.trabajo.models.Usuarios;
 import com.proyecto.trabajo.models.Espacio;
 import com.proyecto.trabajo.models.Elementos;
 import com.proyecto.trabajo.models.Elemento_Solicitudes;
-import com.proyecto.trabajo.models.Accesorios;
-import com.proyecto.trabajo.models.Accesorios_solicitudes;
+import com.proyecto.trabajo.models.Estado_solicitudes;
 import com.proyecto.trabajo.repository.EspacioRepository;
 import com.proyecto.trabajo.repository.UsuariosRepository;
 import com.proyecto.trabajo.repository.ElementosRepository;
-import com.proyecto.trabajo.repository.AccesoriosRepository;
-import java.util.ArrayList;
-import java.util.List;
+import com.proyecto.trabajo.repository.Estado_solicitudesRepository;
 import java.util.Set;
 import java.util.LinkedHashSet;
 
@@ -29,12 +26,13 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
     private final UsuariosRepository usuariosRepository;
     private final EspacioRepository espacioRepository;
     private final ElementosRepository elementosRepository;
-    private final AccesoriosRepository accesoriosRepository;
-    public SolicitudesMapperImple(UsuariosRepository usuariosRepository, EspacioRepository espacioRepository, ElementosRepository elementosRepository, AccesoriosRepository accesoriosRepository) {
+    private final Estado_solicitudesRepository estadoSolicitudesRepository;
+
+    public SolicitudesMapperImple(UsuariosRepository usuariosRepository, EspacioRepository espacioRepository, ElementosRepository elementosRepository, Estado_solicitudesRepository estadoSolicitudesRepository) {
         this.usuariosRepository = usuariosRepository;
         this.espacioRepository = espacioRepository;
         this.elementosRepository = elementosRepository;
-        this.accesoriosRepository = accesoriosRepository;
+        this.estadoSolicitudesRepository = estadoSolicitudesRepository;
     }
 
     @Override
@@ -51,8 +49,11 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
         solicitudes.setFecha_fin(solicitudesDto.getFecha_fn());
         solicitudes.setAmbiente(solicitudesDto.getAmbient());
         solicitudes.setNum_ficha(solicitudesDto.getNum_fich());
-        Byte est = solicitudesDto.getEst_soli();
-        solicitudes.setEstadosolicitud(est != null ? est : 1);
+        if (solicitudesDto.getEst_soli() != null) {
+            Estado_solicitudes estadoSolicitudes = estadoSolicitudesRepository.findById(solicitudesDto.getEst_soli().intValue())
+                    .orElseThrow(() -> new EntityNotFoundException("Estado de solicitud no encontrado"));
+            solicitudes.setEstado_solicitudes(estadoSolicitudes);
+        }
         solicitudes.setUsuario(usuario);
         solicitudes.setEspacio(espacio);
         return solicitudes;
@@ -69,7 +70,9 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
         dto.setFecha_fn(entity.getFecha_fin());
         dto.setAmbient(entity.getAmbiente());
         dto.setNum_fich(entity.getNum_ficha());
-        dto.setEst_soli(entity.getEstadosolicitud());
+        if (entity.getEstado_solicitudes() != null) {
+            dto.setEst_soli(entity.getEstado_solicitudes().getId().byteValue());
+        }
         if (entity.getUsuario() != null) {
             dto.setId_usu(entity.getUsuario().getId());
             dto.setNom_usu(entity.getUsuario().getNom_usu());
@@ -102,31 +105,6 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
             dto.setId_elem(idsJoin.toString());
             dto.setNom_elem(namesJoin.toString());
         }
-        if (entity.getSolicitudesacce() != null && !entity.getSolicitudesacce().isEmpty()) {
-            StringBuilder accesIds = new StringBuilder();
-            StringBuilder accesNames = new StringBuilder();
-            boolean firstAcc = true;
-            for (Accesorios_solicitudes as : entity.getSolicitudesacce()) {
-                if (as != null && as.getAccesorios() != null) {
-                    if (!firstAcc) {
-                        accesIds.append(",");
-                        accesNames.append(", ");
-                    }
-                    if (as.getAccesorios().getId() != null) {
-                        accesIds.append(as.getAccesorios().getId());
-                    }
-                    if (as.getAccesorios().getNom_acce() != null) {
-                        accesNames.append(as.getAccesorios().getNom_acce());
-                    }
-                    firstAcc = false;
-                }
-            }
-            dto.setAcces_id(accesIds.toString());
-            dto.setNom_acces(accesNames.toString());
-        } else {
-            dto.setAcces_id("");
-            dto.setNom_acces("");
-        }
         return dto;
     }
 
@@ -140,9 +118,11 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
         solicitudes.setFecha_fin(createDto.getFecha_fn());
         solicitudes.setAmbiente(createDto.getAmbient());
         solicitudes.setNum_ficha(createDto.getNum_fich());
-        Byte est = createDto.getEstadosoli();
         // Por defecto = 2 (no aprobado) si no viene en el DTO
-        solicitudes.setEstadosolicitud(est != null ? est : 2);
+        Integer estadoId = createDto.getId_estado_soli() != null ? createDto.getId_estado_soli() : 2;
+        Estado_solicitudes estadoSolicitudes = estadoSolicitudesRepository.findById(estadoId)
+                .orElseThrow(() -> new EntityNotFoundException("Estado de solicitud no encontrado"));
+        solicitudes.setEstado_solicitudes(estadoSolicitudes);
         if (createDto.getId_usu() != null) {
             Usuarios usuario = usuariosRepository.findById(createDto.getId_usu())
                     .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
@@ -165,18 +145,6 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
                 solicitudes.getElemento().add(es);
             }
         }
-        if (createDto.getIds_acces() != null && !createDto.getIds_acces().isEmpty()) {
-            Set<Long> uniqueAccIds = new LinkedHashSet<>(createDto.getIds_acces());
-            for (Long idAcc : uniqueAccIds) {
-                if (idAcc == null) continue;
-                Accesorios accesorio = accesoriosRepository.findById(idAcc.intValue())
-                        .orElseThrow(() -> new EntityNotFoundException("Accesorio no encontrado"));
-                Accesorios_solicitudes as = new Accesorios_solicitudes();
-                as.setSolicitudes(solicitudes);
-                as.setAccesorios(accesorio);
-                solicitudes.getSolicitudesacce().add(as);
-            }
-        }
         return solicitudes;
     }
 
@@ -191,8 +159,10 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
         if (updateDto.getFecha_fn() != null) {
             entity.setFecha_fin(updateDto.getFecha_fn());
         }
-        if (updateDto.getEst_soli() != null) {
-            entity.setEstadosolicitud(updateDto.getEst_soli());
+        if (updateDto.getId_est_soli() != null) {
+            Estado_solicitudes estadoSolicitudes = estadoSolicitudesRepository.findById(updateDto.getId_est_soli())
+                    .orElseThrow(() -> new EntityNotFoundException("Estado de solicitud no encontrado"));
+            entity.setEstado_solicitudes(estadoSolicitudes);
         }
     }
 }

@@ -13,6 +13,7 @@ public class TicketsUpdateDtos {
     private Long id_ticke;
     private LocalDateTime fecha_in;
     private LocalDateTime fecha_fin;
+    private Byte estado;
 
     private Long id_est_tick;
     
