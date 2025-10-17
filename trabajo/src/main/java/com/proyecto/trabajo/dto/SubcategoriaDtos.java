@@ -7,10 +7,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+public class SubcategoriaDtos {
+    private Long id;
+    private String nom_subcateg;
 
-public class Accesorios_SolicitudesDtos {
-    private Long id_acces;
-    private String nom_acces;
-
-    private Long id_soli;
+    private Long id_cat;
+    private String nom_cat;
 }

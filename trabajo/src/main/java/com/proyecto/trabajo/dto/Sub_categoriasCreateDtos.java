@@ -7,9 +7,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class AccesoriosDto {
-private Integer id_accesorio;
-private String nom_acces;
-private String marc;
-private Integer num_ser;
+public class Sub_categoriasCreateDtos {
+    private String nom_subcateg;
+    private Long id_cat;
 }
