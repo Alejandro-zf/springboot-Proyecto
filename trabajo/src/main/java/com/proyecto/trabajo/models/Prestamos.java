@@ -30,7 +30,9 @@ public class Prestamos {
     
     private LocalDateTime fecha_entre;
     private LocalDateTime fecha_recep;
-    private Byte Estado;
+    
+    @Column(nullable = false)
+    private Byte estado = 1; // 0=No activo, 1=Activo
 
     @Column(nullable = false, length = 30)
     private String tipo_prest;

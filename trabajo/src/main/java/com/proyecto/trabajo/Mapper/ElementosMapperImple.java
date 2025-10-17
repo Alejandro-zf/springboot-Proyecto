@@ -9,8 +9,8 @@ import com.proyecto.trabajo.dto.ElementoDto;
 import com.proyecto.trabajo.dto.ElementosCreateDto;
 import com.proyecto.trabajo.dto.ElementoUpdateDtos;
 import com.proyecto.trabajo.models.Elementos;
-import com.proyecto.trabajo.models.Categoria;
-import com.proyecto.trabajo.repository.CategoriaRepository;
+import com.proyecto.trabajo.models.Sub_categoria;
+import com.proyecto.trabajo.repository.Sub_categoriaRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -18,16 +18,16 @@ import jakarta.persistence.EntityNotFoundException;
 @Component
 public class ElementosMapperImple implements ElementosMapper {
 
-    private final CategoriaRepository categoriaRepository;
+    private final Sub_categoriaRepository subCategoriaRepository;
 
-    public ElementosMapperImple(CategoriaRepository categoriaRepository) {
-        this.categoriaRepository = categoriaRepository;
+    public ElementosMapperImple(Sub_categoriaRepository subCategoriaRepository) {
+        this.subCategoriaRepository = subCategoriaRepository;
     }
 
     private static byte validarEstado(Byte estado) {
-        if (estado == null) return 2; 
-        if (estado < 1 || estado > 2) {
-            throw new IllegalArgumentException("Estado de elemento inválido. Use 1 (no disponible) o 2 (disponible)");
+        if (estado == null) return 1; 
+        if (estado < 0 || estado > 1) {
+            throw new IllegalArgumentException("Estado de elemento inválido. Use 0 (no activo) o 1 (activo)");
         }
         return estado;
     }
@@ -47,9 +47,9 @@ public class ElementosMapperImple implements ElementosMapper {
         elementos.setEstadosoelement(validarEstado(elementoDto.getEst_elemn()));
 
         if (elementoDto.getId_categ() != null) {
-            Categoria categoria = categoriaRepository.findById(elementoDto.getId_categ().byteValue())
-                .orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada"));
-            elementos.setCategoria(categoria);
+            Sub_categoria subCategoria = subCategoriaRepository.findById(elementoDto.getId_categ())
+                .orElseThrow(() -> new EntityNotFoundException("Subcategoría no encontrada"));
+            elementos.setSub_categoria(subCategoria);
         }
 
         return elementos;
@@ -68,9 +68,9 @@ public class ElementosMapperImple implements ElementosMapper {
         elementoDto.setNum_seri(elementos.getNum_serie());
         elementoDto.setComponen(elementos.getComponentes());
         elementoDto.setEst_elemn(elementos.getEstadosoelement());
-        if (elementos.getCategoria() != null) {
-            elementoDto.setId_categ(elementos.getCategoria().getId().longValue());
-            elementoDto.setTip_catg(elementos.getCategoria().getNom_categoria());
+        if (elementos.getSub_categoria() != null) {
+            elementoDto.setId_categ(elementos.getSub_categoria().getId());
+            elementoDto.setTip_catg(elementos.getSub_categoria().getNom_subcategoria());
         }
         
         return elementoDto;
@@ -87,10 +87,10 @@ public class ElementosMapperImple implements ElementosMapper {
         elementos.setNum_serie(createDto.getNum_seri());
         elementos.setComponentes(createDto.getComponen());
         elementos.setEstadosoelement(validarEstado(createDto.getEst_elem()));
-        if (createDto.getId_categoria() != null) {
-            Categoria categoria = categoriaRepository.findById(createDto.getId_categoria().byteValue())
-                .orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada"));
-            elementos.setCategoria(categoria);
+        if (createDto.getId_categ() != null) {
+            Sub_categoria subCategoria = subCategoriaRepository.findById(createDto.getId_categ())
+                .orElseThrow(() -> new EntityNotFoundException("Subcategoría no encontrada"));
+            elementos.setSub_categoria(subCategoria);
         }
         return elementos;
     }

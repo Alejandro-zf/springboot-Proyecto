@@ -1,10 +1,8 @@
 package com.proyecto.trabajo.Services;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.proyecto.trabajo.Mapper.TrasabilidadMapper;
 import com.proyecto.trabajo.dto.TrasabilidadCreateDtos;
@@ -38,89 +36,77 @@ public class TrasabilidadServicesImple implements TrasabilidadServices {
         this.trasabilidadMapper = trasabilidadMapper;
     }
 
-    @Override
-    @Transactional
-    public TrasabilidadDtos guardar(TrasabilidadCreateDtos dto) {
+    /**
+     * Valida los datos de la trasabilidad
+     * @param dto El DTO a validar
+     * @throws IllegalArgumentException si los datos son inválidos
+     */
+    private void validarTrasabilidad(TrasabilidadCreateDtos dto) {
         if (dto.getId_usu() == null) {
-            throw new IllegalArgumentException("id_usu es obligatorio");
+            throw new IllegalArgumentException("El usuario es obligatorio");
         }
         if (dto.getId_ticet() == null) {
-            throw new IllegalArgumentException("id_ticet es obligatorio");
+            throw new IllegalArgumentException("El ticket es obligatorio");
         }
+        if (dto.getObser() != null && dto.getObser().length() > 255) {
+            throw new IllegalArgumentException("La observación no puede exceder 255 caracteres");
+        }
+    }
+
+    @Override
+    public TrasabilidadDtos guardar(TrasabilidadCreateDtos dto) {
+        validarTrasabilidad(dto);
+        
         Trasabilidad entity = trasabilidadMapper.toTrasabilidadFromCreateDto(dto);
         Trasabilidad guardado = trasabilidadRepository.save(entity);
         return trasabilidadMapper.toTrasabilidadDto(guardado);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public TrasabilidadDtos buscarPorId(Long id) {
-        Trasabilidad entity = trasabilidadRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Trasabilidad no encontrada"));
-        return trasabilidadMapper.toTrasabilidadDto(entity);
+        return trasabilidadRepository.findById(id)
+                .map(trasabilidadMapper::toTrasabilidadDto)
+                .orElseThrow(() -> new EntityNotFoundException("Trasabilidad no encontrada con id: " + id));
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<TrasabilidadDtos> listarTodos() {
-        return trasabilidadRepository.findAll()
-            .stream()
-            .map(trasabilidadMapper::toTrasabilidadDto)
-            .collect(Collectors.toList());
+        List<Trasabilidad> trasabilidades = trasabilidadRepository.findAll();
+        return trasabilidadMapper.toTrasabilidadDtoList(trasabilidades);
     }
 
     @Override
-    @Transactional
     public void eliminar(Long id) {
-        Trasabilidad entity = trasabilidadRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Trasabilidad no encontrada"));
-        trasabilidadRepository.delete(entity);
+        if (!trasabilidadRepository.existsById(id)) {
+            throw new EntityNotFoundException("Trasabilidad no encontrada con id: " + id);
+        }
+        trasabilidadRepository.deleteById(id);
     }
 
     @Override
-    @Transactional
     public TrasabilidadDtos actualizar(TrasabilidadDtos dto) {
         Trasabilidad entity = trasabilidadRepository.findById(dto.getId_trsa())
-            .orElseThrow(() -> new EntityNotFoundException("Trasabilidad no encontrada"));
+                .orElseThrow(() -> new EntityNotFoundException("Trasabilidad no encontrada con id: " + dto.getId_trsa()));
 
-        // Actualizar campos simples via reflección (no hay setters en la entidad)
-        try {
-            if (dto.getFech() != null) {
-                java.lang.reflect.Field fFecha = Trasabilidad.class.getDeclaredField("fecha");
-                fFecha.setAccessible(true);
-                fFecha.set(entity, dto.getFech());
-            }
-            if (dto.getObser() != null) {
-                java.lang.reflect.Field fObs = Trasabilidad.class.getDeclaredField("observacion");
-                fObs.setAccessible(true);
-                fObs.set(entity, dto.getObser());
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Error actualizando campos de Trasabilidad", e);
+        // Actualizar campos simples
+        if (dto.getFech() != null) {
+            entity.setFecha(dto.getFech());
+        }
+        if (dto.getObser() != null) {
+            entity.setObservacion(dto.getObser());
         }
 
         // Actualizar relaciones si vienen en el DTO
         if (dto.getId_usu() != null) {
             Usuarios usuario = usuariosRepository.findById(dto.getId_usu())
-                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
-            try {
-                java.lang.reflect.Field fUsu = Trasabilidad.class.getDeclaredField("usuario");
-                fUsu.setAccessible(true);
-                fUsu.set(entity, usuario);
-            } catch (Exception e) {
-                throw new RuntimeException("Error asignando usuario en Trasabilidad", e);
-            }
+                    .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con id: " + dto.getId_usu()));
+            entity.setUsuario(usuario);
         }
+        
         if (dto.getId_ticet() != null) {
             Tickets ticket = ticketsRepository.findById(dto.getId_ticet())
-                .orElseThrow(() -> new EntityNotFoundException("Ticket no encontrado"));
-            try {
-                java.lang.reflect.Field fTick = Trasabilidad.class.getDeclaredField("tickets");
-                fTick.setAccessible(true);
-                fTick.set(entity, ticket);
-            } catch (Exception e) {
-                throw new RuntimeException("Error asignando ticket en Trasabilidad", e);
-            }
+                    .orElseThrow(() -> new EntityNotFoundException("Ticket no encontrado con id: " + dto.getId_ticet()));
+            entity.setTickets(ticket);
         }
 
         Trasabilidad actualizado = trasabilidadRepository.save(entity);
