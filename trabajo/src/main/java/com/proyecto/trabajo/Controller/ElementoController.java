@@ -53,7 +53,6 @@ public class ElementoController {
         }
     }
     
-
     //Obtener por ID
     @GetMapping("/{id}")
     public ResponseEntity<ElementoDto> obtenerPorId(@PathVariable Long id){

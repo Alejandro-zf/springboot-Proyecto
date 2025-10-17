@@ -42,6 +42,7 @@ public class AuthController {
         final UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getUsername());
         final String token = jwtTokenUtil.generateToken(userDetails);
 
-        return ResponseEntity.ok(new JwtResponse(token));
+        // prueba aun no terminada 
+        return ResponseEntity.ok(new JwtResponse(token, null, token, token));
     }
 }
