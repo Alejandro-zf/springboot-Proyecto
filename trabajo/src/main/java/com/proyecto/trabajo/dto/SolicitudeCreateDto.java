@@ -21,6 +21,7 @@ public class SolicitudeCreateDto {
     private String ambient;
     private Integer num_fich;
     private Integer id_estado_soli;
+    private String mensaj;
 
     private Long id_usu;
 
