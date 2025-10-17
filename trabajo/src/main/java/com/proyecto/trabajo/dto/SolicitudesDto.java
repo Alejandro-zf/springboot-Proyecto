@@ -26,6 +26,4 @@ private String nom_espa;
 private String id_elem;
 private String nom_elem;
 
-private String acces_id;
-private String nom_acces;
 }

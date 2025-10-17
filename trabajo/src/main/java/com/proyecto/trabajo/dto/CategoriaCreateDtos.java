@@ -1,5 +1,7 @@
 package com.proyecto.trabajo.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,12 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+public class CategoriaCreateDtos {
+    private String nom_cat;
 
-public class Accesorios_PrestamosDtos {
-
-    private Long id_acceso;
-    private String nom_acses;
-
-    private Long id_prest;
-    
+    private List <Long> id_subcat;
 }

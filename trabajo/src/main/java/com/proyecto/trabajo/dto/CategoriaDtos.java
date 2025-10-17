@@ -13,6 +13,7 @@ public class CategoriaDtos {
     private Byte id_cat;
     private String nom_cat;
 
-    private List<Long> id_subcat;
+    private Long id_subcat;
+    private String nom_subcast;
 
 }

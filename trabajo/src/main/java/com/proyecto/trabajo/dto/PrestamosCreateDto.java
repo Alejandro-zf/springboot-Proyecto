@@ -18,11 +18,7 @@ public class PrestamosCreateDto {
 
     private Long id_usuario;
 
-    // Múltiples elementos asociados al préstamo
     private List<Long> ids_elem;
-
-    // Múltiples accesorios asociados al préstamo
-    private List<Long> ids_acces;
 
     private Long id_esp;
 
