@@ -33,10 +33,10 @@ public class Solicitudes {
     @Column(nullable = false,length = 35)
     private String ambiente;
 
+    private Integer num_ficha;    
+
     @Column(nullable = true,length=255)
     private String mensaje;
-
-    private Integer num_ficha;    
 
     @ManyToOne
     @JoinColumn(name = "id_usuari", nullable = false, foreignKey = @ForeignKey(name = "FK_Id_usuari"))

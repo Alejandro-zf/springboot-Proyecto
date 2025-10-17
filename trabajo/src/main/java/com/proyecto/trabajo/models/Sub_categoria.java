@@ -28,10 +28,10 @@ public class Sub_categoria {
     @Column(nullable = false, length = 50)
     private String nom_subcategoria;
 
-    @OneToMany(mappedBy = "sub_categoria")
-    private List<Elementos> elementos;
- 
     @ManyToOne
     @JoinColumn(name = "categoria", nullable = false, foreignKey = @ForeignKey(name = "FK_Id_categoria"))
     private Categoria categoria;
+
+    @OneToMany(mappedBy = "sub_categoria")
+    private List<Elementos> elementos;   
 }
