@@ -1,4 +1,4 @@
-package com.proyecto.trabajo.controller;
+package com.proyecto.trabajo.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
