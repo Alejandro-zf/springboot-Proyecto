@@ -42,7 +42,10 @@ public class AuthController {
         final UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getUsername());
         final String token = jwtTokenUtil.generateToken(userDetails);
 
-        // prueba aun no terminada 
-        return ResponseEntity.ok(new JwtResponse(token, null, token, token));
+        // Prefijar con "Bearer " para que el cliente lo use directamente en Authorization header
+        final String bearerToken = "Bearer " + token;
+
+        
+        return ResponseEntity.ok(new JwtResponse(bearerToken, null, bearerToken, bearerToken));
     }
 }

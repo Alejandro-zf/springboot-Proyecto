@@ -33,15 +33,25 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String username = null;
         String jwtToken = null;
 
-        if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
-            jwtToken = requestTokenHeader.substring(7);
-            try {
-                username = jwtTokenUtil.getUsernameFromToken(jwtToken);
-            } catch (Exception e) {
-                logger.error("Unable to get JWT Token or JWT Token has expired");
+        // Aceptar tanto "Bearer <token>" como token crudo.
+        // Si no hay header Authorization, no mostrar warning (puede ser endpoint público).
+        if (requestTokenHeader != null && !requestTokenHeader.trim().isEmpty()) {
+            if (requestTokenHeader.startsWith("Bearer ")) {
+                jwtToken = requestTokenHeader.substring(7);
+            } else {
+                // Header presente pero no con el prefijo Bearer: tratarlo como token crudo
+                jwtToken = requestTokenHeader.trim();
             }
-        } else {
-            logger.warn("JWT Token does not begin with Bearer String");
+        }
+
+        try {
+            if (jwtToken != null) {
+                username = jwtTokenUtil.getUsernameFromToken(jwtToken);
+            }
+        } catch (IllegalArgumentException e) {
+            logger.error("Unable to get JWT Token");
+        } catch (io.jsonwebtoken.ExpiredJwtException e) {
+            logger.warn("JWT Token has expired");
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
