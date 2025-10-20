@@ -26,6 +26,11 @@ public class Espacio {
     @Column(nullable = false,length = 25)
     private String nom_espa;
 
+    // Setter temporal para pruebas
+    public void setNom_espa(String nom_espa) {
+        this.nom_espa = nom_espa;
+    }
+
 
     @OneToMany(mappedBy = "espacio", cascade = CascadeType.ALL, orphanRemoval = true)
     private List <Solicitudes> solicitudes = new ArrayList<>();

@@ -74,6 +74,13 @@ public class TicketsController {
         return ResponseEntity.ok(tickets);
     }
 
+        //Listar solo tickets activos
+        @GetMapping("/activos")
+        public ResponseEntity<List<TicketsDtos>> listarActivos() {
+            List<TicketsDtos> tickets = ticketsServices.listarActivos();
+            return ResponseEntity.ok(tickets);
+        }
+
     //Elminar tickets 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {

@@ -120,6 +120,15 @@ public class TicketsServicesImple implements TicketsServices {
                 .collect(Collectors.toList());
     }
 
+        @Override
+        @Transactional(readOnly = true)
+        public List<TicketsDtos> listarActivos() {
+            return ticketsRepository.findByEstado((byte)1)
+                    .stream()
+                    .map(ticketsMapper::toTicketsDto)
+                    .collect(Collectors.toList());
+        }
+
     @Override
     @Transactional
     public void eliminar(Long id) {
