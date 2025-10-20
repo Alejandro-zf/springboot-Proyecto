@@ -25,7 +25,7 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/**", "/api/**").permitAll()
+                .requestMatchers("/auth/**", "/api/**", "/api/Usuarios", "/api/subcategorias").permitAll()
                 // Rutas para administradores
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 // Rutas para técnicos

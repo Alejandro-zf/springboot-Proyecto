@@ -9,6 +9,7 @@ import com.proyecto.trabajo.dto.SubcategoriaDtos;
 import com.proyecto.trabajo.dto.Sub_categoriasCreateDtos;
 import com.proyecto.trabajo.models.Sub_categoria;
 import com.proyecto.trabajo.repository.Sub_categoriaRepository;
+import com.proyecto.trabajo.repository.CategoriaRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -17,11 +18,14 @@ public class SubcategoriaServicesImple implements SubcategoriaServices {
 
     private final Sub_categoriaRepository subcategoriaRepository;
     private final SubcategoriaMapper subcategoriaMapper;
+    private final CategoriaRepository categoriaRepository;
 
     public SubcategoriaServicesImple(Sub_categoriaRepository subcategoriaRepository, 
-                                     SubcategoriaMapper subcategoriaMapper) {
+                                     SubcategoriaMapper subcategoriaMapper,
+                                     CategoriaRepository categoriaRepository) {
         this.subcategoriaRepository = subcategoriaRepository;
         this.subcategoriaMapper = subcategoriaMapper;
+        this.categoriaRepository = categoriaRepository;
     }
 
     /**
@@ -42,7 +46,9 @@ public class SubcategoriaServicesImple implements SubcategoriaServices {
     @Override
     public SubcategoriaDtos guardar(Sub_categoriasCreateDtos dto) {
         validarNombreSubcategoria(dto.getNom_subcateg());
-        
+        if (dto.getId_cat() == null || !categoriaRepository.existsById(dto.getId_cat().byteValue())) {
+            throw new IllegalArgumentException("La categoría asociada no existe");
+        }
         Sub_categoria subcategoria = subcategoriaMapper.toSubcategoriaFromCreateDto(dto);
         Sub_categoria guardado = subcategoriaRepository.save(subcategoria);
         return subcategoriaMapper.toSubcategoriaDto(guardado);
