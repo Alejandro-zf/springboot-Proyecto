@@ -33,7 +33,7 @@ public class Usuarios {
     @Column(nullable=false,length=100)
     private String correo;
 
-    private Integer num_doc;
+    private Long num_doc;
     @Column(nullable=false,length=30) 
     private String password;
 

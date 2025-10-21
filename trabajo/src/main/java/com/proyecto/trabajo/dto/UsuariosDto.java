@@ -12,7 +12,7 @@ private Long id_usuari;
 private String nom_usua;
 private String ape_usua;
 private String corre;
-private Integer num_docu;
+private Long num_docu;
 private Byte nom_est;
 
 private Byte id_tip_docu;
