@@ -78,6 +78,9 @@ public class UsuariosMapperImple implements UsuariosMapper {
         usuarios.setCorreo(createDto.getCorre());
         usuarios.setNum_doc(createDto.getNum_docu());
         usuarios.setPassword(createDto.getPasword());
+        if (createDto.getEstad() != null) {
+            usuarios.setEstado(createDto.getEstad());
+        }
         if (createDto.getId_tip_docu() != null) {
             Byte tipId = createDto.getId_tip_docu().byteValue();
             Tip_documento tip = tipDocumentoRepository.findById(tipId)

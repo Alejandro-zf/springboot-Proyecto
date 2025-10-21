@@ -9,6 +9,7 @@ public interface PrestamosServices {
     PrestamosDto guardar(PrestamosCreateDto dto);
     PrestamosDto buscarPorId(Long id);
     List<PrestamosDto> listarTodos();
+    List<PrestamosDto> listarActivos();
     void eliminar(Long id);
     PrestamosDto actualizarPrestamo(PrestamosDto dto);
 }

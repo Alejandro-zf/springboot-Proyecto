@@ -1,4 +1,8 @@
+
 package com.proyecto.trabajo.Controller;
+
+import org.springframework.web.bind.annotation.PutMapping;
+import com.proyecto.trabajo.dto.SolicitudesUpdateDtos;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,6 +30,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RestController
 @RequestMapping("/api/solicitudes")
 public class SolicitudesController {
+    // Actualizar estado de solicitud
+    @PutMapping("/{id}")
+    public ResponseEntity<?> actualizarEstado(@PathVariable Long id, @RequestBody SolicitudesUpdateDtos dto) {
+        try {
+            SolicitudesDto actualizado = solicitudesServices.actualizarSolicitud(id, dto);
+            return ResponseEntity.ok(Map.of("mensaje", "Solicitud actualizada", "data", actualizado));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", ex.getMessage()));
+        }
+    }
 
     private final SolicitudesServices solicitudesServices;
 

@@ -78,22 +78,22 @@ public class PrestamosMapperImple implements PrestamosMapper {
     public Prestamos toPrestamosFromCreateDto(PrestamosCreateDto createDto) {
         if (createDto == null) return null;
         Prestamos prestamos = new Prestamos();
-        prestamos.setFecha_entre(createDto.getFecha_entreg());
-        prestamos.setFecha_recep(createDto.getFecha_repc());
-        validarTipo(createDto.getTipo_pres());
-        prestamos.setTipo_prest(createDto.getTipo_pres());
+        prestamos.setFecha_entre(createDto.getFechaEntreg());
+        prestamos.setFecha_recep(createDto.getFechaRepc());
+        validarTipo(createDto.getTipoPres());
+        prestamos.setTipo_prest(createDto.getTipoPres());
         if (createDto.getEstado() != null) {
             prestamos.setEstado(createDto.getEstado());
         }
 
-        if (createDto.getId_usuario() != null) {
-            Usuarios usuario = usuariosRepository.findById(createDto.getId_usuario())
+        if (createDto.getIdUsuario() != null) {
+            Usuarios usuario = usuariosRepository.findById(createDto.getIdUsuario())
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
             prestamos.setUsuario(usuario);
         }
 
-        if (createDto.getId_esp() != null) {
-            Espacio espacio = espacioRepository.findById(createDto.getId_esp().intValue())
+        if (createDto.getIdEsp() != null) {
+            Espacio espacio = espacioRepository.findById(createDto.getIdEsp().intValue())
                 .orElseThrow(() -> new EntityNotFoundException("Espacio no encontrado"));
             prestamos.setEspacio(espacio);
         }

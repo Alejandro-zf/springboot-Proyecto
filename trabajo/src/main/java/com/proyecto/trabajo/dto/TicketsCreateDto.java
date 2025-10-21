@@ -15,7 +15,6 @@ public class TicketsCreateDto {
     private LocalDateTime fecha_fin;
     private String ambient;
     private String obser;
-    private Byte estado;
 
     private Long id_problem;
 

@@ -46,8 +46,8 @@ public class ElementosMapperImple implements ElementosMapper {
         elementos.setComponentes(elementoDto.getComponen());
         elementos.setEstadosoelement(validarEstado(elementoDto.getEst_elemn()));
 
-        if (elementoDto.getId_categ() != null) {
-            Sub_categoria subCategoria = subCategoriaRepository.findById(elementoDto.getId_categ())
+        if (elementoDto.getId_subcat() != null) {
+            Sub_categoria subCategoria = subCategoriaRepository.findById(elementoDto.getId_subcat())
                 .orElseThrow(() -> new EntityNotFoundException("Subcategoría no encontrada"));
             elementos.setSub_categoria(subCategoria);
         }
@@ -69,7 +69,7 @@ public class ElementosMapperImple implements ElementosMapper {
         elementoDto.setComponen(elementos.getComponentes());
         elementoDto.setEst_elemn(elementos.getEstadosoelement());
         if (elementos.getSub_categoria() != null) {
-            elementoDto.setId_categ(elementos.getSub_categoria().getId());
+            elementoDto.setId_subcat(elementos.getSub_categoria().getId());
             elementoDto.setTip_catg(elementos.getSub_categoria().getNom_subcategoria());
         }
         
@@ -87,8 +87,8 @@ public class ElementosMapperImple implements ElementosMapper {
         elementos.setNum_serie(createDto.getNum_seri());
         elementos.setComponentes(createDto.getComponen());
         elementos.setEstadosoelement(validarEstado(createDto.getEst_elem()));
-        if (createDto.getId_categ() != null) {
-            Sub_categoria subCategoria = subCategoriaRepository.findById(createDto.getId_categ())
+        if (createDto.getId_subcat() != null) {
+            Sub_categoria subCategoria = subCategoriaRepository.findById(createDto.getId_subcat())
                 .orElseThrow(() -> new EntityNotFoundException("Subcategoría no encontrada"));
             elementos.setSub_categoria(subCategoria);
         }

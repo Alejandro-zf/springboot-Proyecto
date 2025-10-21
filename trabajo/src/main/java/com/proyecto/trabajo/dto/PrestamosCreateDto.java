@@ -12,16 +12,16 @@ import lombok.NoArgsConstructor;
 @Data
 public class PrestamosCreateDto {
 
-    private LocalDateTime fecha_entreg;
-    private LocalDateTime fecha_repc;
-    private String tipo_pres;
+    private LocalDateTime fechaEntreg;
+    private LocalDateTime fechaRepc;
+    private String tipoPres;
     private Byte estado;
 
-    private Long id_usuario;
+    private Long idUsuario;
 
-    private List<Long> ids_elem;
+    private List<Long> idsElem;
 
-    private Long id_esp;
+    private Long idEsp;
 
     
 }

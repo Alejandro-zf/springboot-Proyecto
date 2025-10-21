@@ -69,11 +69,19 @@ public class PrestamosController {
         return ResponseEntity.ok(prestamo);
     }
     
-    //Listar los prestamos 
+
+    // Listar todos los préstamos
     @GetMapping
     public ResponseEntity<List<PrestamosDto>> listarTodos() {
-    List<PrestamosDto> prestamos = prestamosServices.listarTodos();
-    return ResponseEntity.ok(prestamos);
+        List<PrestamosDto> prestamos = prestamosServices.listarTodos();
+        return ResponseEntity.ok(prestamos);
+    }
+
+    // Listar préstamos activos (estado=1)
+    @GetMapping("/activos")
+    public ResponseEntity<List<PrestamosDto>> listarActivos() {
+        List<PrestamosDto> activos = prestamosServices.listarActivos();
+        return ResponseEntity.ok(activos);
     }
 
     //Eliminar prestamos por el id

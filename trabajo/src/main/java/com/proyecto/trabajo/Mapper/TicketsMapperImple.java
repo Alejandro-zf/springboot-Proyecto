@@ -113,18 +113,17 @@ public class TicketsMapperImple implements TicketsMapper {
         tickets.setFecha_finn(createDto.getFecha_fin());
         tickets.setAmbiente(createDto.getAmbient());
         tickets.setObservaciones(createDto.getObser());
-        if (createDto.getEstado() != null) {
-            tickets.setEstado(createDto.getEstado());
+        // Asignar el estado (Byte) desde est_tick
+        if (createDto.getEst_tick() != null) {
+            tickets.setEstado(createDto.getEst_tick().byteValue());
+            Estado_ticket estado = estadoTicketRepository.findById(createDto.getEst_tick().byteValue())
+                .orElseThrow(() -> new EntityNotFoundException("Estado de ticket no encontrado"));
+            tickets.setEstado_ticket(estado);
         }
         if (createDto.getId_usu() != null) {
             Usuarios usuario = usuariosRepository.findById(createDto.getId_usu())
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
             tickets.setUsuario(usuario);
-        }
-        if (createDto.getEst_tick() != null) {
-            Estado_ticket estado = estadoTicketRepository.findById(createDto.getEst_tick().byteValue())
-                .orElseThrow(() -> new EntityNotFoundException("Estado de ticket no encontrado"));
-            tickets.setEstado_ticket(estado);
         }
         if (createDto.getId_elem() != null) {
             Elementos elemento = elementosRepository.findById(createDto.getId_elem())

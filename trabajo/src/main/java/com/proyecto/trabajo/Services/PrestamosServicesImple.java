@@ -1,3 +1,4 @@
+// ...existing code...
 package com.proyecto.trabajo.Services;
 
 import java.util.List;
@@ -25,6 +26,15 @@ import jakarta.persistence.EntityNotFoundException;
 @Service
 public class PrestamosServicesImple implements PrestamosServices {
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<PrestamosDto> listarActivos() {
+        return prestamosRepository.findByEstado((byte)1)
+                .stream()
+                .map(prestamosMapper::toPrestamosDto)
+                .collect(Collectors.toList());
+    }
+
     private final PrestamosRepository prestamosRepository;
     private final PrestamosMapper prestamosMapper;
     private final UsuariosRepository usuariosRepository;
@@ -47,18 +57,19 @@ public class PrestamosServicesImple implements PrestamosServices {
     @Override
     @Transactional
     public PrestamosDto guardar(PrestamosCreateDto dto) {
-        if (dto.getId_usuario() == null) {
-            throw new IllegalArgumentException("id_usuario es obligatorio");
+
+        if (dto.getIdUsuario() == null) {
+            throw new IllegalArgumentException("idUsuario es obligatorio");
         }
-        if (dto.getId_esp() == null) {
-            throw new IllegalArgumentException("id_esp es obligatorio");
+        if (dto.getIdEsp() == null) {
+            throw new IllegalArgumentException("idEsp es obligatorio");
         }
         Prestamos prestamos = prestamosMapper.toPrestamosFromCreateDto(dto);
         Prestamos guardado = prestamosRepository.save(prestamos);
 
         // Asociar elementos si vienen en el DTO
-        if (dto.getIds_elem() != null && !dto.getIds_elem().isEmpty()) {
-            for (Long idElem : dto.getIds_elem()) {
+        if (dto.getIdsElem() != null && !dto.getIdsElem().isEmpty()) {
+            for (Long idElem : dto.getIdsElem()) {
                 if (idElem == null) continue;
                 Elementos elemento = elementosRepository.findById(idElem)
                     .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));

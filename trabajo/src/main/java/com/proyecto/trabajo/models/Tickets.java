@@ -1,3 +1,5 @@
+
+
 package com.proyecto.trabajo.models;
 
 import java.time.LocalDateTime;
@@ -33,11 +35,15 @@ public class Tickets {
     @Column(nullable = false, length = 30)
     private String ambiente;
 
+
+
     @Column(nullable = true, length = 255)
     private String observaciones;
 
+
     @Column(nullable = false)
     private Byte estado = 2; // 0=No aprobado, 1=Aprobado, 2=Pendiente, 3=Terminado
+
     
     @ManyToOne
     @JoinColumn(name = "id_usu", nullable = false, foreignKey = @ForeignKey(name = "FK_Id_usu"))

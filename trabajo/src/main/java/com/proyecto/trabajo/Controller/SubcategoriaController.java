@@ -1,12 +1,14 @@
 package com.proyecto.trabajo.Controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.proyecto.trabajo.Services.SubcategoriaServices;
 import com.proyecto.trabajo.dto.SubcategoriaDtos;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
+import com.proyecto.trabajo.dto.Sub_categoriasCreateDtos;
 
 @RestController
 @RequestMapping("/api/subcategorias")
@@ -21,5 +23,11 @@ public class SubcategoriaController {
     public ResponseEntity<List<SubcategoriaDtos>> listarTodos() {
         List<SubcategoriaDtos> subcategorias = subcategoriaServices.listarTodos();
         return ResponseEntity.ok(subcategorias);
+    }
+
+    @PostMapping
+    public ResponseEntity<SubcategoriaDtos> crear(@Valid @RequestBody Sub_categoriasCreateDtos dto) {
+        SubcategoriaDtos creada = subcategoriaServices.guardar(dto);
+        return ResponseEntity.status(201).body(creada);
     }
 }
