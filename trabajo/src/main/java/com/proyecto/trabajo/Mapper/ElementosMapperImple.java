@@ -83,15 +83,10 @@ public class ElementosMapperImple implements ElementosMapper {
         elementoDto.setComponen(elementos.getComponentes());
         elementoDto.setEst_elemn(estadoSincronizado);
         if (elementos.getSub_categoria() != null) {
-<<<<<<< HEAD
-            elementoDto.setId_subcat(elementos.getSub_categoria().getId());
-            elementoDto.setTip_catg(elementos.getSub_categoria().getNom_subcategoria());
-=======
             elementoDto.setId_categ(elementos.getSub_categoria().getCategoria().getId() != null ? elementos.getSub_categoria().getCategoria().getId().longValue() : null);
             elementoDto.setTip_catg(elementos.getSub_categoria().getCategoria().getNom_categoria());
             elementoDto.setId_subcat(elementos.getSub_categoria().getId());
             elementoDto.setSub_catg(elementos.getSub_categoria().getNom_subcategoria());
->>>>>>> e74fc69acb3a82722dfd453177d2206e7e597dcc
         }
         elementoDto.setMarc(elementos.getMarca());
         return elementoDto;
@@ -103,20 +98,12 @@ public class ElementosMapperImple implements ElementosMapper {
             return null;
         }
         Elementos elementos = new Elementos();
-<<<<<<< HEAD
         elementos.setNom_elemento(createDto.getNom_eleme());
         elementos.setObser(createDto.getObse());
         elementos.setNum_serie(createDto.getNum_seri());
         elementos.setComponentes(createDto.getComponen());
         elementos.setEstadosoelement(validarEstado(createDto.getEst_elem()));
-=======
-    elementos.setNom_elemento(createDto.getNom_eleme());
-    elementos.setObser(createDto.getObse());
-    elementos.setNum_serie(createDto.getNum_seri());
-    elementos.setComponentes(createDto.getComponen());
-    elementos.setEstadosoelement(validarEstado(createDto.getEst_elem()));
-    elementos.setMarca(createDto.getMarc());
->>>>>>> e74fc69acb3a82722dfd453177d2206e7e597dcc
+        elementos.setMarca(createDto.getMarc());
         if (createDto.getId_subcat() != null) {
             Sub_categoria subCategoria = subCategoriaRepository.findById(createDto.getId_subcat())
                 .orElseThrow(() -> new EntityNotFoundException("Subcategoría no encontrada"));
