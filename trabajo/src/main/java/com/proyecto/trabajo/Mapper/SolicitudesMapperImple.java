@@ -40,8 +40,16 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
         Usuarios usuario = usuariosRepository.findById(solicitudesDto.getId_usu())
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
 
-        Espacio espacio = espacioRepository.findById(solicitudesDto.getId_espa().intValue())
-                .orElseThrow(() -> new EntityNotFoundException("Espacio no encontrado"));
+        Espacio espacio = null;
+        if (solicitudesDto.getId_espa() != null) {
+            try {
+                Integer idEspacio = Integer.parseInt(solicitudesDto.getId_espa().toString());
+                espacio = espacioRepository.findById(idEspacio)
+                        .orElseThrow(() -> new EntityNotFoundException("Espacio no encontrado"));
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("id_espa debe ser numérico", e);
+            }
+        }
 
         Solicitudes solicitudes = new Solicitudes();
         solicitudes.setId(solicitudesDto.getId_soli());
@@ -50,9 +58,14 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
         solicitudes.setAmbiente(solicitudesDto.getAmbient());
         solicitudes.setNum_ficha(solicitudesDto.getNum_fich());
         if (solicitudesDto.getEst_soli() != null) {
-            Estado_solicitudes estadoSolicitudes = estadoSolicitudesRepository.findById(solicitudesDto.getEst_soli().intValue())
-                    .orElseThrow(() -> new EntityNotFoundException("Estado de solicitud no encontrado"));
-            solicitudes.setEstado_solicitudes(estadoSolicitudes);
+            try {
+                Integer idEstado = Integer.parseInt(solicitudesDto.getEst_soli());
+                Estado_solicitudes estadoSolicitudes = estadoSolicitudesRepository.findById(idEstado)
+                        .orElseThrow(() -> new EntityNotFoundException("Estado de solicitud no encontrado"));
+                solicitudes.setEstado_solicitudes(estadoSolicitudes);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("est_soli debe ser numérico", e);
+            }
         }
         solicitudes.setUsuario(usuario);
         solicitudes.setEspacio(espacio);
@@ -71,7 +84,24 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
         dto.setAmbient(entity.getAmbiente());
         dto.setNum_fich(entity.getNum_ficha());
         if (entity.getEstado_solicitudes() != null) {
-            dto.setEst_soli(entity.getEstado_solicitudes().getId().byteValue());
+            String nombreEstado = entity.getEstado_solicitudes().getNom_esta();
+            if (nombreEstado != null && !nombreEstado.isEmpty()) {
+                dto.setEst_soli(nombreEstado);
+            } else {
+                switch (entity.getEstado_solicitudes().getId()) {
+                    case 1:
+                        dto.setEst_soli("Activo");
+                        break;
+                    case 2:
+                        dto.setEst_soli("Inactivo");
+                        break;
+                    case 3:
+                        dto.setEst_soli("Pendiente");
+                        break;
+                    default:
+                        dto.setEst_soli("Desconocido");
+                }
+            }
         }
         if (entity.getUsuario() != null) {
             dto.setId_usu(entity.getUsuario().getId());
@@ -118,11 +148,14 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
         solicitudes.setFecha_fin(createDto.getFecha_fn());
         solicitudes.setAmbiente(createDto.getAmbient());
         solicitudes.setNum_ficha(createDto.getNum_fich());
-        // Por defecto = 2 (no aprobado) si no viene en el DTO
-        Integer estadoId = createDto.getId_estado_soli() != null ? createDto.getId_estado_soli() : 2;
-        Estado_solicitudes estadoSolicitudes = estadoSolicitudesRepository.findById(estadoId)
-                .orElseThrow(() -> new EntityNotFoundException("Estado de solicitud no encontrado"));
-        solicitudes.setEstado_solicitudes(estadoSolicitudes);
+    // Por defecto = 2 (no aprobado) si no viene en el DTO, si viene 1 (aprobado) se usa ese valor
+    // 1=aprobado, 2=pendiente, 3=denegado
+    Integer estadoId = (createDto.getId_estado_soli() != null) ? createDto.getId_estado_soli() : 2;
+    Estado_solicitudes estadoSolicitudes = estadoSolicitudesRepository.findById(estadoId)
+        .orElseThrow(() -> new EntityNotFoundException("Estado de solicitud no encontrado"));
+    solicitudes.setEstado_solicitudes(estadoSolicitudes);
+    // Sincroniza el campo estadosolicitud para la lógica de préstamo automático
+    solicitudes.setEstadosolicitud(estadoId.byteValue());
         if (createDto.getId_usu() != null) {
             Usuarios usuario = usuariosRepository.findById(createDto.getId_usu())
                     .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));

@@ -38,6 +38,9 @@ public class Elementos {
     
     @Column(nullable = false, length = 255)
     private String componentes;
+    
+        @Column(length = 50)
+        private String marca;
 
     @OneToMany(mappedBy = "elementos", cascade = CascadeType.ALL, orphanRemoval = true)
     private List <Elemento_Solicitudes> solicitud = new ArrayList<>();
