@@ -44,11 +44,12 @@ public class CategoriaController {
     }
 
     //Obtener categoria por ID
-    @PostMapping("/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<CategoriaDtos> obtenerporId(@PathVariable byte id){
         CategoriaDtos categoria = categoriaServices.buscarPorId(id);
         return ResponseEntity.ok(categoria);
     }
+    
     //Listar todas las categorias
     @GetMapping
     public ResponseEntity<List<CategoriaDtos>> listarTodos(){
