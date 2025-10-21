@@ -42,8 +42,12 @@ public class Tickets {
 
 
     @Column(nullable = false)
+<<<<<<< HEAD
     private Byte estado = 2; // 0=No aprobado, 1=Aprobado, 2=Pendiente, 3=Terminado
 
+=======
+    private Byte estado = 2; // 1=activo/pendiente, 2=inactivo, 3=solucionado
+>>>>>>> e74fc69acb3a82722dfd453177d2206e7e597dcc
     
     @ManyToOne
     @JoinColumn(name = "id_usu", nullable = false, foreignKey = @ForeignKey(name = "FK_Id_usu"))

@@ -48,7 +48,9 @@ public class TicketsServicesImple implements TicketsServices {
         Estado_ticket estado = ticket.getEstado_ticket();
         if (elemento == null || estado == null || estado.getId_estado() == null) return;
 
-        final byte nuevoEstadoElemento = (estado.getId_estado() == 1) ? (byte) 2 : (byte) 1;
+    // 1=activo, 2=inactivo para elementos
+        // Si el ticket está en estado 3 (terminado), el elemento está activo (1); en cualquier otro caso, inactivo (0)
+        final byte nuevoEstadoElemento = (estado.getId_estado() == 3) ? (byte) 1 : (byte) 0;
 
         if (elemento.getEstadosoelement() == null || elemento.getEstadosoelement() != nuevoEstadoElemento) {
             elemento.setEstadosoelement(nuevoEstadoElemento);

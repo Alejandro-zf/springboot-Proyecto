@@ -81,7 +81,19 @@ public class TicketsMapperImple implements TicketsMapper {
         }
         if (tickets.getEstado_ticket() != null) {
             ticketsDtos.setId_est_tick(tickets.getEstado_ticket().getId_estado().longValue());
-            ticketsDtos.setTip_est_ticket(tickets.getEstado_ticket().getNom_estado());
+            switch (tickets.getEstado_ticket().getId_estado()) {
+                case 1:
+                    ticketsDtos.setTip_est_ticket("Aprobado");
+                    break;
+                case 2:
+                    ticketsDtos.setTip_est_ticket("Pendiente");
+                    break;
+                case 3:
+                    ticketsDtos.setTip_est_ticket("Terminado");
+                    break;
+                default:
+                    ticketsDtos.setTip_est_ticket("Desconocido");
+            }
         } else {
             ticketsDtos.setId_est_tick(0L);
             ticketsDtos.setTip_est_ticket("");

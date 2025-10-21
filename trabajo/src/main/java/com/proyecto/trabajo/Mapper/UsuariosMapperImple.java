@@ -61,7 +61,8 @@ public class UsuariosMapperImple implements UsuariosMapper {
         if (usuarios.getRole() != null && !usuarios.getRole().isEmpty()) {
             Roles_Usuario ru = usuarios.getRole().get(0);
             if (ru.getRoles() != null) {
-                usuariosDto.setNomb_rol(ru.getRoles().getNom_rol());
+                    usuariosDto.setId_rol(ru.getRoles().getId());
+                    usuariosDto.setNomb_rol(ru.getRoles().getNom_rol());
             }
         }
         return usuariosDto;
