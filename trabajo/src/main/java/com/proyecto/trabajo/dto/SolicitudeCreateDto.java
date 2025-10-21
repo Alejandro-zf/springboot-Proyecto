@@ -20,6 +20,7 @@ public class SolicitudeCreateDto {
     private LocalDateTime fecha_fn;
     private String ambient;
     private Integer num_fich;
+    @JsonAlias({"id_estado_soli", "estadosoli"})
     private Integer id_estado_soli;
     private String mensaj;
 

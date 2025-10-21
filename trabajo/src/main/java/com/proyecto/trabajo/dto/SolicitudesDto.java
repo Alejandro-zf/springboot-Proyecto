@@ -15,7 +15,7 @@ private LocalDateTime fecha_ini;
 private LocalDateTime fecha_fn;
 private String ambient;
 private Integer num_fich;
-private Byte est_soli;
+	private String est_soli;
 private String mensaj;
 
 private Long id_usu;
