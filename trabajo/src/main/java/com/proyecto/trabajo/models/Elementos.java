@@ -32,7 +32,7 @@ public class Elementos {
     private String obser;
 
     @Column(nullable = false)
-    private Byte estadosoelement = 1; // 0=No activo, 1=Activo
+    private Byte estadosoelement = 1; // 1=Activo, 0=Inactivo
 
     private Integer num_serie;
     

@@ -55,6 +55,27 @@ public class SolicitudesServicesImple implements SolicitudesServices {
         this.prestamosElementoRepository = prestamosElementoRepository;
     }
 
+    // Marca como inactivas (estadosolicitud = 3) las solicitudes cuya fecha_inicio ya pasó
+    @Transactional
+    public void expirarSolicitudesVencidas() {
+        List<Solicitudes> vencidas = solicitudesRepository.findVencidasNoExpiradas(LocalDateTime.now());
+        if (vencidas == null || vencidas.isEmpty()) return;
+        for (Solicitudes s : vencidas) {
+            s.setEstadosolicitud((byte) 3); // 3 = Inactiva/expirada
+            solicitudesRepository.save(s);
+            // Al expirar, el elemento asociado pasa a activo (1)
+            if (s.getElemento() != null) {
+                for (Elemento_Solicitudes es : s.getElemento()) {
+                    Elementos elem = es.getElementos();
+                    if (elem != null) {
+                        elem.setEstadosoelement((byte) 1); // Activo
+                        elementosRepository.save(elem);
+                    }
+                }
+            }
+        }
+    }
+
     private void sincronizarEstadoElementos(Solicitudes solicitud) {
         if (solicitud == null || solicitud.getElemento() == null) return;
         Byte estadoSolicitud = solicitud.getEstadosolicitud();
@@ -111,6 +132,8 @@ public class SolicitudesServicesImple implements SolicitudesServices {
         // Recargar la entidad para asegurar que las relaciones se reflejen en la respuesta
         Solicitudes solicitudFullPostSave = solicitudesRepository.findById(guardado.getId())
             .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada tras guardar"));
+        // Expirar solicitudes vencidas (incluye posible expiración de la guardada si fecha_inicio ya pasó)
+        expirarSolicitudesVencidas();
         // Sincronizar estado de elementos según estado de la solicitud
         sincronizarEstadoElementos(solicitudFullPostSave);
 
@@ -148,18 +171,22 @@ public class SolicitudesServicesImple implements SolicitudesServices {
     @Override
     @Transactional(readOnly = true)
     public SolicitudesDto buscarPorId(Long id) {
-        Solicitudes solicitudes = solicitudesRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada"));
+    // Expirar solicitudes vencidas antes de devolver
+    expirarSolicitudesVencidas();
+    Solicitudes solicitudes = solicitudesRepository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada"));
         return solicitudesMapper.toSolicitudesDto(solicitudes);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<SolicitudesDto> listarTodos() {
-        return solicitudesRepository.findAll()
-                .stream()
-                .map(solicitudesMapper::toSolicitudesDto)
-                .collect(Collectors.toList());
+    // Expirar solicitudes vencidas antes de listar
+    expirarSolicitudesVencidas();
+    return solicitudesRepository.findAll()
+        .stream()
+        .map(solicitudesMapper::toSolicitudesDto)
+        .collect(Collectors.toList());
     }
 
     @Override
@@ -182,6 +209,9 @@ public class SolicitudesServicesImple implements SolicitudesServices {
 
         Solicitudes actualizado = solicitudesRepository.save(solicitudes);
         sincronizarEstadoElementos(actualizado);
+
+    // Después de actualizar, expirar solicitudes vencidas si aplica
+    expirarSolicitudesVencidas();
 
         if (aprobado) {
             if (sinPrestamo) {
