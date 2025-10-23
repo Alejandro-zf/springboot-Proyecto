@@ -39,4 +39,7 @@ public class Prestamos_Elemento {
     @NotNull
     @Column(name = "Obser_prest")
     private String obser_prest;
+
+    @Column(name = "cantidad")
+    private Integer cantidad;
 }
