@@ -1,4 +1,3 @@
-
 package com.proyecto.trabajo.Controller;
 
 import org.springframework.web.bind.annotation.PutMapping;
@@ -81,5 +80,15 @@ public class SolicitudesController {
         solicitudesServices.eliminar(id);
         return ResponseEntity.noContent().build();
     }
-}
-    
+    // Expirar solicitudes vencidas manualmente
+    @PostMapping("/expirar")
+    public ResponseEntity<?> expirarVencidas() {
+        try {
+            solicitudesServices.expirarSolicitudesVencidas();
+            return ResponseEntity.ok(Map.of("mensaje", "Expiración ejecutada"));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", ex.getMessage()));
+            }
+        }
+    }
