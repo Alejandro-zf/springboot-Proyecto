@@ -30,6 +30,8 @@ public class Solicitudes {
     private LocalDateTime fecha_inicio;
     private LocalDateTime fecha_fin;
 
+    private Integer cantidad;
+
     @Column(nullable = false,length = 35)
     private String ambiente;
 

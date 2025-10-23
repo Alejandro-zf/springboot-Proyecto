@@ -26,7 +26,7 @@ public class Elementos {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false, length = 30)
+    @Column(nullable = false, length = 100)
     private String nom_elemento;
     @Column(nullable = false, length = 150)
     private String obser;
@@ -36,7 +36,7 @@ public class Elementos {
 
     private Integer num_serie;
     
-    @Column(nullable = false, length = 255)
+    @Column(nullable = true, length = 255)
     private String componentes;
     
         @Column(length = 50)

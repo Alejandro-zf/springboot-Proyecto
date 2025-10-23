@@ -30,6 +30,6 @@ public class Elemento_Solicitudes {
 
     @ManyToOne
     @MapsId("elementoid")
-    @JoinColumn(name = "elemento_id", foreignKey = @ForeignKey(name = "FK_elemento_solicitudes_elementos"))
+    @JoinColumn(name = "elemento_id", nullable = true, foreignKey = @ForeignKey(name = "FK_elemento_solicitudes_elementos"))
     private Elementos elementos;
 }
