@@ -17,6 +17,7 @@ private String ambient;
 private Integer num_fich;
 	private String est_soli;
 private String mensaj;
+private Integer cantid;
 
 private Long id_usu;
 private String nom_usu;
