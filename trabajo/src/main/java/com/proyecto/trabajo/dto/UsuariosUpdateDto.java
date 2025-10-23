@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class UsuariosUpdateDto {
     private Long id_Usu;
+    private Long id_rl;
     private String nom_us;
     private String ape_us;
     private String corre;
