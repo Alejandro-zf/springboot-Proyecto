@@ -97,9 +97,13 @@ public class UsuariosMapperImple implements UsuariosMapper {
             return null;
         }
         Usuarios usuarios = new Usuarios();
+        usuarios.setId(updateDto.getId_Usu());
+        usuarios.setNom_usu(updateDto.getNom_us());
         usuarios.setApe_usu(updateDto.getApe_us());
         usuarios.setCorreo(updateDto.getCorre());
         usuarios.setPassword(updateDto.getPassword());
+        usuarios.setEstado(updateDto.getEst_usu());
+        // El rol se gestiona en el service
         return usuarios;
     }
 }
