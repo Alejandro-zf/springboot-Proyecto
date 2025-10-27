@@ -125,7 +125,7 @@ public class TicketsMapperImple implements TicketsMapper {
         tickets.setFecha_finn(createDto.getFecha_fin());
         tickets.setAmbiente(createDto.getAmbient());
         tickets.setObservaciones(createDto.getObser());
-        // Asignar el estado (Byte) desde est_tick
+        
         if (createDto.getEst_tick() != null) {
             tickets.setEstado(createDto.getEst_tick().byteValue());
             Estado_ticket estado = estadoTicketRepository.findById(createDto.getEst_tick().byteValue())

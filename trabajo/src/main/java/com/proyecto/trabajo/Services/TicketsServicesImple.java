@@ -48,9 +48,7 @@ public class TicketsServicesImple implements TicketsServices {
         Estado_ticket estado = ticket.getEstado_ticket();
         if (elemento == null || estado == null || estado.getId_estado() == null) return;
 
-        // Convención para Elementos.estadosoelement: 1 = activo, 0 = inactivo
-        // Regla: si el ticket está en estado 3 (Terminado) => elemento activo (1);
-        // en cualquier otro estado del ticket (por ejemplo: Pendiente, Aprobado) => elemento inactivo (0)
+        
         final byte nuevoEstadoElemento = (estado.getId_estado() == 3) ? (byte) 1 : (byte) 0;
 
         if (elemento.getEstadosoelement() == null || elemento.getEstadosoelement() != nuevoEstadoElemento) {
@@ -65,7 +63,7 @@ public class TicketsServicesImple implements TicketsServices {
         if (dto.getId_usu() == null) {
             throw new IllegalStateException("id_usu es obligatorio");
         }
-        // est_tick puede ser null; por defecto será 'pendiente' (ID 3)
+        
         if (dto.getId_problem() == null) {
             throw new IllegalStateException("id_problem es obligatorio");
         }

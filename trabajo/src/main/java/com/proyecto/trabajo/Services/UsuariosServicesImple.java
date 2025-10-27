@@ -100,9 +100,9 @@ public class UsuariosServicesImple implements UsuariosServices {
             usuarios.setEstado(est);
         }
 
-        // Actualizar el rol si id_rl está presente
+        
         if (dto.getId_rl() != null) {
-            // Eliminar roles actuales y asignar el nuevo rol
+            
             usuarios.getRole().clear();
             Roles rol = rolesRepository.findById(dto.getId_rl())
                     .orElseThrow(() -> new EntityNotFoundException("Rol no encontrado"));

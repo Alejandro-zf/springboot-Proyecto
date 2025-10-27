@@ -31,7 +31,6 @@ public class ProblemasMapperImple implements ProblemasMapper {
         dto.setId(entity.getId());
         dto.setDescr_problem(entity.getDesc_problema());
         
-        // Derivar id_tick desde la primera relación si existe
         if (entity.getTickets() != null && !entity.getTickets().isEmpty()) {
             dto.setId_tick(entity.getTickets().get(0).getId());
         }

@@ -121,8 +121,7 @@ public class PrestamosMapperImple implements PrestamosMapper {
             prestamosDto.setId_espac(prestamos.getEspacio().getId().longValue());
             prestamosDto.setNom_espac(prestamos.getEspacio().getNom_espa());
         }
-        // Mapear elementos asociados como strings concatenados ("2,3,4")
-        if (prestamos.getPrestamoss() != null && !prestamos.getPrestamoss().isEmpty()) {
+    if (prestamos.getPrestamoss() != null && !prestamos.getPrestamoss().isEmpty()) {
             StringBuilder idsJoin = new StringBuilder();
             StringBuilder namesJoin = new StringBuilder();
             boolean first = true;

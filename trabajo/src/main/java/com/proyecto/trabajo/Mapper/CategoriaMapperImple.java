@@ -46,7 +46,6 @@ public class CategoriaMapperImple implements CategoriaMapper {
         categoriaDto.setId_cat(categoria.getId());
         categoriaDto.setNom_cat(categoria.getNom_categoria());
         
-        // Si tiene subcategorías, tomar la primera para mostrar en el DTO
         if (categoria.getSub_categoria() != null && !categoria.getSub_categoria().isEmpty()) {
             Sub_categoria primeraSubcat = categoria.getSub_categoria().get(0);
             categoriaDto.setId_subcat(primeraSubcat.getId());
@@ -65,14 +64,13 @@ public class CategoriaMapperImple implements CategoriaMapper {
         Categoria categoria = new Categoria();
         categoria.setNom_categoria(createDto.getNom_cat());
         
-        // Si se proporcionan IDs de subcategorías, cargarlas y asociarlas
         if (createDto.getId_subcat() != null && !createDto.getId_subcat().isEmpty()) {
             List<Sub_categoria> subcategorias = createDto.getId_subcat().stream()
                 .map(id -> subCategoriaRepository.findById(id)
                     .orElseThrow(() -> new EntityNotFoundException("Subcategoría no encontrada con id: " + id)))
                 .collect(Collectors.toList());
             
-            // Establecer la relación bidireccional
+            
             for (Sub_categoria subcat : subcategorias) {
                 subcat.setCategoria(categoria);
             }
