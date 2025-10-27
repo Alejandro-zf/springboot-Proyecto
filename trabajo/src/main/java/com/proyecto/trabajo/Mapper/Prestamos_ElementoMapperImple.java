@@ -39,8 +39,7 @@ public class Prestamos_ElementoMapperImple implements Prestamos_ElementoMapper {
         pe.setElementos(elementos);
         pe.setObser_prest(dto.getObs_pres());
         pe.setCantidad(dto.getCant_elem());
-        // Si viene id_solicitud, asociar la solicitud (requiere SolicitudesRepository si se quiere buscar la entidad)
-        // Si viene solicitudAceptada, se puede usar para lógica adicional
+        
         return pe;
         }
 
@@ -51,12 +50,7 @@ public class Prestamos_ElementoMapperImple implements Prestamos_ElementoMapper {
         dto.setId_prest(entity.getPrestamos().getId());
         dto.setId_element(entity.getElementos().getId());
         dto.setCant_elem(entity.getCantidad());
-        // Mostrar solicitud si existe
-        // Si la entidad tiene referencia a solicitud, se puede mostrar
-        // if (entity.getSolicitud() != null) {
-        //     dto.setId_solicitud(entity.getSolicitud().getId());
-        //     dto.setSolicitudAceptada(entity.getSolicitud().getEstadosolicitud() != null && entity.getSolicitud().getEstadosolicitud() == 1);
-        // }
+        
         return dto;
     }
 }

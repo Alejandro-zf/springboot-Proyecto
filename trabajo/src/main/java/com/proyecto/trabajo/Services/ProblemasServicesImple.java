@@ -26,11 +26,6 @@ public class ProblemasServicesImple implements ProblemasServices {
         this.problemasMapper = problemasMapper;
     }
 
-    /**
-     * Valida la descripción del problema
-     * @param descripcion La descripción a validar
-     * @throws IllegalArgumentException si la descripción es inválida
-     */
     private void validarDescripcionProblema(String descripcion) {
         if (descripcion == null || descripcion.trim().isEmpty()) {
             throw new IllegalArgumentException("La descripción del problema es obligatoria");
@@ -78,8 +73,7 @@ public class ProblemasServicesImple implements ProblemasServices {
         Problemas entity = problemasRepository.findById(dto.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Problema no encontrado con id: " + dto.getId()));
 
-        // Actualizar descripción
-        entity.setDesc_problema(dto.getDescr_problem());
+    entity.setDesc_problema(dto.getDescr_problem());
 
         Problemas actualizado = problemasRepository.save(entity);
         return problemasMapper.toProblemasDto(actualizado);

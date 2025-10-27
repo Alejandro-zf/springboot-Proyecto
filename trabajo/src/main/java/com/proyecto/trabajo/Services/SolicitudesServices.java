@@ -12,6 +12,5 @@ public interface SolicitudesServices {
     List<SolicitudesDto> listarTodos();
     void eliminar(Long id);
     SolicitudesDto actualizarSolicitud(Long id, SolicitudesUpdateDtos dto);
-    // Ejecuta la expiración de solicitudes cuya fecha_inicio ya pasó
     void expirarSolicitudesVencidas();
 }

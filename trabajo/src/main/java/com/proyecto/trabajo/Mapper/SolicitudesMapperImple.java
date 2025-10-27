@@ -111,8 +111,7 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
             dto.setId_espa(entity.getEspacio().getId().longValue());
             dto.setNom_espa(entity.getEspacio().getNom_espa());
         }
-        // Mapear IDs y nombres de elementos como strings concatenados ("2,3,4")
-        if (entity.getElemento() != null && !entity.getElemento().isEmpty()) {
+    if (entity.getElemento() != null && !entity.getElemento().isEmpty()) {
             StringBuilder idsJoin = new StringBuilder();
             StringBuilder namesJoin = new StringBuilder();
             boolean first = true;
@@ -148,13 +147,10 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
         solicitudes.setFecha_fin(createDto.getFecha_fn());
         solicitudes.setAmbiente(createDto.getAmbient());
         solicitudes.setNum_ficha(createDto.getNum_fich());
-    // Por defecto = 2 (no aprobado) si no viene en el DTO, si viene 1 (aprobado) se usa ese valor
-    // 1=aprobado, 2=pendiente, 3=denegado
     Integer estadoId = (createDto.getId_estado_soli() != null) ? createDto.getId_estado_soli() : 2;
     Estado_solicitudes estadoSolicitudes = estadoSolicitudesRepository.findById(estadoId)
         .orElseThrow(() -> new EntityNotFoundException("Estado de solicitud no encontrado"));
     solicitudes.setEstado_solicitudes(estadoSolicitudes);
-    // Sincroniza el campo estadosolicitud para la lógica de préstamo automático
     solicitudes.setEstadosolicitud(estadoId.byteValue());
         if (createDto.getId_usu() != null) {
             Usuarios usuario = usuariosRepository.findById(createDto.getId_usu())

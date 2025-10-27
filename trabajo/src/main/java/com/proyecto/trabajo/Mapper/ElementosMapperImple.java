@@ -61,13 +61,13 @@ public class ElementosMapperImple implements ElementosMapper {
             return null;
         }
         
-        // Sincroniza el estado del elemento según los tickets asociados
+        
         Byte estadoSincronizado = 1;
         if (elementos.getTickets() != null && !elementos.getTickets().isEmpty()) {
             for (var ticket : elementos.getTickets()) {
                 if (ticket != null && ticket.getEstado_ticket() != null && ticket.getEstado_ticket().getId_estado() != null) {
                     byte estadoTicket = ticket.getEstado_ticket().getId_estado();
-                    // Si hay algún ticket en estado 1 o 2, el elemento debe estar inactivo (0)
+                    
                     if (estadoTicket == 1 || estadoTicket == 2) {
                         estadoSincronizado = 0;
                         break;

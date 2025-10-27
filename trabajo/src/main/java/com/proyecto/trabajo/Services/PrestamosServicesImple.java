@@ -1,4 +1,3 @@
-// ...existing code...
 package com.proyecto.trabajo.Services;
 
 import java.util.List;
@@ -67,7 +66,7 @@ public class PrestamosServicesImple implements PrestamosServices {
         Prestamos prestamos = prestamosMapper.toPrestamosFromCreateDto(dto);
         Prestamos guardado = prestamosRepository.save(prestamos);
 
-        // Asociar elementos si vienen en el DTO
+        
         if (dto.getIdsElem() != null && !dto.getIdsElem().isEmpty()) {
             for (Long idElem : dto.getIdsElem()) {
                 if (idElem == null) continue;
@@ -81,7 +80,7 @@ public class PrestamosServicesImple implements PrestamosServices {
             }
         }
 
-        // Recargar para asegurar relaciones presentes y evitar nulls al mapear
+        
         Prestamos full = prestamosRepository.findById(guardado.getId())
             .orElseThrow(() -> new EntityNotFoundException("Préstamo no encontrado tras guardar"));
         return prestamosMapper.toPrestamosDto(full);

@@ -24,11 +24,6 @@ public class SubcategoriaServicesImple implements SubcategoriaServices {
         this.subcategoriaMapper = subcategoriaMapper;
     }
 
-    /**
-     * Valida el nombre de la subcategoría
-     * @param nombre El nombre a validar
-     * @throws IllegalArgumentException si el nombre es inválido
-     */
     private void validarNombreSubcategoria(String nombre) {
         if (nombre == null || nombre.trim().isEmpty()) {
             throw new IllegalArgumentException("El nombre de la subcategoría es obligatorio");
@@ -68,10 +63,9 @@ public class SubcategoriaServicesImple implements SubcategoriaServices {
         Sub_categoria subcategoria = subcategoriaRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Subcategoría no encontrada con id: " + id));
         
-        // Actualizar el nombre
-        subcategoria.setNom_subcategoria(dto.getNom_subcateg());
+    subcategoria.setNom_subcategoria(dto.getNom_subcateg());
         
-        // Actualizar la categoría si se proporciona
+        
         if (dto.getId_cat() != null) {
             Sub_categoria subcategoriaTemp = subcategoriaMapper.toSubcategoriaFromCreateDto(dto);
             subcategoria.setCategoria(subcategoriaTemp.getCategoria());

@@ -27,7 +27,7 @@ public class ElementosServicesImple implements ElementosServices {
 
     @Override
     public ElementoDto guardar(ElementosCreateDto dto) {
-        // Ya no es obligatorio id_categ, solo id_subcat
+        
         Elementos elementos = elementosMapper.toElementosFromCreateDto(dto);
         Elementos guardado = elementosRepository.save(elementos);
         return elementosMapper.toElementoDto(guardado);

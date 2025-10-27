@@ -23,11 +23,6 @@ public class CategoriaServicesImple implements CategoriaServices {
         this.categoriaMapper = categoriaMapper;
     }
 
-    /**
-     * Valida el nombre de la categoría
-     * @param nombre El nombre a validar
-     * @throws IllegalArgumentException si el nombre es inválido
-     */
     private void validarNombreCategoria(String nombre) {
         if (nombre == null || nombre.trim().isEmpty()) {
             throw new IllegalArgumentException("El nombre de la categoría es obligatorio");
@@ -67,8 +62,7 @@ public class CategoriaServicesImple implements CategoriaServices {
         Categoria categoria = categoriaRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada con id: " + id));
         
-        // Actualizar el nombre
-        categoria.setNom_categoria(dto.getNom_cat());
+    categoria.setNom_categoria(dto.getNom_cat());
         
         Categoria actualizado = categoriaRepository.save(categoria);
         return categoriaMapper.toCategoriaDto(actualizado);

@@ -103,7 +103,7 @@ public class UsuariosMapperImple implements UsuariosMapper {
         usuarios.setCorreo(updateDto.getCorre());
         usuarios.setPassword(updateDto.getPassword());
         usuarios.setEstado(updateDto.getEst_usu());
-        // El rol se gestiona en el service
+        
         return usuarios;
     }
 }

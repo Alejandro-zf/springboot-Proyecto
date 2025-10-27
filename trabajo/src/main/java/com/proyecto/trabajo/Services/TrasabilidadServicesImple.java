@@ -36,11 +36,6 @@ public class TrasabilidadServicesImple implements TrasabilidadServices {
         this.trasabilidadMapper = trasabilidadMapper;
     }
 
-    /**
-     * Valida los datos de la trasabilidad
-     * @param dto El DTO a validar
-     * @throws IllegalArgumentException si los datos son inválidos
-     */
     private void validarTrasabilidad(TrasabilidadCreateDtos dto) {
         if (dto.getId_usu() == null) {
             throw new IllegalArgumentException("El usuario es obligatorio");
@@ -88,7 +83,7 @@ public class TrasabilidadServicesImple implements TrasabilidadServices {
         Trasabilidad entity = trasabilidadRepository.findById(dto.getId_trsa())
                 .orElseThrow(() -> new EntityNotFoundException("Trasabilidad no encontrada con id: " + dto.getId_trsa()));
 
-        // Actualizar campos simples
+        
         if (dto.getFech() != null) {
             entity.setFecha(dto.getFech());
         }
@@ -96,7 +91,7 @@ public class TrasabilidadServicesImple implements TrasabilidadServices {
             entity.setObservacion(dto.getObser());
         }
 
-        // Actualizar relaciones si vienen en el DTO
+        
         if (dto.getId_usu() != null) {
             Usuarios usuario = usuariosRepository.findById(dto.getId_usu())
                     .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con id: " + dto.getId_usu()));
