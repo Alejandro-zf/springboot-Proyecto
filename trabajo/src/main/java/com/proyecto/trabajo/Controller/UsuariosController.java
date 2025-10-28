@@ -37,7 +37,7 @@ public class UsuariosController {
 
 
     //Crear usuario
-    @PostMapping
+@PostMapping
     public ResponseEntity<?> crear(@Valid @RequestBody UsuariosCreateDto dto) {
         try{
             UsuariosDto creado = usuariosServices.guardar(dto);

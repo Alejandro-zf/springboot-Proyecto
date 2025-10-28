@@ -25,14 +25,16 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/**", "/api/**").permitAll()
-                // Rutas para administradores
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                // Rutas para técnicos
-                .requestMatchers("/api/tecnico/**").hasRole("TECNICO")
-                // Rutas para usuarios normales
-                .requestMatchers("/api/usuario/**").hasRole("USUARIO")
+                // Permitir acceso sin autenticación a estas rutas
+                .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/api/public/**").permitAll()
                 
+                // Rutas específicas por rol (más restrictivas primero)
+                .requestMatchers("/api/admin/**").hasAnyRole("ADMINISTRADOR", "ADMIN")
+                .requestMatchers("/api/tecnico/**").hasAnyRole("TECNICO", "ADMINISTRADOR")
+                .requestMatchers("/api/usuario/**").hasAnyRole("USUARIO", "INSTRUCTOR", "ADMINISTRADOR", "TECNICO")
+                
+                // Cualquier otra petición requiere autenticación
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session

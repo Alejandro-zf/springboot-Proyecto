@@ -58,10 +58,6 @@ public class PrestamosController {
             .body(Map.of("errores2", "Error3 al crear el prestamo", "detalle", ex.getMessage()));
         }
 }
-        
-
-    
-
     //Obtener prestamos por el id
     @GetMapping("/{id}")
     public ResponseEntity<PrestamosDto> buscarPorId(@PathVariable Long id) {

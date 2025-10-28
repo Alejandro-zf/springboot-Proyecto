@@ -5,16 +5,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.proyecto.trabajo.dto.JwtResponse;
+import com.proyecto.trabajo.dto.UserInfoDto;
 import com.proyecto.trabajo.dto.LoginRequest;
 import com.proyecto.trabajo.security.JwtTokenUtil;
+import com.proyecto.trabajo.repository.UsuariosRepository;
+import com.proyecto.trabajo.models.Usuarios;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/auth")
@@ -28,6 +34,9 @@ public class AuthController {
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
+
+    @Autowired
+    private UsuariosRepository usuariosRepository;
 
     @PostMapping("/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody LoginRequest loginRequest) throws Exception {
@@ -47,5 +56,30 @@ public class AuthController {
 
         
         return ResponseEntity.ok(new JwtResponse(bearerToken, null, bearerToken, bearerToken));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> me(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(401).body("No autenticado");
+        }
+
+        String username = authentication.getName(); // correo
+        Usuarios usuario = usuariosRepository.findByCorreo(username).orElse(null);
+        if (usuario == null) {
+            return ResponseEntity.status(404).body("Usuario no encontrado");
+        }
+
+        UserInfoDto dto = new UserInfoDto();
+        dto.setId(usuario.getId());
+        dto.setCorreo(usuario.getCorreo());
+        dto.setNombre(usuario.getNom_usu());
+        dto.setApellido(usuario.getApe_usu());
+        dto.setRoles(
+            usuario.getRole().stream()
+                .map(ru -> ru.getRoles().getNom_rol().toUpperCase())
+                .collect(Collectors.toList())
+        );
+        return ResponseEntity.ok(dto);
     }
 }

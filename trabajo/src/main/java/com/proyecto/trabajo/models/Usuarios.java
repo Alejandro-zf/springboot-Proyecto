@@ -34,11 +34,11 @@ public class Usuarios {
     private String correo;
 
     private Long num_doc;
-    @Column(nullable=false,length=30) 
+    @Column(nullable=false,length=150) 
     private String password;
 
     @Column(nullable = false)
-    private Byte estado = 1; // 0=No activo, 1=Activo
+    private Byte estado = 1; 
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Solicitudes> solicitudes = new ArrayList<>();
