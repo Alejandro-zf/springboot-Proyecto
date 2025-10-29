@@ -42,6 +42,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+            .cors().and()
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 // Permitir acceso sin autenticación a estas rutas
@@ -50,17 +51,12 @@ public class SecurityConfig {
                 .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/Usuarios").permitAll() // Permitir POST público para crear usuario
 
                 // Rutas solo para ADMINISTRADOR
-                .requestMatchers("/admin", "/adcrear", "/Inventario", "/Solielemento", "/Soliespacio").hasRole("ADMINISTRADOR")
+                .requestMatchers("/admin", "/adcrear", "/Inventario", "/Solielemento", "/Soliespacio", "/api/Usuarios", "/api/tickets").hasRole("ADMINISTRADOR")
 
                 // Rutas solo para TECNICO (solo estas rutas, ninguna más)
                 .requestMatchers("/Prestamos-Tecnico", "/Tickets-Tecnico", "/TicketsActivos", "/PrestamosActivos", "/HistorialTec").hasRole("TECNICO")
 
-                // Rutas específicas por rol (más restrictivas primero)
-                .requestMatchers("/api/admin/**").hasAnyRole("ADMINISTRADOR", "ADMIN")
-                // Eliminar acceso general a /api/tecnico/** y /api/usuario/** para TECNICO
-                .requestMatchers("/api/tecnico/**").hasRole("ADMINISTRADOR")
-                .requestMatchers("/api/usuario/**").hasAnyRole("USUARIO", "INSTRUCTOR", "ADMINISTRADOR")
-                // Cualquier otra petición requiere autenticación y no será accesible para TECNICO
+                // Cualquier otra petición requiere autenticación y será denegada si no está explícitamente permitida
                 .anyRequest().denyAll()
             )
             .sessionManagement(session -> session
