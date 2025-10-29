@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,8 +37,9 @@ public class PrestamosController {
         this.prestamosServices = prestamosServices;
     }
 
-    //Crear prestamo  
+    //Crear prestamo - Acceso: Admin, Tecnico, Instructor
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
     public ResponseEntity<?> crear(@Valid @RequestBody PrestamosCreateDto dto) {
         try{
             PrestamosDto creado = prestamosServices.guardar(dto);
@@ -58,30 +60,34 @@ public class PrestamosController {
             .body(Map.of("errores2", "Error3 al crear el prestamo", "detalle", ex.getMessage()));
         }
 }
-    //Obtener prestamos por el id
+    //Obtener prestamos por el id - Acceso: Admin, Tecnico, Instructor
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
     public ResponseEntity<PrestamosDto> buscarPorId(@PathVariable Long id) {
         PrestamosDto prestamo = prestamosServices.buscarPorId(id);
         return ResponseEntity.ok(prestamo);
     }
     
 
-    // Listar todos los préstamos
+    // Listar todos los préstamos - Acceso: Admin, Tecnico, Instructor
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
     public ResponseEntity<List<PrestamosDto>> listarTodos() {
         List<PrestamosDto> prestamos = prestamosServices.listarTodos();
         return ResponseEntity.ok(prestamos);
     }
 
-    // Listar préstamos activos (estado=1)
+    // Listar préstamos activos (estado=1) - Acceso: Admin, Tecnico, Instructor
     @GetMapping("/activos")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
     public ResponseEntity<List<PrestamosDto>> listarActivos() {
         List<PrestamosDto> activos = prestamosServices.listarActivos();
         return ResponseEntity.ok(activos);
     }
 
-    //Eliminar prestamos por el id
+    //Eliminar prestamos por el id - Acceso: Solo Admin (Tecnico e Instructor NO pueden)
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         prestamosServices.eliminar(id);
         return ResponseEntity.noContent().build();

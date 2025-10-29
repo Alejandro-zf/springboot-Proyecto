@@ -10,7 +10,6 @@ import com.proyecto.trabajo.dto.ProblemasDtos;
 import com.proyecto.trabajo.models.Problemas;
 import com.proyecto.trabajo.repository.ProblemasRepository;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController

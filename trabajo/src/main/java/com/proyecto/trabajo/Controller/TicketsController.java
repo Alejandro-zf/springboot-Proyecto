@@ -13,15 +13,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PutMapping;
 
 
 
@@ -37,8 +35,9 @@ public class TicketsController {
     }
 
 
-    //Crear ticket 
+    //Crear ticket - Acceso: Admin, Tecnico, Instructor
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
     public ResponseEntity<?> crear(@Valid  @RequestBody TicketsCreateDto dto){
         try{
             TicketsDtos creado = ticketsServices.guardar(dto);
@@ -60,29 +59,33 @@ public class TicketsController {
         }
     }
 
-    //Obtener ticket por id
+    //Obtener ticket por id - Acceso: Admin, Tecnico, Instructor
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
     public ResponseEntity<TicketsDtos> obtener(@PathVariable Long id) {
         TicketsDtos tickets = ticketsServices.buscarPorId(id);
         return ResponseEntity.ok(tickets);
     }
 
-    //Listar tickets 
+    //Listar tickets - Acceso: Admin, Tecnico, Instructor
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
     public ResponseEntity<List<TicketsDtos>> listarTodos() {
         List<TicketsDtos> tickets = ticketsServices.listarTodos();
         return ResponseEntity.ok(tickets);
     }
 
-        //Listar solo tickets activos
+        //Listar solo tickets activos - Acceso: Admin, Tecnico, Instructor
         @GetMapping("/activos")
+        @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
         public ResponseEntity<List<TicketsDtos>> listarActivos() {
             List<TicketsDtos> tickets = ticketsServices.listarActivos();
             return ResponseEntity.ok(tickets);
         }
 
-    //Elminar tickets 
+    //Elminar tickets - Acceso: Solo Admin (Tecnico e Instructor NO pueden)
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         ticketsServices.eliminar(id);
         return ResponseEntity.noContent().build();

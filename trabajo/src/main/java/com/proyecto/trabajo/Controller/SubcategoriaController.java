@@ -5,11 +5,11 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,7 +18,6 @@ import com.proyecto.trabajo.Services.SubcategoriaServices;
 import com.proyecto.trabajo.dto.SubcategoriaDtos;
 import com.proyecto.trabajo.dto.Sub_categoriasCreateDtos;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 
 @RestController
@@ -31,8 +30,9 @@ public class SubcategoriaController {
         this.subcategoriaServices = subcategoriaServices;
     }
 
-    // Crear Subcategoria
+    // Crear Subcategoria - Acceso: Admin, Tecnico, Instructor
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
     public ResponseEntity<?> crear(@Valid @RequestBody Sub_categoriasCreateDtos dto) {
         try {
             SubcategoriaDtos creado = subcategoriaServices.guardar(dto);
@@ -44,22 +44,25 @@ public class SubcategoriaController {
         }
     }
 
-    // Obtener Subcategoria por ID
+    // Obtener Subcategoria por ID - Acceso: Admin, Tecnico, Instructor
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
     public ResponseEntity<SubcategoriaDtos> obtenerPorId(@PathVariable Long id) {
         SubcategoriaDtos subcategoria = subcategoriaServices.buscarPorId(id);
         return ResponseEntity.ok(subcategoria);
     }
     
-    // Listar todas las Subcategorias
+    // Listar todas las Subcategorias - Acceso: Admin, Tecnico, Instructor
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
     public ResponseEntity<List<SubcategoriaDtos>> listarTodos() {
         List<SubcategoriaDtos> subcategorias = subcategoriaServices.listarTodos();
         return ResponseEntity.ok(subcategorias);
     }
 
-    // Eliminar Subcategoria
+    // Eliminar Subcategoria - Acceso: Solo Admin (Tecnico e Instructor NO pueden)
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         subcategoriaServices.eliminar(id);
         return ResponseEntity.noContent().build();

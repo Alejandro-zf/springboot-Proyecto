@@ -1,6 +1,6 @@
 package com.proyecto.trabajo.models;
 
-import org.antlr.v4.runtime.misc.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;

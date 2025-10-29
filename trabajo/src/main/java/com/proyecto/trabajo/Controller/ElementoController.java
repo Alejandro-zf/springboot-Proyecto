@@ -14,6 +14,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,8 +33,9 @@ public class ElementoController {
         this.elementosServices = elementosServices;
     }
 
-    //Crear elemento
+    //Crear elemento - Acceso: Admin, Tecnico, Instructor
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
     public ResponseEntity<?> crear(@Valid @RequestBody ElementosCreateDto dto) {
         try{
             ElementoDto creado = elementosServices.guardar(dto);
@@ -53,22 +55,25 @@ public class ElementoController {
         }
     }
     
-    //Obtener por ID
+    //Obtener por ID - Acceso: Admin, Tecnico, Instructor
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
     public ResponseEntity<ElementoDto> obtenerPorId(@PathVariable Long id){
         ElementoDto elemento = elementosServices.buscarPorId(id);
         return ResponseEntity.ok(elemento); 
     }
 
-    //Listar todos
+    //Listar todos - Acceso: Admin, Tecnico, Instructor
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
     public ResponseEntity<List<ElementoDto>> listarTodos(){
         List<ElementoDto> elementos = elementosServices.listarTodos();
         return ResponseEntity.ok(elementos);
     }
 
-    //Eliminar elementos
+    //Eliminar elementos - Acceso: Solo Admin (Tecnico e Instructor NO pueden)
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<Void> eliminar (@PathVariable Long id){
         elementosServices.eliminar(id);
         return ResponseEntity.noContent().build();

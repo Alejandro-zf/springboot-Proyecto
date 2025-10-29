@@ -7,7 +7,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-@Component
+// ⚠️ DESACTIVADO: Este componente actualiza contraseñas específicas al iniciar
+// Solo activar temporalmente si necesitas resetear una contraseña
+// Para activar, descomenta la línea @Component
+//@Component
 public class PasswordForceUpdate implements CommandLineRunner {
 
     @Autowired
@@ -18,6 +21,11 @@ public class PasswordForceUpdate implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        System.out.println("⚠️ PasswordForceUpdate está DESACTIVADO");
+        System.out.println("   Para activarlo, descomenta @Component en PasswordForceUpdate.java");
+        
+        // Código original comentado para evitar ejecución accidental
+        /*
         String correo = "alejandro@example.com";
         String nuevaPassword = "adri123";
         Usuarios usuario = usuariosRepository.findByCorreo(correo).orElse(null);
@@ -28,5 +36,6 @@ public class PasswordForceUpdate implements CommandLineRunner {
         } else {
             System.out.println("Usuario no encontrado: " + correo);
         }
+        */
     }
 }

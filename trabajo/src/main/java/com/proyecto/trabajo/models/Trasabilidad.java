@@ -28,10 +28,10 @@ public class Trasabilidad {
     private String observacion;
 
     @ManyToOne
-    @JoinColumn(name = "Id_usuario", nullable = false, foreignKey = @ForeignKey(name = "FK_id_usuario"))
+    @JoinColumn(name = "id_usuario", nullable = false, foreignKey = @ForeignKey(name = "FK_id_usuario"))
     private Usuarios usuario;
 
     @ManyToOne
-    @JoinColumn(name = "Id_ticket", nullable = false, foreignKey = @ForeignKey(name = "FK_id_ticket"))
+    @JoinColumn(name = "id_ticket", nullable = false, foreignKey = @ForeignKey(name = "FK_id_ticket"))
     private Tickets tickets;
 }

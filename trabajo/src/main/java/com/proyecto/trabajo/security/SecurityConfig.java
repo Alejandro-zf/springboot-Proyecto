@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -24,6 +25,7 @@ import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true) // Habilita @PreAuthorize en controladores
 public class SecurityConfig {
 
     @Autowired
@@ -42,7 +44,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .cors().and()
+            .cors(cors -> cors.configure(http))
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 // Permitir acceso sin autenticación a estas rutas
@@ -50,14 +52,15 @@ public class SecurityConfig {
                 .requestMatchers("/api/public/**").permitAll()
                 .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/Usuarios").permitAll() // Permitir POST público para crear usuario
 
-                // Rutas solo para ADMINISTRADOR
-                .requestMatchers("/admin", "/adcrear", "/Inventario", "/Solielemento", "/Soliespacio", "/api/Usuarios", "/api/tickets").hasRole("ADMINISTRADOR")
-
-                // Rutas solo para TECNICO (solo estas rutas, ninguna más)
+                // Todas las rutas API requieren autenticación (los permisos específicos están en @PreAuthorize de cada método)
+                .requestMatchers("/api/**").authenticated()
+                
+                // Rutas de vistas específicas por rol
+                .requestMatchers("/admin", "/adcrear", "/Inventario", "/Solielemento", "/Soliespacio").hasRole("ADMINISTRADOR")
                 .requestMatchers("/Prestamos-Tecnico", "/Tickets-Tecnico", "/TicketsActivos", "/PrestamosActivos", "/HistorialTec").hasRole("TECNICO")
 
-                // Cualquier otra petición requiere autenticación y será denegada si no está explícitamente permitida
-                .anyRequest().denyAll()
+                // Cualquier otra ruta requiere autenticación
+                .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

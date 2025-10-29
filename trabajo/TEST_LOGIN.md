@@ -22,7 +22,7 @@ Al iniciar la aplicación, busca en la consola:
 
 ### **Opción 2: Hacer Login via API**
 
-**Endpoint:** `POST http://localhost:8080/auth/login`
+**Endpoint:** `POST http://localhost:8081/auth/login`
 
 **Headers:**
 ```
@@ -53,7 +53,7 @@ Content-Type: application/json
 
 ### **Login como Instructor:**
 ```bash
-curl -X POST http://localhost:8080/auth/login \
+curl -X POST http://localhost:8081/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "username": "instructor@tech.com",
@@ -63,7 +63,7 @@ curl -X POST http://localhost:8080/auth/login \
 
 ### **Login como Administrador:**
 ```bash
-curl -X POST http://localhost:8080/auth/login \
+curl -X POST http://localhost:8081/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "username": "admin@tech.com",
@@ -73,7 +73,7 @@ curl -X POST http://localhost:8080/auth/login \
 
 ### **Login como Técnico:**
 ```bash
-curl -X POST http://localhost:8080/auth/login \
+curl -X POST http://localhost:8081/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "username": "tecnico@tech.com",
@@ -89,7 +89,7 @@ Una vez obtengas el token, úsalo en el header `Authorization` de tus peticiones
 
 **Ejemplo:**
 ```bash
-curl -X GET http://localhost:8080/api/elementos \
+curl -X GET http://localhost:8081/api/elementos \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWI..."
 ```
 
@@ -114,7 +114,7 @@ curl -X GET http://localhost:8080/api/elementos \
 
 ```powershell
 # Login como Instructor
-Invoke-RestMethod -Uri "http://localhost:8080/auth/login" `
+Invoke-RestMethod -Uri "http://localhost:8081/auth/login" `
   -Method Post `
   -ContentType "application/json" `
   -Body '{"username":"instructor@tech.com","password":"instructor123"}'
@@ -122,7 +122,7 @@ Invoke-RestMethod -Uri "http://localhost:8080/auth/login" `
 
 ```powershell
 # Login como Administrador
-Invoke-RestMethod -Uri "http://localhost:8080/auth/login" `
+Invoke-RestMethod -Uri "http://localhost:8081/auth/login" `
   -Method Post `
   -ContentType "application/json" `
   -Body '{"username":"admin@tech.com","password":"admin123"}'
@@ -130,7 +130,7 @@ Invoke-RestMethod -Uri "http://localhost:8080/auth/login" `
 
 ```powershell
 # Login como Técnico
-Invoke-RestMethod -Uri "http://localhost:8080/auth/login" `
+Invoke-RestMethod -Uri "http://localhost:8081/auth/login" `
   -Method Post `
   -ContentType "application/json" `
   -Body '{"username":"tecnico@tech.com","password":"tecnico123"}'

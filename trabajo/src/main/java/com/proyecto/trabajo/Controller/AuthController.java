@@ -51,11 +51,27 @@ public class AuthController {
         final UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getUsername());
         final String token = jwtTokenUtil.generateToken(userDetails);
 
+        // Buscar información completa del usuario
+        Usuarios usuario = usuariosRepository.findByCorreo(loginRequest.getUsername()).orElse(null);
+        
+        // Extraer el primer rol del usuario
+        String rol = null;
+        if (usuario != null && usuario.getRole() != null && !usuario.getRole().isEmpty()) {
+            rol = usuario.getRole().stream()
+                    .findFirst()
+                    .map(ru -> ru.getRoles().getNom_rol())
+                    .orElse(null);
+        }
+
         // Prefijar con "Bearer " para que el cliente lo use directamente en Authorization header
         final String bearerToken = "Bearer " + token;
 
-        
-        return ResponseEntity.ok(new JwtResponse(bearerToken, null, bearerToken, bearerToken));
+        return ResponseEntity.ok(new JwtResponse(
+            bearerToken,                    // token completo con "Bearer "
+            usuario != null ? usuario.getId() : null,  // id del usuario
+            loginRequest.getUsername(),     // username (correo)
+            rol                            // rol del usuario
+        ));
     }
 
     @GetMapping("/me")

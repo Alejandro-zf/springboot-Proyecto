@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,8 +37,9 @@ public class UsuariosController {
     }
 
 
-    //Crear usuario
+    //Crear usuario - Acceso: Admin, Tecnico, Instructor
 @PostMapping
+@PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
     public ResponseEntity<?> crear(@Valid @RequestBody UsuariosCreateDto dto) {
         try{
             UsuariosDto creado = usuariosServices.guardar(dto);
@@ -53,23 +55,26 @@ public class UsuariosController {
     }
 
 
-//Obtener por ID
+//Obtener por ID - Acceso: Admin, Tecnico, Instructor
 @GetMapping("/{id}")
+@PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
 public ResponseEntity<UsuariosDto>obtenerPorId(@PathVariable Long id) {
     UsuariosDto usuario = usuariosServices.buscarPorId(id);
     return ResponseEntity.ok(usuario);
 }
 
-//Listar a todos
+//Listar a todos - Acceso: Admin, Tecnico, Instructor
 @GetMapping
+@PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
 public ResponseEntity<List<UsuariosDto>> listarTodos() {
     List<UsuariosDto> usuarios = usuariosServices.listarTodos();
     return ResponseEntity.ok(usuarios);
 }
 
 
-//Actualizar al usuario
+//Actualizar al usuario - Acceso: Solo Admin y Tecnico (Instructor NO puede)
 @PutMapping("/{id}")
+@PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO')")
 public ResponseEntity<UsuariosDto> actualizar(@PathVariable Long id,
         @Valid @RequestBody UsuariosUpdateDto dto) {
         dto.setId_Usu(id);
@@ -79,8 +84,9 @@ public ResponseEntity<UsuariosDto> actualizar(@PathVariable Long id,
 
 
 
-//Eliminar usuario por id
+//Eliminar usuario por id - Acceso: Solo Admin (Tecnico e Instructor NO pueden)
 @DeleteMapping("/{id}")
+@PreAuthorize("hasRole('ADMINISTRADOR')")
 public ResponseEntity<Void> eliminar(@PathVariable Long id){
     usuariosServices.eliminar(id);
     return ResponseEntity.noContent().build();
