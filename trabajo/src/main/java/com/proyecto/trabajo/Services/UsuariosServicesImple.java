@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.proyecto.trabajo.Mapper.UsuariosMapper;
 import com.proyecto.trabajo.dto.UsuariosDto;
@@ -18,6 +19,7 @@ import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class UsuariosServicesImple implements UsuariosServices {
+    private final PasswordEncoder passwordEncoder;
 
     private final UsuariosRepository usuariosRepository;
     private final UsuariosMapper usuariosMapper;
@@ -27,15 +29,22 @@ public class UsuariosServicesImple implements UsuariosServices {
     public UsuariosServicesImple(UsuariosRepository usuariosRepository,
                                  UsuariosMapper usuariosMapper,
                                  RolesRepository rolesRepository,
-                                 Roles_UsuarioRepository rolesUsuarioRepository) {
+                                 Roles_UsuarioRepository rolesUsuarioRepository,
+                                 PasswordEncoder passwordEncoder) {
         this.usuariosRepository = usuariosRepository;
         this.usuariosMapper = usuariosMapper;
         this.rolesRepository = rolesRepository;
         this.rolesUsuarioRepository = rolesUsuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public UsuariosDto guardar(com.proyecto.trabajo.dto.UsuariosCreateDto dto) {
         Usuarios usuarios = usuariosMapper.toUsuariosFromCreateDto(dto);
+
+        // Cifrar la contraseña antes de guardar
+        if (usuarios.getPassword() != null && !usuarios.getPassword().isEmpty()) {
+            usuarios.setPassword(passwordEncoder.encode(usuarios.getPassword()));
+        }
 
         usuarios.setEstado((byte) 1);
 
@@ -89,8 +98,8 @@ public class UsuariosServicesImple implements UsuariosServices {
         if (dto.getCorre() != null) {
             usuarios.setCorreo(dto.getCorre());
         }
-        if (dto.getPassword() != null) {
-            usuarios.setPassword(dto.getPassword());
+        if (dto.getPassword() != null && !dto.getPassword().isEmpty()) {
+            usuarios.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
         if (dto.getEst_usu() != null) {
             Byte est = dto.getEst_usu();
