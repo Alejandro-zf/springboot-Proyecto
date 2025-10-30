@@ -37,7 +37,7 @@ public class TicketsController {
 
     //Crear ticket - Acceso: Admin, Tecnico, Instructor
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
     public ResponseEntity<?> crear(@Valid  @RequestBody TicketsCreateDto dto){
         try{
             TicketsDtos creado = ticketsServices.guardar(dto);
@@ -61,7 +61,7 @@ public class TicketsController {
 
     //Obtener ticket por id - Acceso: Admin, Tecnico, Instructor
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
     public ResponseEntity<TicketsDtos> obtener(@PathVariable Long id) {
         TicketsDtos tickets = ticketsServices.buscarPorId(id);
         return ResponseEntity.ok(tickets);
@@ -69,7 +69,7 @@ public class TicketsController {
 
     //Listar tickets - Acceso: Admin, Tecnico, Instructor
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
     public ResponseEntity<List<TicketsDtos>> listarTodos() {
         List<TicketsDtos> tickets = ticketsServices.listarTodos();
         return ResponseEntity.ok(tickets);
@@ -77,7 +77,7 @@ public class TicketsController {
 
         //Listar solo tickets activos - Acceso: Admin, Tecnico, Instructor
         @GetMapping("/activos")
-        @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
+        @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
         public ResponseEntity<List<TicketsDtos>> listarActivos() {
             List<TicketsDtos> tickets = ticketsServices.listarActivos();
             return ResponseEntity.ok(tickets);
@@ -85,7 +85,7 @@ public class TicketsController {
 
     //Elminar tickets - Acceso: Solo Admin (Tecnico e Instructor NO pueden)
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasRole('Administrador')")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         ticketsServices.eliminar(id);
         return ResponseEntity.noContent().build();

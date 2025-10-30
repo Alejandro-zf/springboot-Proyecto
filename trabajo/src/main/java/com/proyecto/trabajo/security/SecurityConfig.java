@@ -56,8 +56,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/**").authenticated()
                 
                 // Rutas de vistas específicas por rol
-                .requestMatchers("/admin", "/adcrear", "/Inventario", "/Solielemento", "/Soliespacio").hasRole("ADMINISTRADOR")
-                .requestMatchers("/Prestamos-Tecnico", "/Tickets-Tecnico", "/TicketsActivos", "/PrestamosActivos", "/HistorialTec").hasRole("TECNICO")
+                .requestMatchers("/admin", "/adcrear", "/Inventario", "/Solielemento", "/Soliespacio").hasRole("Administrador")
+                .requestMatchers("/Prestamos-Tecnico", "/Tickets-Tecnico", "/TicketsActivos", "/PrestamosActivos", "/HistorialTec").hasRole("Tecnico")
 
                 // Cualquier otra ruta requiere autenticación
                 .anyRequest().authenticated()

@@ -39,7 +39,7 @@ public class UsuariosController {
 
     //Crear usuario - Acceso: Admin, Tecnico, Instructor
 @PostMapping
-@PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
+@PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
     public ResponseEntity<?> crear(@Valid @RequestBody UsuariosCreateDto dto) {
         try{
             UsuariosDto creado = usuariosServices.guardar(dto);
@@ -57,7 +57,7 @@ public class UsuariosController {
 
 //Obtener por ID - Acceso: Admin, Tecnico, Instructor
 @GetMapping("/{id}")
-@PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
+@PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
 public ResponseEntity<UsuariosDto>obtenerPorId(@PathVariable Long id) {
     UsuariosDto usuario = usuariosServices.buscarPorId(id);
     return ResponseEntity.ok(usuario);
@@ -65,7 +65,7 @@ public ResponseEntity<UsuariosDto>obtenerPorId(@PathVariable Long id) {
 
 //Listar a todos - Acceso: Admin, Tecnico, Instructor
 @GetMapping
-@PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
+@PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
 public ResponseEntity<List<UsuariosDto>> listarTodos() {
     List<UsuariosDto> usuarios = usuariosServices.listarTodos();
     return ResponseEntity.ok(usuarios);
@@ -74,7 +74,7 @@ public ResponseEntity<List<UsuariosDto>> listarTodos() {
 
 //Actualizar al usuario - Acceso: Solo Admin y Tecnico (Instructor NO puede)
 @PutMapping("/{id}")
-@PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO')")
+@PreAuthorize("hasAnyRole('Administrador', 'Tecnico')")
 public ResponseEntity<UsuariosDto> actualizar(@PathVariable Long id,
         @Valid @RequestBody UsuariosUpdateDto dto) {
         dto.setId_Usu(id);
@@ -86,7 +86,7 @@ public ResponseEntity<UsuariosDto> actualizar(@PathVariable Long id,
 
 //Eliminar usuario por id - Acceso: Solo Admin (Tecnico e Instructor NO pueden)
 @DeleteMapping("/{id}")
-@PreAuthorize("hasRole('ADMINISTRADOR')")
+@PreAuthorize("hasRole('Administrador')")
 public ResponseEntity<Void> eliminar(@PathVariable Long id){
     usuariosServices.eliminar(id);
     return ResponseEntity.noContent().build();

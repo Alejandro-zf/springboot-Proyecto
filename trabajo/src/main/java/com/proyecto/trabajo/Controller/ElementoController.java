@@ -35,7 +35,7 @@ public class ElementoController {
 
     //Crear elemento - Acceso: Admin, Tecnico, Instructor
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
     public ResponseEntity<?> crear(@Valid @RequestBody ElementosCreateDto dto) {
         try{
             ElementoDto creado = elementosServices.guardar(dto);
@@ -57,7 +57,7 @@ public class ElementoController {
     
     //Obtener por ID - Acceso: Admin, Tecnico, Instructor
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
     public ResponseEntity<ElementoDto> obtenerPorId(@PathVariable Long id){
         ElementoDto elemento = elementosServices.buscarPorId(id);
         return ResponseEntity.ok(elemento); 
@@ -65,7 +65,7 @@ public class ElementoController {
 
     //Listar todos - Acceso: Admin, Tecnico, Instructor
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
     public ResponseEntity<List<ElementoDto>> listarTodos(){
         List<ElementoDto> elementos = elementosServices.listarTodos();
         return ResponseEntity.ok(elementos);
@@ -73,7 +73,7 @@ public class ElementoController {
 
     //Eliminar elementos - Acceso: Solo Admin (Tecnico e Instructor NO pueden)
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasRole('Administrador')")
     public ResponseEntity<Void> eliminar (@PathVariable Long id){
         elementosServices.eliminar(id);
         return ResponseEntity.noContent().build();

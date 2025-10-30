@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class SolicitudesController {
     // Actualizar estado de solicitud - Acceso: Solo Admin y Tecnico (Instructor NO puede)
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO')")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico')")
     public ResponseEntity<?> actualizarEstado(@PathVariable Long id, @RequestBody SolicitudesUpdateDtos dto) {
         try {
             SolicitudesDto actualizado = solicitudesServices.actualizarSolicitud(id, dto);
@@ -50,7 +50,7 @@ public class SolicitudesController {
 
     //Crear solicitud - Acceso: Admin, Tecnico, Instructor
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
     public ResponseEntity<?> crear (@Valid @RequestBody SolicitudeCreateDto dto){
         try{
             SolicitudesDto creado = solicitudesServices.guardar(dto);
@@ -64,7 +64,7 @@ public class SolicitudesController {
 
     //Obtener solicitudes por ID - Acceso: Admin, Tecnico, Instructor
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
     public ResponseEntity<SolicitudesDto> obtenerporId(@PathVariable Long id){
         SolicitudesDto solicitudes = solicitudesServices.buscarPorId(id);
         return ResponseEntity.ok(solicitudes);
@@ -72,7 +72,7 @@ public class SolicitudesController {
     
     //Listar todas las solicitudes - Acceso: Admin, Tecnico, Instructor
     @GetMapping 
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
     public ResponseEntity<List<SolicitudesDto>> listarTodos(){
         List<SolicitudesDto> solicitudes = solicitudesServices.listarTodos();
         return ResponseEntity.ok(solicitudes);
@@ -80,14 +80,14 @@ public class SolicitudesController {
 
     //Eliminar solicitud - Acceso: Solo Admin (Tecnico e Instructor NO pueden)
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasRole('Administrador')")
     public ResponseEntity<Void> eliminar(@PathVariable Long id){
         solicitudesServices.eliminar(id);
         return ResponseEntity.noContent().build();
     }
     // Expirar solicitudes vencidas manualmente - Acceso: Admin, Tecnico, Instructor
     @PostMapping("/expirar")
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
     public ResponseEntity<?> expirarVencidas() {
         try {
             solicitudesServices.expirarSolicitudesVencidas();

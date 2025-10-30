@@ -33,7 +33,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         
         if (usuario.getRole() != null && !usuario.getRole().isEmpty()) {
             usuario.getRole().forEach(rolesUsuario -> {
-                String roleName = "ROLE_" + rolesUsuario.getRoles().getNom_rol().toUpperCase();
+                String roleName = "ROLE_" + rolesUsuario.getRoles().getNom_rol();
                 authorities.add(new SimpleGrantedAuthority(roleName));
             });
         }

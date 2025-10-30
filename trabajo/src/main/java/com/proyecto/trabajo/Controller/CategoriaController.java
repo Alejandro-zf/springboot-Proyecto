@@ -33,7 +33,7 @@ public class CategoriaController {
 
     //crear Categoria - Acceso: Admin, Tecnico, Instructor
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
     public ResponseEntity<?> crear (@Valid @RequestBody CategoriaCreateDtos dto){
         try{
             CategoriaDtos creado = categoriaServices.guardar(dto);
@@ -47,7 +47,7 @@ public class CategoriaController {
 
     //Obtener categoria por ID - Acceso: Admin, Tecnico, Instructor
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
     public ResponseEntity<CategoriaDtos> obtenerporId(@PathVariable byte id){
         CategoriaDtos categoria = categoriaServices.buscarPorId(id);
         return ResponseEntity.ok(categoria);
@@ -55,7 +55,7 @@ public class CategoriaController {
     
     //Listar todas las categorias - Acceso: Admin, Tecnico, Instructor
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
     public ResponseEntity<List<CategoriaDtos>> listarTodos(){
         List<CategoriaDtos> categorias = categoriaServices.listarTodos();
         return ResponseEntity.ok(categorias);
@@ -63,7 +63,7 @@ public class CategoriaController {
 
     //Eliminar categoria - Acceso: Solo Admin (Tecnico e Instructor NO pueden)
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasRole('Administrador')")
     public ResponseEntity<Void> eliminar(@PathVariable byte id){
         categoriaServices.eliminar(id);
         return ResponseEntity.noContent().build();
