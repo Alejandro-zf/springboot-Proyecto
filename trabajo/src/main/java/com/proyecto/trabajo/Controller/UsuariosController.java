@@ -43,9 +43,9 @@ public class UsuariosController {
     }
 
 
-    //Crear usuario - Acceso: Admin, Tecnico, Instructor
+    //Crear usuario - Acceso: Solo Admin (Tecnico e Instructor NO pueden)
 @PostMapping
-@PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
+@PreAuthorize("hasRole('Administrador')")
     public ResponseEntity<?> crear(@Valid @RequestBody UsuariosCreateDto dto) {
         try{
             UsuariosDto creado = usuariosServices.guardar(dto);
@@ -86,6 +86,28 @@ public ResponseEntity<UsuariosDto> actualizar(@PathVariable Long id,
         dto.setId_Usu(id);
     UsuariosDto actualizado = usuariosServices.actualizarUsuario(id, dto);
     return ResponseEntity.ok(actualizado);
+}
+
+
+//Actualizar mi propio perfil - Acceso: Cualquier usuario autenticado
+@PutMapping("/perfil/me")
+@PreAuthorize("isAuthenticated()")
+public ResponseEntity<?> actualizarMiPerfil(@Valid @RequestBody UsuariosUpdateDto dto,
+        org.springframework.security.core.Authentication authentication) {
+    try {
+        // Obtener el correo del usuario autenticado
+        String correoAutenticado = authentication.getName();
+        
+        // Actualizar solo el perfil del usuario autenticado
+        UsuariosDto actualizado = usuariosServices.actualizarMiPerfil(correoAutenticado, dto);
+        return ResponseEntity.ok(actualizado);
+    } catch (IllegalStateException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(Map.of("error", ex.getMessage()));
+    } catch (Exception ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Error al actualizar el perfil", "detalle", ex.getMessage()));
+    }
 } 
 
 

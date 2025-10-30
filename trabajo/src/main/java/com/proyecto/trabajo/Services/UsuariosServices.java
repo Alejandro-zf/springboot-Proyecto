@@ -12,5 +12,6 @@ public interface UsuariosServices {
     List<UsuariosDto> listarTodos();
     void eliminar(Long id);
     UsuariosDto actualizarUsuario(Long id, UsuariosUpdateDto dto);
+    UsuariosDto actualizarMiPerfil(String correoAutenticado, UsuariosUpdateDto dto);
     byte[] generarPlantillaUsuarios() throws Exception;
 }

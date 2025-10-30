@@ -30,9 +30,9 @@ public class SubcategoriaController {
         this.subcategoriaServices = subcategoriaServices;
     }
 
-    // Crear Subcategoria - Acceso: Admin, Tecnico, Instructor
+    // Crear Subcategoria - Acceso: Solo Admin (Tecnico e Instructor NO pueden)
     @PostMapping
-    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
+    @PreAuthorize("hasRole('Administrador')")
     public ResponseEntity<?> crear(@Valid @RequestBody Sub_categoriasCreateDtos dto) {
         try {
             SubcategoriaDtos creado = subcategoriaServices.guardar(dto);

@@ -207,7 +207,7 @@ Authorization: Bearer {{TOKEN_ADMIN}}
 
 ---
 
-#### ✅ TEST 2: Crear Usuario (POST)
+#### ✅ TEST 2: Crear Usuario (POST) - Solo Admin
 
 **Endpoint:** `POST {{BASE_URL}}/api/Usuarios`
 
@@ -220,14 +220,13 @@ Authorization: Bearer {{TOKEN_ADMIN}}
 **Body (raw - JSON):**
 ```json
 {
-  "username": "nuevo_usuario",
-  "nombre": "Nuevo",
-  "apellido": "Usuario",
-  "correo": "nuevo@tech.com",
-  "num_doc": 1112223334,
-  "password": "password123",
-  "id_Tip_doc": 1,
-  "id_rol": 2
+  "nom_su": "Nuevo",
+  "ape_su": "Usuario",
+  "corre": "nuevo@tech.com",
+  "num_docu": 1112223334,
+  "pasword": "password123",
+  "id_tip_docu": 1,
+  "id_role": 2
 }
 ```
 
@@ -236,17 +235,20 @@ Authorization: Bearer {{TOKEN_ADMIN}}
 {
   "Mensaje": "Usuario creado exitosamente",
   "data": {
-    "id_Usu": 4,
-    "username": "nuevo_usuario",
-    "nombre": "Nuevo",
+    "id_usuari": 4,
+    "nom_usua": "Nuevo",
+    "ape_usua": "Usuario",
+    "corre": "nuevo@tech.com",
     ...
   }
 }
 ```
 
+**⚠️ IMPORTANTE:** Solo el Administrador puede crear usuarios. Tecnico e Instructor recibirán `403 Forbidden`.
+
 ---
 
-#### ✅ TEST 3: Actualizar Usuario (PUT)
+#### ✅ TEST 3: Actualizar Usuario (PUT) - Admin y Tecnico
 
 **Endpoint:** `PUT {{BASE_URL}}/api/Usuarios/4`
 
@@ -259,26 +261,29 @@ Authorization: Bearer {{TOKEN_ADMIN}}
 **Body (raw - JSON):**
 ```json
 {
-  "nombre": "Nuevo Actualizado",
-  "apellido": "Usuario Modificado",
-  "correo": "nuevo_actualizado@tech.com"
+  "nom_us": "Nuevo Actualizado",
+  "ape_us": "Usuario Modificado",
+  "corre": "nuevo_actualizado@tech.com",
+  "id_rl": 2
 }
 ```
 
 **Respuesta Esperada:** `200 OK`
 ```json
 {
-  "id_Usu": 4,
-  "username": "nuevo_usuario",
-  "nombre": "Nuevo Actualizado",
-  "apellido": "Usuario Modificado",
+  "id_usuari": 4,
+  "nom_usua": "Nuevo Actualizado",
+  "ape_usua": "Usuario Modificado",
+  "corre": "nuevo_actualizado@tech.com",
   ...
 }
 ```
 
+**⚠️ IMPORTANTE:** Solo Admin y Tecnico pueden actualizar usuarios. Instructor recibirá `403 Forbidden`.
+
 ---
 
-#### ✅ TEST 4: Eliminar Usuario (DELETE)
+#### ✅ TEST 4: Eliminar Usuario (DELETE) - Solo Admin
 
 **Endpoint:** `DELETE {{BASE_URL}}/api/Usuarios/4`
 
@@ -288,6 +293,55 @@ Authorization: Bearer {{TOKEN_ADMIN}}
 ```
 
 **Respuesta Esperada:** `204 No Content`
+
+**⚠️ IMPORTANTE:** Solo el Administrador puede eliminar usuarios. Tecnico e Instructor recibirán `403 Forbidden`.
+
+---
+
+#### ✅ TEST 4.5: Actualizar Mi Propio Perfil (PUT) - Todos los Roles
+
+**Endpoint:** `PUT {{BASE_URL}}/api/Usuarios/perfil/me`
+
+**Headers:**
+```
+Content-Type: application/json
+Authorization: Bearer {{TOKEN_INSTRUCTOR}}  
+```
+*(Funciona con cualquier token: Admin, Tecnico o Instructor)*
+
+**Body (raw - JSON):**
+```json
+{
+  "nom_us": "Mi Nombre Actualizado",
+  "ape_us": "Mi Apellido Actualizado",
+  "corre": "nuevo_correo@tech.com",
+  "password": "nuevaContraseña123",
+  "num_docu": 9876543210,
+  "id_td": 1
+}
+```
+
+**Respuesta Esperada:** `200 OK`
+```json
+{
+  "id_usuari": 1,
+  "nom_usua": "Mi Nombre Actualizado",
+  "ape_usua": "Mi Apellido Actualizado",
+  "corre": "nuevo_correo@tech.com",
+  "num_docu": 9876543210,
+  "nom_est": 1,
+  "id_tip_docu": 1,
+  "tip_docu": "Cédula de Ciudadanía",
+  "id_rol": 1,
+  "nomb_rol": "Instructor"
+}
+```
+
+**✅ IMPORTANTE:** 
+- Cualquier usuario autenticado puede actualizar su propio perfil
+- El sistema identifica al usuario por el token JWT (no necesitas enviar ID)
+- NO puedes cambiar tu propio rol (campo ignorado por seguridad)
+- Solo envía los campos que quieres actualizar
 
 ---
 
@@ -539,7 +593,7 @@ Authorization: Bearer {{TOKEN_TECNICO}}
 
 ### 🟢 ROL: INSTRUCTOR (Solo CREATE + READ, SIN UPDATE ni DELETE)
 
-#### ✅ TEST 14: Listar Categorías (GET)
+#### ✅ TEST 14: Listar Categorías (GET) - Todos los Roles
 
 **Endpoint:** `GET {{BASE_URL}}/api/categoria`
 
@@ -553,29 +607,30 @@ Authorization: Bearer {{TOKEN_INSTRUCTOR}}
 [
   {
     "id": 1,
-    "nom_categ": "Electrónica",
-    "descripcion": "Equipos electrónicos"
+    "nom_cat": "Equipos de Cómputo"
   }
 ]
 ```
 
+**✅ Todos pueden consultar categorías**
+
 ---
 
-#### ✅ TEST 15: Crear Categoría (POST)
+#### ✅ TEST 15: Crear Categoría (POST) - Solo Admin
 
 **Endpoint:** `POST {{BASE_URL}}/api/categoria`
 
 **Headers:**
 ```
 Content-Type: application/json
-Authorization: Bearer {{TOKEN_INSTRUCTOR}}
+Authorization: Bearer {{TOKEN_ADMIN}}
 ```
 
 **Body (raw - JSON):**
 ```json
 {
-  "nom_categ": "Mobiliario",
-  "descripcion": "Muebles de oficina"
+  "nom_cat": "Periféricos",
+  "id_subcat": []
 }
 ```
 
@@ -585,15 +640,16 @@ Authorization: Bearer {{TOKEN_INSTRUCTOR}}
   "mensaje": "Categoria creada exitosamente",
   "data": {
     "id": 2,
-    "nom_categ": "Mobiliario",
-    "descripcion": "Muebles de oficina"
+    "nom_cat": "Periféricos"
   }
 }
 ```
 
+**⚠️ IMPORTANTE:** Solo el Administrador puede crear categorías. Tecnico e Instructor recibirán `403 Forbidden`.
+
 ---
 
-#### ✅ TEST 16: Listar Subcategorías (GET)
+#### ✅ TEST 16: Listar Subcategorías (GET) - Todos los Roles
 
 **Endpoint:** `GET {{BASE_URL}}/api/subcategoria`
 
@@ -607,29 +663,30 @@ Authorization: Bearer {{TOKEN_INSTRUCTOR}}
 [
   {
     "id": 1,
-    "nom_subcateg": "Computadores",
-    "categoria": "Electrónica"
+    "nom_subcateg": "Portátiles"
   }
 ]
 ```
 
+**✅ Todos pueden consultar subcategorías**
+
 ---
 
-#### ✅ TEST 17: Crear Subcategoría (POST)
+#### ✅ TEST 17: Crear Subcategoría (POST) - Solo Admin
 
 **Endpoint:** `POST {{BASE_URL}}/api/subcategoria`
 
 **Headers:**
 ```
 Content-Type: application/json
-Authorization: Bearer {{TOKEN_INSTRUCTOR}}
+Authorization: Bearer {{TOKEN_ADMIN}}
 ```
 
 **Body (raw - JSON):**
 ```json
 {
-  "nom_subcateg": "Sillas",
-  "id_categoria": 2
+  "nom_subcateg": "Monitores",
+  "id_cat": 1
 }
 ```
 
@@ -639,11 +696,12 @@ Authorization: Bearer {{TOKEN_INSTRUCTOR}}
   "mensaje": "Subcategoria creada exitosamente",
   "data": {
     "id": 2,
-    "nom_subcateg": "Sillas",
-    "categoria": "Mobiliario"
+    "nom_subcateg": "Monitores"
   }
 }
 ```
+
+**⚠️ IMPORTANTE:** Solo el Administrador puede crear subcategorías. Tecnico e Instructor recibirán `403 Forbidden`.
 
 ---
 
@@ -789,28 +847,42 @@ Authorization: Bearer {{TOKEN_INSTRUCTOR}}
 | # | Endpoint | Método | Admin | Tecnico | Instructor | Resultado Esperado |
 |---|----------|--------|-------|---------|------------|-------------------|
 | 1 | `/api/Usuarios` | GET | ✅ 200 | ✅ 200 | ✅ 200 | Lista usuarios |
-| 2 | `/api/Usuarios` | POST | ✅ 201 | ✅ 201 | ✅ 201 | Crea usuario |
+| 2 | `/api/Usuarios` | POST | ✅ 201 | ❌ 403 | ❌ 403 | Crea usuario |
 | 3 | `/api/Usuarios/{id}` | PUT | ✅ 200 | ✅ 200 | ❌ 403 | Actualiza usuario |
-| 4 | `/api/Usuarios/{id}` | DELETE | ✅ 204 | ❌ 403 | ❌ 403 | Elimina usuario |
-| 5 | `/api/tickets` | POST | ✅ 201 | ✅ 201 | ✅ 201 | Crea ticket |
-| 6 | `/api/tickets` | GET | ✅ 200 | ✅ 200 | ✅ 200 | Lista tickets |
-| 7 | `/api/tickets/{id}` | DELETE | ✅ 204 | ❌ 403 | ❌ 403 | Elimina ticket |
-| 8 | `/api/elementos` | GET | ✅ 200 | ✅ 200 | ✅ 200 | Lista elementos |
-| 9 | `/api/elementos` | POST | ✅ 201 | ✅ 201 | ✅ 201 | Crea elemento |
-| 10 | `/api/elementos/{id}` | DELETE | ✅ 204 | ❌ 403 | ❌ 403 | Elimina elemento |
-| 11 | `/api/prestamos` | POST | ✅ 201 | ✅ 201 | ✅ 201 | Crea préstamo |
-| 12 | `/api/prestamos/{id}` | DELETE | ✅ 204 | ❌ 403 | ❌ 403 | Elimina préstamo |
-| 13 | `/api/solicitudes/{id}` | PUT | ✅ 200 | ✅ 200 | ❌ 403 | Actualiza solicitud |
-| 14 | `/api/solicitudes` | POST | ✅ 201 | ✅ 201 | ✅ 201 | Crea solicitud |
-| 15 | `/api/solicitudes/{id}` | DELETE | ✅ 204 | ❌ 403 | ❌ 403 | Elimina solicitud |
-| 16 | `/api/categoria` | GET | ✅ 200 | ✅ 200 | ✅ 200 | Lista categorías |
-| 17 | `/api/categoria` | POST | ✅ 201 | ✅ 201 | ✅ 201 | Crea categoría |
-| 18 | `/api/categoria/{id}` | DELETE | ✅ 204 | ❌ 403 | ❌ 403 | Elimina categoría |
-| 19 | `/api/subcategoria` | GET | ✅ 200 | ✅ 200 | ✅ 200 | Lista subcategorías |
-| 20 | `/api/subcategoria` | POST | ✅ 201 | ✅ 201 | ✅ 201 | Crea subcategoría |
-| 21 | `/api/subcategoria/{id}` | DELETE | ✅ 204 | ❌ 403 | ❌ 403 | Elimina subcategoría |
+| 4 | `/api/Usuarios/perfil/me` | PUT | ✅ 200 | ✅ 200 | ✅ 200 | Actualiza propio perfil |
+| 5 | `/api/Usuarios/{id}` | DELETE | ✅ 204 | ❌ 403 | ❌ 403 | Elimina usuario |
+| 6 | `/api/elementos` | GET | ✅ 200 | ✅ 200 | ✅ 200 | Lista elementos |
+| 7 | `/api/elementos` | POST | ✅ 201 | ✅ 201 | ✅ 201 | Crea elemento |
+| 8 | `/api/elementos/{id}` | DELETE | ✅ 204 | ❌ 403 | ❌ 403 | Elimina elemento |
+| 9 | `/api/categoria` | GET | ✅ 200 | ✅ 200 | ✅ 200 | Lista categorías |
+| 10 | `/api/categoria` | POST | ✅ 201 | ❌ 403 | ❌ 403 | Crea categoría |
+| 11 | `/api/categoria/{id}` | DELETE | ✅ 204 | ❌ 403 | ❌ 403 | Elimina categoría |
+| 12 | `/api/subcategoria` | GET | ✅ 200 | ✅ 200 | ✅ 200 | Lista subcategorías |
+| 13 | `/api/subcategoria` | POST | ✅ 201 | ❌ 403 | ❌ 403 | Crea subcategoría |
+| 14 | `/api/subcategoria/{id}` | DELETE | ✅ 204 | ❌ 403 | ❌ 403 | Elimina subcategoría |
 
-**Total de pruebas:** 21+ casos de uso
+---
+
+## 🎯 RESUMEN DE PERMISOS ACTUALIZADOS
+
+### 👥 **USUARIOS**
+- **Crear:** 🛡️ Solo Administrador
+- **Ver/Listar:** 👥 Todos (Admin, Tecnico, Instructor)
+- **Actualizar cualquier usuario:** 🔧 Admin y Tecnico
+- **Actualizar mi propio perfil:** 👥 Todos (Admin, Tecnico, Instructor)
+- **Eliminar:** 🛡️ Solo Administrador
+
+### 📁 **CATEGORÍAS Y SUBCATEGORÍAS**
+- **Crear:** 🛡️ Solo Administrador
+- **Ver/Listar:** 👥 Todos (Admin, Tecnico, Instructor)
+- **Eliminar:** 🛡️ Solo Administrador
+
+### 📦 **ELEMENTOS**
+- **Crear:** 👥 Todos (Admin, Tecnico, Instructor)
+- **Ver/Listar:** 👥 Todos (Admin, Tecnico, Instructor)
+- **Eliminar:** 🛡️ Solo Administrador
+
+**Total de pruebas:** 14+ casos de uso principales
 
 ---
 
@@ -1062,17 +1134,83 @@ pm.test("Acceso denegado correctamente", function () {
 
 ---
 
+## 📦 EJEMPLOS DE JSON ACTUALIZADOS
+
+### Crear Usuario (Solo Admin)
+```json
+{
+  "nom_su": "Carlos",
+  "ape_su": "Pérez",
+  "corre": "carlos@tech.com",
+  "num_docu": 1234567890,
+  "pasword": "password123",
+  "id_tip_docu": 1,
+  "id_role": 1
+}
+```
+
+### Actualizar Mi Perfil (Todos)
+```json
+{
+  "nom_us": "Nuevo Nombre",
+  "ape_us": "Nuevo Apellido",
+  "corre": "nuevo@tech.com",
+  "password": "nuevaContraseña",
+  "num_docu": 9876543210,
+  "id_td": 1
+}
+```
+
+### Crear Categoría (Solo Admin)
+```json
+{
+  "nom_cat": "Equipos de Cómputo",
+  "id_subcat": []
+}
+```
+
+### Crear Subcategoría (Solo Admin)
+```json
+{
+  "nom_subcateg": "Portátiles",
+  "id_cat": 1
+}
+```
+
+### Crear Elemento (Todos)
+```json
+{
+  "nom_eleme": "Portátil Dell Latitude 7490",
+  "obse": "Equipo nuevo con 16GB RAM",
+  "num_seri": 123456789,
+  "componen": "Intel i7, 16GB RAM, SSD 512GB",
+  "est_elem": 1,
+  "marc": "Dell",
+  "id_categ": 1,
+  "id_subcat": 5
+}
+```
+
+---
+
 ## 🎉 CONCLUSIÓN
 
 Con este manual puedes:
 1. ✅ Autenticarte con los 3 roles
-2. ✅ Probar todos los permisos CRUD
+2. ✅ Probar todos los permisos CRUD actualizados
 3. ✅ Verificar que las restricciones funcionan correctamente
-4. ✅ Automatizar pruebas con scripts de Postman
+4. ✅ Actualizar tu propio perfil sin permisos especiales
+5. ✅ Entender la arquitectura de permisos del sistema
 
-**Total de tests recomendados:** 25+
+**Cambios principales implementados:**
+- ✅ Solo Admin puede crear/eliminar usuarios
+- ✅ Solo Admin puede crear/eliminar categorías y subcategorías
+- ✅ Todos pueden actualizar su propio perfil
+- ✅ Todos pueden crear elementos
 
-**Tiempo estimado de pruebas completas:** 30-45 minutos
+**Total de tests recomendados:** 14+ casos principales
+
+**Tiempo estimado de pruebas completas:** 20-30 minutos
 
 ---
 

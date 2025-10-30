@@ -31,9 +31,9 @@ public class CategoriaController {
         this.categoriaServices = categoriaServices;
     }
 
-    //crear Categoria - Acceso: Admin, Tecnico, Instructor
+    //crear Categoria - Acceso: Solo Admin (Tecnico e Instructor NO pueden)
     @PostMapping
-    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
+    @PreAuthorize("hasRole('Administrador')")
     public ResponseEntity<?> crear (@Valid @RequestBody CategoriaCreateDtos dto){
         try{
             CategoriaDtos creado = categoriaServices.guardar(dto);
