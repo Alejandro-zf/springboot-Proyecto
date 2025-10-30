@@ -36,11 +36,6 @@ CREATE TABLE `categoria` (
 -- Volcado de datos para la tabla `categoria`
 --
 
-INSERT INTO `categoria` (`id`, `nom_categoria`) VALUES
-(1, 'Portátiles'),
-(2, 'Equipo de mesa'),
-(3, 'Televisores');
-
 -- --------------------------------------------------------
 
 --
