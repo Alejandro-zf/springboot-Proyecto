@@ -97,7 +97,7 @@ CREATE TABLE `estado_solicitudes` (
 -- Volcado de datos para la tabla `estado_solicitudes`
 --
 
-INSERT INTO estado_solicitudes(nom_esta) VALUES
+INSERT INTO estado_solicitudes (nom_esta) VALUES
 ('Activo'),
 ('Pendiente'),
 ('Inactivo');
@@ -116,7 +116,7 @@ CREATE TABLE `estado_ticket` (
 -- Volcado de datos para la tabla `estado_ticket`
 --
 
-INSERT INTO estado_ticket(nom_estado) VALUES
+INSERT INTO estado_ticket (nom_estado) VALUES
 ('Activo'),
 ('Pendiente'),
 ('Inactivo');
@@ -192,10 +192,10 @@ CREATE TABLE `roles` (
 -- Volcado de datos para la tabla `roles`
 --
 
-INSERT INTO Roles (Nom_rol) VALUES
-("Instructor"),
-("Administrador"),
-("Tecnico");
+INSERT INTO roles (nom_rol) VALUES
+('Instructor'),
+('Administrador'),
+('Tecnico');
 
 -- --------------------------------------------------------
 
@@ -283,7 +283,7 @@ CREATE TABLE `tip_documento` (
 -- Volcado de datos para la tabla `tip_documento`
 --
 
-INSERT INTO tip_documento (Tipo_Doc) VALUES
+INSERT INTO tip_documento (tipo_doc) VALUES
 ('Cédula de Ciudadanía'),
 ('Cedula de Extrangeria'),
 ('Pasaporte');
