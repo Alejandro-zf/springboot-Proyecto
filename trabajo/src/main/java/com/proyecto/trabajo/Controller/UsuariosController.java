@@ -1,28 +1,30 @@
 package com.proyecto.trabajo.Controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
+import java.util.Map;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.proyecto.trabajo.Services.UsuariosImportService;
 import com.proyecto.trabajo.Services.UsuariosServices;
 import com.proyecto.trabajo.dto.UsuariosCreateDto;
 import com.proyecto.trabajo.dto.UsuariosDto;
 import com.proyecto.trabajo.dto.UsuariosUpdateDto;
 
 import jakarta.validation.Valid;
-
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-
 
 
 
@@ -31,9 +33,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 public class UsuariosController {
 
     private final UsuariosServices usuariosServices;
+    private final UsuariosImportService usuariosImportService;
 
-    public UsuariosController(UsuariosServices usuariosServices){
-        this.usuariosServices= usuariosServices;
+    
+    public UsuariosController(UsuariosServices usuariosServices, UsuariosImportService usuariosImportService){
+        this.usuariosServices = usuariosServices;
+        this.usuariosImportService = usuariosImportService;
     }
 
 
@@ -91,4 +96,25 @@ public ResponseEntity<Void> eliminar(@PathVariable Long id){
     usuariosServices.eliminar(id);
     return ResponseEntity.noContent().build();
 }
+    
+
+    /**
+     * Endpoint para subir un archivo Excel (.xlsx) con usuarios masivos.
+     * Se delega el parsing a UsuariosImportService para mantener el controlador limpio.
+     */
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('Administrador')")
+    public ResponseEntity<?> uploadUsuariosMasivos(@RequestParam("file") MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Archivo vacío o no proporcionado"));
+        }
+
+        try (var is = file.getInputStream()) {
+            var result = usuariosImportService.importFromExcel(is);
+            return ResponseEntity.ok(result);
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error al procesar el archivo", "detalle", ex.getMessage()));
+        }
     }
+}
