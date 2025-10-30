@@ -140,7 +140,7 @@ public class ElementosServicesImple implements ElementosServices {
                         // Columnas esperadas (orden): nom_eleme, obse, num_seri, componen, est_elem, marc, id_subcat
                         String nom = getStringCell(row.getCell(0));
                         String obse = getStringCell(row.getCell(1));
-                        Integer numSeri = getIntegerCell(row.getCell(2));
+                        String numSeri = getStringCell(row.getCell(2));
                         String componen = getStringCell(row.getCell(3));
                         Byte estElem = getByteCell(row.getCell(4));
                         String marc = getStringCell(row.getCell(5));

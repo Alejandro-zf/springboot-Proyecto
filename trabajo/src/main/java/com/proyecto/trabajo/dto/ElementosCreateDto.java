@@ -11,7 +11,7 @@ public class ElementosCreateDto {
   
     private String nom_eleme;
     private String obse;
-    private Integer num_seri;
+    private String num_seri;
     private String componen;
     private Byte est_elem;
     private String marc;
