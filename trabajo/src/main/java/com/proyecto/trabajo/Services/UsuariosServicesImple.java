@@ -1,19 +1,25 @@
 package com.proyecto.trabajo.Services;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.stereotype.Service;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import com.proyecto.trabajo.Mapper.UsuariosMapper;
 import com.proyecto.trabajo.dto.UsuariosDto;
-import com.proyecto.trabajo.models.Usuarios;
-import com.proyecto.trabajo.repository.UsuariosRepository;
-import com.proyecto.trabajo.repository.RolesRepository;
-import com.proyecto.trabajo.repository.Roles_UsuarioRepository;
 import com.proyecto.trabajo.models.Roles;
 import com.proyecto.trabajo.models.Roles_Usuario;
+import com.proyecto.trabajo.models.Usuarios;
+import com.proyecto.trabajo.repository.RolesRepository;
+import com.proyecto.trabajo.repository.Roles_UsuarioRepository;
+import com.proyecto.trabajo.repository.UsuariosRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -36,6 +42,26 @@ public class UsuariosServicesImple implements UsuariosServices {
         this.rolesRepository = rolesRepository;
         this.rolesUsuarioRepository = rolesUsuarioRepository;
         this.passwordEncoder = passwordEncoder;
+    }
+
+    @Override
+    public byte[] generarPlantillaUsuarios() throws Exception {
+        try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+            Sheet sheet = workbook.createSheet("usuarios_template");
+            Row header = sheet.createRow(0);
+            String[] headers = new String[] {"Nombre", "Apellido", "Correo", "Contraseña", "NúmeroDocumento", "IdTipoDocumento", "IdRole"};
+            for (int i = 0; i < headers.length; i++) {
+                Cell c = header.createCell(i);
+                c.setCellValue(headers[i]);
+            }
+
+            for (int i = 0; i < headers.length; i++) {
+                sheet.autoSizeColumn(i);
+            }
+
+            workbook.write(bos);
+            return bos.toByteArray();
+        }
     }
 
     public UsuariosDto guardar(com.proyecto.trabajo.dto.UsuariosCreateDto dto) {

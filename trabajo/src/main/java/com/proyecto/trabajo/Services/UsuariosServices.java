@@ -2,8 +2,8 @@ package com.proyecto.trabajo.Services;
 
 import java.util.List;
 
-import com.proyecto.trabajo.dto.UsuariosDto;
 import com.proyecto.trabajo.dto.UsuariosCreateDto;
+import com.proyecto.trabajo.dto.UsuariosDto;
 import com.proyecto.trabajo.dto.UsuariosUpdateDto;
 
 public interface UsuariosServices {
@@ -12,4 +12,5 @@ public interface UsuariosServices {
     List<UsuariosDto> listarTodos();
     void eliminar(Long id);
     UsuariosDto actualizarUsuario(Long id, UsuariosUpdateDto dto);
+    byte[] generarPlantillaUsuarios() throws Exception;
 }

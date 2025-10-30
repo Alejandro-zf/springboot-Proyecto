@@ -3,6 +3,7 @@ package com.proyecto.trabajo.Controller;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -116,5 +117,28 @@ public ResponseEntity<Void> eliminar(@PathVariable Long id){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Error al procesar el archivo", "detalle", ex.getMessage()));
         }
+    }
+
+    // Descargar plantilla XLSX para usuarios (delegado al servicio)
+    @GetMapping("/template")
+    @PreAuthorize("hasRole('Administrador')")
+    public ResponseEntity<byte[]> descargarPlantillaUsuarios() {
+        try {
+            byte[] bytes = usuariosServices.generarPlantillaUsuarios();
+            HttpHeaders headersResp = new HttpHeaders();
+            headersResp.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+            headersResp.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=usuarios_plantilla.xlsx");
+            return new ResponseEntity<>(bytes, headersResp, HttpStatus.OK);
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    // Devuelve solamente la cabecera (nombres de columnas) que debe contener el XLSX
+    @GetMapping("/template/headers")
+    @PreAuthorize("hasRole('Administrador')")
+    public ResponseEntity<?> obtenerCabeceraPlantilla() {
+        String[] headers = new String[] {"Nombre", "Apellido", "Correo", "Contraseña", "NúmeroDocumento", "IdTipoDocumento", "IdRole"};
+        return ResponseEntity.ok(Map.of("headers", headers));
     }
 }
