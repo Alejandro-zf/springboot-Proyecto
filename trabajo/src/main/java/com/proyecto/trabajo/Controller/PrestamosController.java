@@ -39,7 +39,7 @@ public class PrestamosController {
 
     //Crear prestamo - Acceso: Admin, Tecnico, Instructor
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
     public ResponseEntity<?> crear(@Valid @RequestBody PrestamosCreateDto dto) {
         try{
             PrestamosDto creado = prestamosServices.guardar(dto);
@@ -62,7 +62,7 @@ public class PrestamosController {
 }
     //Obtener prestamos por el id - Acceso: Admin, Tecnico, Instructor
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
     public ResponseEntity<PrestamosDto> buscarPorId(@PathVariable Long id) {
         PrestamosDto prestamo = prestamosServices.buscarPorId(id);
         return ResponseEntity.ok(prestamo);
@@ -71,7 +71,7 @@ public class PrestamosController {
 
     // Listar todos los préstamos - Acceso: Admin, Tecnico, Instructor
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
     public ResponseEntity<List<PrestamosDto>> listarTodos() {
         List<PrestamosDto> prestamos = prestamosServices.listarTodos();
         return ResponseEntity.ok(prestamos);
@@ -79,7 +79,7 @@ public class PrestamosController {
 
     // Listar préstamos activos (estado=1) - Acceso: Admin, Tecnico, Instructor
     @GetMapping("/activos")
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
     public ResponseEntity<List<PrestamosDto>> listarActivos() {
         List<PrestamosDto> activos = prestamosServices.listarActivos();
         return ResponseEntity.ok(activos);
@@ -87,7 +87,7 @@ public class PrestamosController {
 
     //Eliminar prestamos por el id - Acceso: Solo Admin (Tecnico e Instructor NO pueden)
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasRole('Administrador')")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         prestamosServices.eliminar(id);
         return ResponseEntity.noContent().build();
