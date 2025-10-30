@@ -90,7 +90,17 @@ CREATE TABLE `estado_solicitudes` (
   `id` int(11) NOT NULL,
   `nom_esta` varchar(25) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+ 
+-- --------------------------------------------------------
 
+--
+-- Volcado de datos para la tabla `estado_solicitudes`
+--
+
+INSERT INTO estado_solicitudes(nom_esta) VALUES
+('Activo'),
+('Pendiente'),
+('Inactivo');
 -- --------------------------------------------------------
 
 --
@@ -106,10 +116,10 @@ CREATE TABLE `estado_ticket` (
 -- Volcado de datos para la tabla `estado_ticket`
 --
 
-INSERT INTO `estado_ticket` (`id_estado`, `nom_estado`) VALUES
-(1, 'Activo'),
-(2, 'Inactivo'),
-(3, 'Pendiente');
+INSERT INTO estado_ticket(nom_estado) VALUES
+('Activo'),
+('Pendiente'),
+('Inactivo');
 
 -- --------------------------------------------------------
 
@@ -156,16 +166,16 @@ CREATE TABLE `problemas` (
 -- Volcado de datos para la tabla `problemas`
 --
 
-INSERT INTO `problemas` (`id`, `desc_problema`) VALUES
-(1, 'Problemas con el Office'),
-(2, 'Problemas con credenciales'),
-(3, 'Sobrecalentamiento'),
-(4, 'Se apaga solo'),
-(5, 'Demasiado tiempo cargando'),
-(6, 'No enciende'),
-(7, 'Sin internet'),
-(8, 'Puertos dañados'),
-(9, 'Bloqueado');
+INSERT INTO problemas (desc_problema) VALUES
+('Problemas con el Office'),
+('Problemas con credenciales'),
+('Sobrecalentamiento'),
+('Se apaga solo'),
+('Demasiado tiempo cargando'),
+('No enciende'),
+('Sin internet'),
+('Puertos dañados'),
+('Bloqueado');
 
 -- --------------------------------------------------------
 
@@ -182,10 +192,10 @@ CREATE TABLE `roles` (
 -- Volcado de datos para la tabla `roles`
 --
 
-INSERT INTO `roles` (`id`, `nom_rol`) VALUES
-(1, 'Instructor'),
-(2, 'Administrador'),
-(3, 'Tecnico');
+INSERT INTO Roles (Nom_rol) VALUES
+("Instructor"),
+("Administrador"),
+("Tecnico");
 
 -- --------------------------------------------------------
 
@@ -273,10 +283,10 @@ CREATE TABLE `tip_documento` (
 -- Volcado de datos para la tabla `tip_documento`
 --
 
-INSERT INTO `tip_documento` (`id`, `tipo_doc`) VALUES
-(1, 'Cédula de Ciudadanía'),
-(2, 'Pasaporte'),
-(3, 'Cédula de Extranjería');
+INSERT INTO tip_documento (Tipo_Doc) VALUES
+('Cédula de Ciudadanía'),
+('Cedula de Extrangeria'),
+('Pasaporte');
 
 -- --------------------------------------------------------
 
