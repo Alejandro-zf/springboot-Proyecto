@@ -32,6 +32,9 @@ public class SolicitudesController {
     // Actualizar estado de solicitud - Acceso: Solo Admin y TECNICO (INSTRUCTOR NO puede)
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO')")
+    // Actualizar estado de solicitud - Acceso: Solo Tecnico (Admin e Instructor NO pueden)
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('Tecnico')")
     public ResponseEntity<?> actualizarEstado(@PathVariable Long id, @RequestBody SolicitudesUpdateDtos dto) {
         try {
             SolicitudesDto actualizado = solicitudesServices.actualizarSolicitud(id, dto);
@@ -51,6 +54,9 @@ public class SolicitudesController {
     //Crear solicitud - Acceso: Admin, TECNICO, INSTRUCTOR
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
+    //Crear solicitud - Acceso: Tecnico, Instructor (Admin NO puede crear)
+    @PostMapping
+    @PreAuthorize("hasAnyRole('Tecnico', 'Instructor')")
     public ResponseEntity<?> crear (@Valid @RequestBody SolicitudeCreateDto dto){
         try{
             SolicitudesDto creado = solicitudesServices.guardar(dto);
@@ -81,6 +87,9 @@ public class SolicitudesController {
     //Eliminar solicitud - Acceso: Solo Admin (TECNICO e INSTRUCTOR NO pueden)
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMINISTRADO')")
+    //Eliminar solicitud - Acceso: Solo Tecnico (Admin e Instructor NO pueden)
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('Tecnico')")
     public ResponseEntity<Void> eliminar(@PathVariable Long id){
         solicitudesServices.eliminar(id);
         return ResponseEntity.noContent().build();

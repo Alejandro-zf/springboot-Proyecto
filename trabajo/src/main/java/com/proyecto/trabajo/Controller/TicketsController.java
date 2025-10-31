@@ -35,9 +35,9 @@ public class TicketsController {
     }
 
 
-    //Crear ticket - Acceso: Admin, Tecnico, Instructor
+    //Crear ticket - Acceso: Tecnico, Instructor (Admin NO puede crear)
     @PostMapping
-    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
+    @PreAuthorize("hasAnyRole('Tecnico', 'Instructor')")
     public ResponseEntity<?> crear(@Valid  @RequestBody TicketsCreateDto dto){
         try{
             TicketsDtos creado = ticketsServices.guardar(dto);
@@ -83,9 +83,9 @@ public class TicketsController {
             return ResponseEntity.ok(tickets);
         }
 
-    //Elminar tickets - Acceso: Solo Admin (Tecnico e Instructor NO pueden)
+    //Elminar tickets - Acceso: Solo Tecnico (Admin e Instructor NO pueden)
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('Administrador')")
+    @PreAuthorize("hasRole('Tecnico')")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         ticketsServices.eliminar(id);
         return ResponseEntity.noContent().build();
