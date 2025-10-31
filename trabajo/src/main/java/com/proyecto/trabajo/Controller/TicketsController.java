@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.proyecto.trabajo.Services.TicketsServices;
 import com.proyecto.trabajo.dto.TicketsCreateDto;
 import com.proyecto.trabajo.dto.TicketsDtos;
+import com.proyecto.trabajo.dto.TicketsUpdateDtos;
 
 import jakarta.validation.Valid;
 
@@ -16,10 +17,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.security.access.AccessDeniedException;
+//
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 
 
@@ -35,9 +43,9 @@ public class TicketsController {
     }
 
 
-    //Crear ticket - Acceso: Admin, Tecnico, Instructor
+    //Crear ticket - Acceso: solo Instructor
     @PostMapping
-    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
+    @PreAuthorize("hasRole('Instructor')")
     public ResponseEntity<?> crear(@Valid  @RequestBody TicketsCreateDto dto){
         try{
             TicketsDtos creado = ticketsServices.guardar(dto);
@@ -75,19 +83,53 @@ public class TicketsController {
         return ResponseEntity.ok(tickets);
     }
 
-        //Listar solo tickets activos - Acceso: Admin, Tecnico, Instructor
-        @GetMapping("/activos")
-        @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
-        public ResponseEntity<List<TicketsDtos>> listarActivos() {
+    //Listar solo tickets activos - Acceso: Administrador, Técnico, Instructor
+    @GetMapping("/activos")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
+    public ResponseEntity<List<TicketsDtos>> listarActivos() {
             List<TicketsDtos> tickets = ticketsServices.listarActivos();
             return ResponseEntity.ok(tickets);
         }
 
-    //Elminar tickets - Acceso: Solo Admin (Tecnico e Instructor NO pueden)
+    //Eliminar tickets - Acceso: Solo Administrador
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('Administrador')")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+    public ResponseEntity<?> eliminar(@PathVariable Long id) {
         ticketsServices.eliminar(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(Map.of("mensaje", "Se eliminó exitosamente"));
+    }
+
+    //Actualizar ticket - Acceso: solo Técnico
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('Tecnico')")
+    public ResponseEntity<?> actualizar(@PathVariable Long id, @Valid @RequestBody TicketsUpdateDtos dto) {
+        try {
+            TicketsDtos actualizado = ticketsServices.actualizar(id, dto);
+            return ResponseEntity.ok(Map.of("mensaje", "Ticket actualizado exitosamente", "data", actualizado));
+        } catch (IllegalStateException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Map.of("error", ex.getMessage()));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Error al actualizar el ticket", "detalle", ex.getMessage()));
+        }
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<?> handleAccessDenied(AccessDeniedException ex) {
+        String rolUsuario = "desconocido";
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getAuthorities() != null) {
+            rolUsuario = auth.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .reduce((a, b) -> a + ", " + b)
+                .orElse("desconocido");
+        }
+        String mensaje = "Acceso restringido. Tu rol: " + rolUsuario;
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+            .body(Map.of(
+                "error", true,
+                "message", mensaje
+            ));
     }
 }
