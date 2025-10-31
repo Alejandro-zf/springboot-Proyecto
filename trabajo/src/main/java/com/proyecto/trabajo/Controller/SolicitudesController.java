@@ -29,9 +29,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RestController
 @RequestMapping("/api/solicitudes")
 public class SolicitudesController {
-    // Actualizar estado de solicitud - Acceso: Solo Admin y Tecnico (Instructor NO puede)
+    // Actualizar estado de solicitud - Acceso: Solo Admin y TECNICO (INSTRUCTOR NO puede)
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico')")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO')")
     public ResponseEntity<?> actualizarEstado(@PathVariable Long id, @RequestBody SolicitudesUpdateDtos dto) {
         try {
             SolicitudesDto actualizado = solicitudesServices.actualizarSolicitud(id, dto);
@@ -48,9 +48,9 @@ public class SolicitudesController {
         this.solicitudesServices = solicitudesServices;
     }
 
-    //Crear solicitud - Acceso: Admin, Tecnico, Instructor
+    //Crear solicitud - Acceso: Admin, TECNICO, INSTRUCTOR
     @PostMapping
-    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
     public ResponseEntity<?> crear (@Valid @RequestBody SolicitudeCreateDto dto){
         try{
             SolicitudesDto creado = solicitudesServices.guardar(dto);
@@ -58,36 +58,36 @@ public class SolicitudesController {
             .body(Map.of("mensaje","Solicitud creada exitosamente","data",creado));
         }catch (IllegalStateException ex) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(Map.of("errores1", ex.getMessage()));    
+                .body(Map.of("errores1", ex.getMessage()));
         }
     }
 
-    //Obtener solicitudes por ID - Acceso: Admin, Tecnico, Instructor
+    //Obtener solicitudes por ID - Acceso: Admin, TECNICO, INSTRUCTOR
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
     public ResponseEntity<SolicitudesDto> obtenerporId(@PathVariable Long id){
         SolicitudesDto solicitudes = solicitudesServices.buscarPorId(id);
         return ResponseEntity.ok(solicitudes);
     }
     
-    //Listar todas las solicitudes - Acceso: Admin, Tecnico, Instructor
+    //Listar todas las solicitudes - Acceso: Admin, TECNICO, INSTRUCTOR
     @GetMapping 
-    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
     public ResponseEntity<List<SolicitudesDto>> listarTodos(){
         List<SolicitudesDto> solicitudes = solicitudesServices.listarTodos();
         return ResponseEntity.ok(solicitudes);
     }
 
-    //Eliminar solicitud - Acceso: Solo Admin (Tecnico e Instructor NO pueden)
+    //Eliminar solicitud - Acceso: Solo Admin (TECNICO e INSTRUCTOR NO pueden)
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('Administrador')")
+    @PreAuthorize("hasRole('ADMINISTRADO')")
     public ResponseEntity<Void> eliminar(@PathVariable Long id){
         solicitudesServices.eliminar(id);
         return ResponseEntity.noContent().build();
     }
-    // Expirar solicitudes vencidas manualmente - Acceso: Admin, Tecnico, Instructor
+    // Expirar solicitudes vencidas manualmente - Acceso: Admin, TECNICO, INSTRUCTOR
     @PostMapping("/expirar")
-    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
     public ResponseEntity<?> expirarVencidas() {
         try {
             solicitudesServices.expirarSolicitudesVencidas();
