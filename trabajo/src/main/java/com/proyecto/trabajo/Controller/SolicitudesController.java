@@ -29,9 +29,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RestController
 @RequestMapping("/api/solicitudes")
 public class SolicitudesController {
-    // Actualizar estado de solicitud - Acceso: Solo Admin y Tecnico (Instructor NO puede)
+    // Actualizar estado de solicitud - Acceso: Solo Tecnico (Admin e Instructor NO pueden)
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico')")
+    @PreAuthorize("hasRole('Tecnico')")
     public ResponseEntity<?> actualizarEstado(@PathVariable Long id, @RequestBody SolicitudesUpdateDtos dto) {
         try {
             SolicitudesDto actualizado = solicitudesServices.actualizarSolicitud(id, dto);
@@ -48,9 +48,9 @@ public class SolicitudesController {
         this.solicitudesServices = solicitudesServices;
     }
 
-    //Crear solicitud - Acceso: Admin, Tecnico, Instructor
+    //Crear solicitud - Acceso: Tecnico, Instructor (Admin NO puede crear)
     @PostMapping
-    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
+    @PreAuthorize("hasAnyRole('Tecnico', 'Instructor')")
     public ResponseEntity<?> crear (@Valid @RequestBody SolicitudeCreateDto dto){
         try{
             SolicitudesDto creado = solicitudesServices.guardar(dto);
@@ -78,9 +78,9 @@ public class SolicitudesController {
         return ResponseEntity.ok(solicitudes);
     }
 
-    //Eliminar solicitud - Acceso: Solo Admin (Tecnico e Instructor NO pueden)
+    //Eliminar solicitud - Acceso: Solo Tecnico (Admin e Instructor NO pueden)
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('Administrador')")
+    @PreAuthorize("hasRole('Tecnico')")
     public ResponseEntity<Void> eliminar(@PathVariable Long id){
         solicitudesServices.eliminar(id);
         return ResponseEntity.noContent().build();
