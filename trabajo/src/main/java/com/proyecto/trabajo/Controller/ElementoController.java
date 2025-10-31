@@ -36,9 +36,9 @@ public class ElementoController {
         this.elementosServices = elementosServices;
     }
 
-    //Crear elemento - Acceso: Admin, Tecnico, Instructor
+    //Crear elemento - Acceso: Admin, Tecnico (Instructor NO puede crear)
     @PostMapping
-    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico')")
     public ResponseEntity<?> crear(@Valid @RequestBody ElementosCreateDto dto) {
         try{
             ElementoDto creado = elementosServices.guardar(dto);
