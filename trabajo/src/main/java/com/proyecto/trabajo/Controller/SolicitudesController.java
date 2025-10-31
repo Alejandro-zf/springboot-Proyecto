@@ -72,7 +72,7 @@ public class SolicitudesController {
     
     //Listar todas las solicitudes - Acceso: Admin, TECNICO, INSTRUCTOR
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'INSTRUCTOR')")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'TECNICO', 'Instructor')")
     public ResponseEntity<List<SolicitudesDto>> listarTodos(){
         List<SolicitudesDto> solicitudes = solicitudesServices.listarTodos();
         return ResponseEntity.ok(solicitudes);
