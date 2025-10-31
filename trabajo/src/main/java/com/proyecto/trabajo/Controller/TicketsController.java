@@ -43,9 +43,15 @@ public class TicketsController {
     }
 
 
+<<<<<<< HEAD
     //Crear ticket - Acceso: solo Instructor
     @PostMapping
     @PreAuthorize("hasRole('Instructor')")
+=======
+    //Crear ticket - Acceso: Tecnico, Instructor (Admin NO puede crear)
+    @PostMapping
+    @PreAuthorize("hasAnyRole('Tecnico', 'Instructor')")
+>>>>>>> d11120cd1141a4694e2493e99a2a7cc3ce55798c
     public ResponseEntity<?> crear(@Valid  @RequestBody TicketsCreateDto dto){
         try{
             TicketsDtos creado = ticketsServices.guardar(dto);
@@ -91,10 +97,17 @@ public class TicketsController {
             return ResponseEntity.ok(tickets);
         }
 
+<<<<<<< HEAD
     //Eliminar tickets - Acceso: Solo Administrador
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('Administrador')")
     public ResponseEntity<?> eliminar(@PathVariable Long id) {
+=======
+    //Elminar tickets - Acceso: Solo Tecnico (Admin e Instructor NO pueden)
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('Tecnico')")
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+>>>>>>> d11120cd1141a4694e2493e99a2a7cc3ce55798c
         ticketsServices.eliminar(id);
         return ResponseEntity.ok(Map.of("mensaje", "Se eliminó exitosamente"));
     }

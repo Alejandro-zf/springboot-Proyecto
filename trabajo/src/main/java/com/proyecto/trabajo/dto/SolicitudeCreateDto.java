@@ -14,7 +14,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SolicitudeCreateDto {
- 
 
     private LocalDateTime fecha_ini;
     private LocalDateTime fecha_fn;
@@ -24,6 +23,9 @@ public class SolicitudeCreateDto {
     @JsonAlias({"id_estado_soli", "estadosoli"})
     private Integer id_estado_soli;
     private String mensaj;
+
+    private Long id_categoria;
+    private Long id_subcategoria;
 
     private Long id_usu;
 
