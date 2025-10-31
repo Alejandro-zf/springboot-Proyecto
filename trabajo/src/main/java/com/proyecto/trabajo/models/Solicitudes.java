@@ -60,4 +60,13 @@ public class Solicitudes {
     @ManyToOne
     @JoinColumn(name = "id_estado_solicitud", nullable = true, foreignKey = @ForeignKey(name = "FK_Id_estado_solicitud"))
     private Estado_solicitudes estado_solicitudes;
+
+    @ManyToOne
+    @JoinColumn(name = "id_subcategoria", nullable = true, foreignKey = @ForeignKey(name = "FK_Id_subcategoria"))
+    private Sub_categoria sub_categoria;
+
+    @ManyToOne
+    @JoinColumn(name = "id_categoria", nullable = true, foreignKey = @ForeignKey(name = "FK_Id_categoria"))
+    private Categoria categoria;
+    
 }

@@ -33,5 +33,8 @@ public class Sub_categoria {
     private Categoria categoria;
 
     @OneToMany(mappedBy = "sub_categoria")
-    private List<Elementos> elementos;   
+    private List<Elementos> elementos;
+    
+    @OneToMany(mappedBy = "sub_categoria")
+    private List<Solicitudes> solicitudes;
 }
