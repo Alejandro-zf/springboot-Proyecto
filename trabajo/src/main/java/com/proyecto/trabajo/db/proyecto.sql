@@ -229,7 +229,9 @@ CREATE TABLE `solicitudes` (
   `num_ficha` int(11) DEFAULT NULL,
   `id_espacio` int(11) DEFAULT NULL,
   `id_estado_solicitud` int(11) DEFAULT NULL,
-  `id_usuari` bigint(20) NOT NULL
+  `id_usuari` bigint(20) NOT NULL,
+  `id_categoria` tinyint(4) DEFAULT NULL,
+  `id_subcategoria` bigint(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -407,7 +409,9 @@ ALTER TABLE `solicitudes`
   ADD PRIMARY KEY (`id`),
   ADD KEY `FK_Id_espacio` (`id_espacio`),
   ADD KEY `FK_Id_estado_solicitud` (`id_estado_solicitud`),
-  ADD KEY `FK_Id_usuari` (`id_usuari`);
+  ADD KEY `FK_Id_usuari` (`id_usuari`),
+  ADD KEY `FK_Id_categoria` (`id_categoria`),
+  ADD KEY `FK_Solicitud_Subcategoria` (`id_subcategoria`);
 
 --
 -- Indices de la tabla `sub_categoria`
@@ -580,13 +584,15 @@ ALTER TABLE `roles_usuario`
 ALTER TABLE `solicitudes`
   ADD CONSTRAINT `FK_Id_espacio` FOREIGN KEY (`id_espacio`) REFERENCES `espacio` (`id`),
   ADD CONSTRAINT `FK_Id_estado_solicitud` FOREIGN KEY (`id_estado_solicitud`) REFERENCES `estado_solicitudes` (`id`),
-  ADD CONSTRAINT `FK_Id_usuari` FOREIGN KEY (`id_usuari`) REFERENCES `usuarios` (`id`);
+  ADD CONSTRAINT `FK_Id_usuari` FOREIGN KEY (`id_usuari`) REFERENCES `usuarios` (`id`),
+  ADD CONSTRAINT `FK_Id_categoria` FOREIGN KEY (`id_categoria`) REFERENCES `categoria` (`id`),
+  ADD CONSTRAINT `FK_Solicitud_Subcategoria` FOREIGN KEY (`id_subcategoria`) REFERENCES `sub_categoria` (`id`);
 
 --
 -- Filtros para la tabla `sub_categoria`
 --
 ALTER TABLE `sub_categoria`
-  ADD CONSTRAINT `FK_Id_categoria` FOREIGN KEY (`categoria`) REFERENCES `categoria` (`id`);
+  ADD CONSTRAINT `FK_SubCat_Categoria` FOREIGN KEY (`categoria`) REFERENCES `categoria` (`id`);
 
 --
 -- Filtros para la tabla `tickets`
