@@ -29,7 +29,7 @@ public class Sub_categoria {
     private String nom_subcategoria;
 
     @ManyToOne
-    @JoinColumn(name = "categoria", nullable = false, foreignKey = @ForeignKey(name = "FK_Id_categoria"))
+    @JoinColumn(name = "categoria", nullable = false, foreignKey = @ForeignKey(name = "FK_SubCat_Categoria"))
     private Categoria categoria;
 
     @OneToMany(mappedBy = "sub_categoria")
