@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.proyecto.trabajo.dto.SubcategoriaDtos;
+import com.proyecto.trabajo.dto.SubcategoriaUpdateDtos;
 import com.proyecto.trabajo.dto.Sub_categoriasCreateDtos;
 import com.proyecto.trabajo.models.Sub_categoria;
 import com.proyecto.trabajo.models.Categoria;
@@ -50,6 +51,7 @@ public class SubcategoriaMapperImple implements SubcategoriaMapper {
         SubcategoriaDtos subcategoriaDto = new SubcategoriaDtos();
         subcategoriaDto.setId(subcategoria.getId());
         subcategoriaDto.setNom_subcateg(subcategoria.getNom_subcategoria());
+        subcategoriaDto.setEstado(subcategoria.getEstado());
         
         if (subcategoria.getCategoria() != null) {
             subcategoriaDto.setId_cat(subcategoria.getCategoria().getId().longValue());
@@ -57,6 +59,27 @@ public class SubcategoriaMapperImple implements SubcategoriaMapper {
         }
         
         return subcategoriaDto;
+    }
+
+    @Override
+    public void updateSubcategoriaFromUpdateDto(SubcategoriaUpdateDtos updateDto, Sub_categoria subcategoria) {
+        if (updateDto == null || subcategoria == null) {
+            return;
+        }
+        
+        if (updateDto.getNom_subcategoria() != null && !updateDto.getNom_subcategoria().isBlank()) {
+            subcategoria.setNom_subcategoria(updateDto.getNom_subcategoria());
+        }
+        
+        if (updateDto.getEstado() != null) {
+            subcategoria.setEstado(updateDto.getEstado());
+        }
+        
+        if (updateDto.getId_categoria() != null) {
+            Categoria categoria = categoriaRepository.findById(updateDto.getId_categoria())
+                .orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada con id: " + updateDto.getId_categoria()));
+            subcategoria.setCategoria(categoria);
+        }
     }
 
     @Override

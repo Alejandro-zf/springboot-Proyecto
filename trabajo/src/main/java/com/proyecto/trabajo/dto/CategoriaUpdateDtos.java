@@ -7,11 +7,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class SubcategoriaDtos {
-    private Long id;
-    private String nom_subcateg;
-    private Byte estado;
-
-    private Long id_cat;
-    private String nom_cat;
+public class CategoriaUpdateDtos {
+    private String nom_categoria;
+    private Byte estado; // 1=Activo, 0=Inactivo
 }

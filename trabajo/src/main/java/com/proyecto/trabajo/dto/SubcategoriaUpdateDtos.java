@@ -7,11 +7,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class SubcategoriaDtos {
-    private Long id;
-    private String nom_subcateg;
+public class SubcategoriaUpdateDtos {
+    private String nom_subcategoria;
     private Byte estado;
-
-    private Long id_cat;
-    private String nom_cat;
+    private Byte id_categoria;  
 }

@@ -27,6 +27,9 @@ public class Sub_categoria {
     private Long id;
     @Column(nullable = false, length = 50)
     private String nom_subcategoria;
+    
+    @Column(nullable = false)
+    private Byte estado = 1; // 1=Activo, 2=Inactivo
 
     @ManyToOne
     @JoinColumn(name = "categoria", nullable = false, foreignKey = @ForeignKey(name = "FK_SubCat_Categoria"))

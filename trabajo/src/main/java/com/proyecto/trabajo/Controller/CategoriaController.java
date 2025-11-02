@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.proyecto.trabajo.Services.CategoriaServices;
 import com.proyecto.trabajo.dto.CategoriaCreateDtos;
 import com.proyecto.trabajo.dto.CategoriaDtos;
+import com.proyecto.trabajo.dto.CategoriaUpdateDtos;
 
 import jakarta.validation.Valid;
 
@@ -59,6 +61,22 @@ public class CategoriaController {
     public ResponseEntity<List<CategoriaDtos>> listarTodos(){
         List<CategoriaDtos> categorias = categoriaServices.listarTodos();
         return ResponseEntity.ok(categorias);
+    }
+
+    //Actualizar categoria (nombre y/o estado) - Acceso: Solo Admin
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('Administrador')")
+    public ResponseEntity<?> actualizarCategoria(@PathVariable byte id, @Valid @RequestBody CategoriaUpdateDtos dto) {
+        try {
+            CategoriaDtos actualizado = categoriaServices.actualizarCategoria(id, dto);
+            return ResponseEntity.ok(Map.of("mensaje", "Categoría actualizada exitosamente", "data", actualizado));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", ex.getMessage()));
+        } catch (IllegalStateException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Map.of("error", ex.getMessage()));
+        }
     }
 
     //Eliminar categoria - Acceso: Solo Admin (Tecnico e Instructor NO pueden)

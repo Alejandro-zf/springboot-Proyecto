@@ -10,12 +10,14 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.proyecto.trabajo.Services.SubcategoriaServices;
 import com.proyecto.trabajo.dto.SubcategoriaDtos;
+import com.proyecto.trabajo.dto.SubcategoriaUpdateDtos;
 import com.proyecto.trabajo.dto.Sub_categoriasCreateDtos;
 
 import jakarta.validation.Valid;
@@ -58,6 +60,22 @@ public class SubcategoriaController {
     public ResponseEntity<List<SubcategoriaDtos>> listarTodos() {
         List<SubcategoriaDtos> subcategorias = subcategoriaServices.listarTodos();
         return ResponseEntity.ok(subcategorias);
+    }
+
+    // Actualizar Subcategoria (nombre y/o estado) - Acceso: Solo Admin
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('Administrador')")
+    public ResponseEntity<?> actualizarSubcategoria(@PathVariable Long id, @Valid @RequestBody SubcategoriaUpdateDtos dto) {
+        try {
+            SubcategoriaDtos actualizado = subcategoriaServices.actualizarSubcategoria(id, dto);
+            return ResponseEntity.ok(Map.of("mensaje", "Subcategoría actualizada exitosamente", "data", actualizado));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", ex.getMessage()));
+        } catch (IllegalStateException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Map.of("error", ex.getMessage()));
+        }
     }
 
     // Eliminar Subcategoria - Acceso: Solo Admin (Tecnico e Instructor NO pueden)

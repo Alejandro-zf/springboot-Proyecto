@@ -24,8 +24,12 @@ public class Categoria {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Byte id;
-    @Column(nullable = false, length =30)
+    
+    @Column(nullable = false, length = 30)
     private String nom_categoria;
+    
+    @Column(nullable = false)
+    private Byte estado = 1; // 1=Activo, 2=Inactivo
 
     @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL, orphanRemoval = true)
     private List <Sub_categoria> sub_categoria = new ArrayList<>();

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.proyecto.trabajo.Mapper.SubcategoriaMapper;
 import com.proyecto.trabajo.dto.SubcategoriaDtos;
+import com.proyecto.trabajo.dto.SubcategoriaUpdateDtos;
 import com.proyecto.trabajo.dto.Sub_categoriasCreateDtos;
 import com.proyecto.trabajo.models.Sub_categoria;
 import com.proyecto.trabajo.repository.Sub_categoriaRepository;
@@ -73,6 +74,30 @@ public class SubcategoriaServicesImple implements SubcategoriaServices {
         
         Sub_categoria actualizado = subcategoriaRepository.save(subcategoria);
         return subcategoriaMapper.toSubcategoriaDto(actualizado);
+    }
+
+    @Override
+    public SubcategoriaDtos actualizarSubcategoria(Long id, SubcategoriaUpdateDtos dto) {
+        // Buscar la subcategoría existente
+        Sub_categoria subcategoria = subcategoriaRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Subcategoría no encontrada con ID: " + id));
+        
+        // Validar nombre si se proporciona
+        if (dto.getNom_subcategoria() != null && !dto.getNom_subcategoria().isBlank()) {
+            validarNombreSubcategoria(dto.getNom_subcategoria());
+        }
+        
+        // Validar estado si se proporciona
+        if (dto.getEstado() != null && dto.getEstado() != 1 && dto.getEstado() != 2) {
+            throw new IllegalArgumentException("El estado debe ser 1 (Activo) o 2 (Inactivo)");
+        }
+        
+        // Actualizar campos usando el mapper
+        subcategoriaMapper.updateSubcategoriaFromUpdateDto(dto, subcategoria);
+        
+        // Guardar y retornar
+        Sub_categoria subcategoriaActualizada = subcategoriaRepository.save(subcategoria);
+        return subcategoriaMapper.toSubcategoriaDto(subcategoriaActualizada);
     }
 
     @Override

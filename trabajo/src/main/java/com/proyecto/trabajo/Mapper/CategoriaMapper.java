@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.proyecto.trabajo.dto.CategoriaCreateDtos;
 import com.proyecto.trabajo.dto.CategoriaDtos;
+import com.proyecto.trabajo.dto.CategoriaUpdateDtos;
 import com.proyecto.trabajo.models.Categoria;
 
 public interface CategoriaMapper {
@@ -13,6 +14,8 @@ public interface CategoriaMapper {
     CategoriaDtos toCategoriaDto(Categoria categoria);
     
     Categoria toCategoriaFromCreateDto(CategoriaCreateDtos createDto);
+    
+    void updateCategoriaFromUpdateDto(CategoriaUpdateDtos updateDto, Categoria categoria);
     
     List<CategoriaDtos> toCategoriaDtoList(List<Categoria> categorias);
 }

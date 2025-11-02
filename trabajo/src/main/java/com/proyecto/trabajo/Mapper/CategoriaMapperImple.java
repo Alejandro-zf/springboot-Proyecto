@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.proyecto.trabajo.dto.CategoriaCreateDtos;
 import com.proyecto.trabajo.dto.CategoriaDtos;
+import com.proyecto.trabajo.dto.CategoriaUpdateDtos;
 import com.proyecto.trabajo.models.Categoria;
 import com.proyecto.trabajo.models.Sub_categoria;
 import com.proyecto.trabajo.repository.Sub_categoriaRepository;
@@ -45,6 +46,7 @@ public class CategoriaMapperImple implements CategoriaMapper {
         CategoriaDtos categoriaDto = new CategoriaDtos();
         categoriaDto.setId_cat(categoria.getId());
         categoriaDto.setNom_cat(categoria.getNom_categoria());
+        categoriaDto.setEstado(categoria.getEstado());
         
         if (categoria.getSub_categoria() != null && !categoria.getSub_categoria().isEmpty()) {
             Sub_categoria primeraSubcat = categoria.getSub_categoria().get(0);
@@ -78,6 +80,21 @@ public class CategoriaMapperImple implements CategoriaMapper {
         }
         
         return categoria;
+    }
+
+    @Override
+    public void updateCategoriaFromUpdateDto(CategoriaUpdateDtos updateDto, Categoria categoria) {
+        if (updateDto == null || categoria == null) {
+            return;
+        }
+        
+        if (updateDto.getNom_categoria() != null && !updateDto.getNom_categoria().isBlank()) {
+            categoria.setNom_categoria(updateDto.getNom_categoria());
+        }
+        
+        if (updateDto.getEstado() != null) {
+            categoria.setEstado(updateDto.getEstado());
+        }
     }
 
     @Override
