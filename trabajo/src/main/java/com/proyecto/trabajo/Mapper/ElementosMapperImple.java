@@ -44,7 +44,7 @@ public class ElementosMapperImple implements ElementosMapper {
         elementos.setObser(elementoDto.getObse());
         elementos.setNum_serie(elementoDto.getNum_seri());
         elementos.setComponentes(elementoDto.getComponen());
-        elementos.setEstadosoelement(validarEstado(elementoDto.getEst_elemn()));
+    elementos.setEstadosoelement(validarEstado(elementoDto.getEst()));
 
         if (elementoDto.getId_subcat() != null) {
             Sub_categoria subCategoria = subCategoriaRepository.findById(elementoDto.getId_subcat())
@@ -62,12 +62,11 @@ public class ElementosMapperImple implements ElementosMapper {
         }
         
         
-        Byte estadoSincronizado = 1;
+        Byte estadoSincronizado = elementos.getEstadosoelement() != null ? elementos.getEstadosoelement() : 1;
         if (elementos.getTickets() != null && !elementos.getTickets().isEmpty()) {
             for (var ticket : elementos.getTickets()) {
                 if (ticket != null && ticket.getEstado_ticket() != null && ticket.getEstado_ticket().getId_estado() != null) {
                     byte estadoTicket = ticket.getEstado_ticket().getId_estado();
-                    
                     if (estadoTicket == 1 || estadoTicket == 2) {
                         estadoSincronizado = 0;
                         break;
@@ -81,8 +80,7 @@ public class ElementosMapperImple implements ElementosMapper {
         elementoDto.setObse(elementos.getObser());
         elementoDto.setNum_seri(elementos.getNum_serie());
         elementoDto.setComponen(elementos.getComponentes());
-        elementoDto.setEst_elemn(estadoSincronizado);
-        elementoDto.setEst(elementos.getEstadosoelement());
+    elementoDto.setEst(estadoSincronizado);
         if (elementos.getSub_categoria() != null) {
             elementoDto.setId_categ(elementos.getSub_categoria().getCategoria().getId() != null ? elementos.getSub_categoria().getCategoria().getId().longValue() : null);
             elementoDto.setTip_catg(elementos.getSub_categoria().getCategoria().getNom_categoria());
@@ -103,7 +101,7 @@ public class ElementosMapperImple implements ElementosMapper {
         elementos.setObser(createDto.getObse());
         elementos.setNum_serie(createDto.getNum_seri());
         elementos.setComponentes(createDto.getComponen());
-        elementos.setEstadosoelement(validarEstado(createDto.getEst_elem()));
+    elementos.setEstadosoelement(validarEstado(createDto.getEst()));
         elementos.setMarca(createDto.getMarc());
         if (createDto.getId_subcat() != null) {
             Sub_categoria subCategoria = subCategoriaRepository.findById(createDto.getId_subcat())
@@ -118,8 +116,8 @@ public class ElementosMapperImple implements ElementosMapper {
         if (updateDto == null || entity == null) {
             return;
         }
-        if (updateDto.getEst_elem() != null) {
-            entity.setEstadosoelement(validarEstado(updateDto.getEst_elem()));
+        if (updateDto.getEst() != null) {
+            entity.setEstadosoelement(validarEstado(updateDto.getEst()));
         }
     }
 

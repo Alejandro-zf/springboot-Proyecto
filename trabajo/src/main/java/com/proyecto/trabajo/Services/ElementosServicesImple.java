@@ -44,7 +44,7 @@ public class ElementosServicesImple implements ElementosServices {
     public byte[] generarPlantilla() {
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Plantilla Elementos");
-            String[] headers = new String[] {"nom_eleme", "obse", "num_seri", "componen", "est_elem", "marc", "id_subcat"};
+            String[] headers = new String[] {"nom_eleme", "obse", "num_seri", "componen", "est", "marc", "id_subcat"};
             Row headerRow = sheet.createRow(0);
             for (int i = 0; i < headers.length; i++) {
                 headerRow.createCell(i).setCellValue(headers[i]);
@@ -137,7 +137,6 @@ public class ElementosServicesImple implements ElementosServices {
                     if (r == sheet.getFirstRowNum()) continue;
                     total++;
                     try {
-                        // Columnas esperadas (orden): nom_eleme, obse, num_seri, componen, est_elem, marc, id_subcat
                         String nom = getStringCell(row.getCell(0));
                         String obse = getStringCell(row.getCell(1));
                         String numSeri = getStringCell(row.getCell(2));

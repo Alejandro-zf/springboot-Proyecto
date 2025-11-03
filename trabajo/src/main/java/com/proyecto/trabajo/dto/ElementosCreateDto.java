@@ -13,7 +13,7 @@ public class ElementosCreateDto {
     private String obse;
     private String num_seri;
     private String componen;
-    private Byte est_elem;
+    private Byte est;
     private String marc;
 
     private Long id_categ;

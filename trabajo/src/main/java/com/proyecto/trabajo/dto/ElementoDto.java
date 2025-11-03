@@ -13,7 +13,6 @@ public class ElementoDto {
     private String obse;
     private String num_seri;
     private String componen;
-    private Byte est_elemn;
     private Byte est;
     private String marc;
 
