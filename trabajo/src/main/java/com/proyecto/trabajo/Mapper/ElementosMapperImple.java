@@ -6,8 +6,8 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.proyecto.trabajo.dto.ElementoDto;
-import com.proyecto.trabajo.dto.ElementosCreateDto;
 import com.proyecto.trabajo.dto.ElementoUpdateDtos;
+import com.proyecto.trabajo.dto.ElementosCreateDto;
 import com.proyecto.trabajo.models.Elementos;
 import com.proyecto.trabajo.models.Sub_categoria;
 import com.proyecto.trabajo.repository.Sub_categoriaRepository;
@@ -82,6 +82,7 @@ public class ElementosMapperImple implements ElementosMapper {
         elementoDto.setNum_seri(elementos.getNum_serie());
         elementoDto.setComponen(elementos.getComponentes());
         elementoDto.setEst_elemn(estadoSincronizado);
+        elementoDto.setEst(elementos.getEstadosoelement());
         if (elementos.getSub_categoria() != null) {
             elementoDto.setId_categ(elementos.getSub_categoria().getCategoria().getId() != null ? elementos.getSub_categoria().getCategoria().getId().longValue() : null);
             elementoDto.setTip_catg(elementos.getSub_categoria().getCategoria().getNom_categoria());

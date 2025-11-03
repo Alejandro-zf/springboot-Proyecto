@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.proyecto.trabajo.Services.ElementosServices;
 import com.proyecto.trabajo.dto.ElementoDto;
+import com.proyecto.trabajo.dto.ElementoUpdateDtos;
 import com.proyecto.trabajo.dto.ElementosCreateDto;
 
 import jakarta.validation.Valid;
@@ -36,9 +38,9 @@ public class ElementoController {
         this.elementosServices = elementosServices;
     }
 
-    //Crear elemento - Acceso: Admin, Tecnico (Instructor NO puede crear)
+    //Crear elemento - Acceso: Admin(Instructor y tecnico NO puede crear)
     @PostMapping
-    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico')")
+    @PreAuthorize("hasRole('Administrador')")
     public ResponseEntity<?> crear(@Valid @RequestBody ElementosCreateDto dto) {
         try{
             ElementoDto creado = elementosServices.guardar(dto);
@@ -80,6 +82,18 @@ public class ElementoController {
     public ResponseEntity<Void> eliminar (@PathVariable Long id){
         elementosServices.eliminar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // Actualizar elemento (por ejemplo cambiar estado) - Acceso: Solo Administrador
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('Administrador')")
+    public ResponseEntity<?> actualizar(@PathVariable Long id, @RequestBody ElementoUpdateDtos dto) {
+        try {
+            var actualizado = elementosServices.actualizarElemento(id, dto);
+            return ResponseEntity.ok(Map.of("mensaje", "Elemento actualizado", "data", actualizado));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", ex.getMessage()));
+        }
     }
 
     // Carga masiva desde Excel (.xlsx) - Solo Admin

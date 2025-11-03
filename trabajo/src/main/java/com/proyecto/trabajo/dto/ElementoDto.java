@@ -14,6 +14,7 @@ public class ElementoDto {
     private String num_seri;
     private String componen;
     private Byte est_elemn;
+    private Byte est;
     private String marc;
 
     private Long id_categ;
