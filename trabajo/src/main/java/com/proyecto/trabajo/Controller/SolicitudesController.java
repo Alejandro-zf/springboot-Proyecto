@@ -29,6 +29,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RestController
 @RequestMapping("/api/solicitudes")
 public class SolicitudesController {
+    // Actualizar solicitud - Acceso: Administrador y Tecnico
+    @PutMapping("/actualizar/{id}")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico')")
+    public ResponseEntity<?> actualizarSolicitud(@PathVariable Long id, @RequestBody SolicitudesUpdateDtos dto) {
+        try {
+            SolicitudesDto actualizado = solicitudesServices.actualizarSolicitud(id, dto);
+            return ResponseEntity.ok(Map.of("mensaje", "Solicitud actualizada correctamente", "data", actualizado));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", ex.getMessage()));
+        }
+    }
     // Actualizar estado de solicitud - Acceso: Administrador y Tecnico
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('Administrador', 'Tecnico')")
@@ -69,6 +81,8 @@ public class SolicitudesController {
         SolicitudesDto solicitudes = solicitudesServices.buscarPorId(id);
         return ResponseEntity.ok(solicitudes);
     }
+
+
     
     //Listar todas las solicitudes - Acceso: Administrador, Tecnico, Instructor
     @GetMapping
