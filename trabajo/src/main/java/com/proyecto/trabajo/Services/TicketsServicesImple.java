@@ -79,8 +79,8 @@ public class TicketsServicesImple implements TicketsServices {
         Tickets tickets = ticketsMapper.toTicketsFromCreateDto(dto);
 
         if (tickets.getEstado_ticket() == null) {
-            Estado_ticket estadoPendiente = estadoTicketRepository.findById((byte)3)
-                .orElseThrow(() -> new EntityNotFoundException("Estado de ticket 'pendiente' (3) no encontrado"));
+            Estado_ticket estadoPendiente = estadoTicketRepository.findById((byte)2)
+                .orElseThrow(() -> new EntityNotFoundException("Estado de ticket 'pendiente' (2) no encontrado"));
             tickets.setEstado_ticket(estadoPendiente);
         }
 
