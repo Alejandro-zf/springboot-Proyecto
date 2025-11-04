@@ -37,9 +37,9 @@ public class PrestamosController {
         this.prestamosServices = prestamosServices;
     }
 
-    //Crear prestamo - Acceso: Solo Tecnico (Admin e Instructor NO pueden crear)
+    //Crear prestamo - Acceso: Administrador y Tecnico
     @PostMapping
-    @PreAuthorize("hasRole('Tecnico')")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico')")
     public ResponseEntity<?> crear(@Valid @RequestBody PrestamosCreateDto dto) {
         try{
             PrestamosDto creado = prestamosServices.guardar(dto);
@@ -85,9 +85,9 @@ public class PrestamosController {
         return ResponseEntity.ok(activos);
     }
 
-    //Eliminar prestamos por el id - Acceso: Solo Tecnico (Admin e Instructor NO pueden)
+    //Eliminar prestamos por el id - Acceso: Administrador y Tecnico
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('Tecnico')")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico')")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         prestamosServices.eliminar(id);
         return ResponseEntity.noContent().build();

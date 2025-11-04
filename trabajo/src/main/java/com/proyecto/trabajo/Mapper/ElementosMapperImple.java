@@ -119,6 +119,13 @@ public class ElementosMapperImple implements ElementosMapper {
         if (updateDto.getEst() != null) {
             entity.setEstadosoelement(validarEstado(updateDto.getEst()));
         }
+        // Actualizar nombre del elemento si se proporciona
+        if (updateDto.getNom_elem() != null) {
+            String nuevoNombre = updateDto.getNom_elem().trim();
+            if (!nuevoNombre.isEmpty()) {
+                entity.setNom_elemento(nuevoNombre);
+            }
+        }
     }
 
     public List<ElementoDto> toElementoDtoList(List<Elementos> elementos) {

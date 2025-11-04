@@ -42,9 +42,9 @@ public class TicketsController {
         this.ticketsServices = ticketsServices;
     }
 
-    //Crear ticket - Acceso: Tecnico, Instructor (Admin NO puede crear)
+    //Crear ticket - Acceso: Administrador, Tecnico, Instructor
     @PostMapping
-    @PreAuthorize("hasAnyRole('Tecnico', 'Instructor')")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
     public ResponseEntity<?> crear(@Valid  @RequestBody TicketsCreateDto dto){
         try{
             TicketsDtos creado = ticketsServices.guardar(dto);
@@ -89,9 +89,9 @@ public class TicketsController {
             List<TicketsDtos> tickets = ticketsServices.listarActivos();
             return ResponseEntity.ok(tickets);
         }
-    //Elminar tickets - Acceso: Solo Tecnico (Admin e Instructor NO pueden)
+    //Eliminar tickets - Acceso: Administrador y Tecnico
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('Tecnico')")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico')")
     public ResponseEntity<Map<String, String>> eliminar(@PathVariable Long id) {
         ticketsServices.eliminar(id);
         return ResponseEntity.ok(Map.of("mensaje", "Se eliminó exitosamente"));
@@ -99,7 +99,7 @@ public class TicketsController {
 
     //Actualizar ticket - Acceso: solo Técnico
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('Tecnico')")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico')")
     public ResponseEntity<?> actualizar(@PathVariable Long id, @Valid @RequestBody TicketsUpdateDtos dto) {
         try {
             TicketsDtos actualizado = ticketsServices.actualizar(id, dto);
