@@ -126,6 +126,14 @@ public class ElementosMapperImple implements ElementosMapper {
                 entity.setNom_elemento(nuevoNombre);
             }
         }
+        // Actualizar observaciones si se proporciona
+        if (updateDto.getObser() != null) {
+            entity.setObser(updateDto.getObser());
+        }
+        // Actualizar componentes si se proporciona
+        if (updateDto.getComponentes() != null) {
+            entity.setComponentes(updateDto.getComponentes());
+        }
     }
 
     public List<ElementoDto> toElementoDtoList(List<Elementos> elementos) {

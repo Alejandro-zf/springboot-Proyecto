@@ -11,4 +11,6 @@ public class ElementoUpdateDtos {
     private Long id_elem;
     private String nom_elem;
     private Byte est;
+    private String obser; // Observaciones
+    private String componentes;
 }
