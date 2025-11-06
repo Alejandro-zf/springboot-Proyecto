@@ -55,7 +55,7 @@ public class Solicitudes {
     private List <Prestamos> prestamos = new ArrayList<>();
 
     @Column(name = "estadosolicitud", nullable = false)
-    private Byte estadosolicitud = 2; // 0=No aprobado, 1=Aprobado, 2=Denegado, 3=Inactiva/Expirada
+    private Byte estadosolicitud = 2; // 0=No aprobado, 1=Aprobado, 2=Pendiente, 3=Denegado, 4=Inactiva/Expirada
 
     @ManyToOne
     @JoinColumn(name = "id_estado_solicitud", nullable = true, foreignKey = @ForeignKey(name = "FK_Id_estado_solicitud"))
