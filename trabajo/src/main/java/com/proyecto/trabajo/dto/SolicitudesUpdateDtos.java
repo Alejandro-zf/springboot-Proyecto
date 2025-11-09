@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 public class SolicitudesUpdateDtos {
     private Long id_soli;
     private Integer id_est_soli;
-    private Byte estado;
 
     private LocalDateTime fecha_ini;
     private LocalDateTime fecha_fn;

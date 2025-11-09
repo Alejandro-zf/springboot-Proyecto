@@ -8,22 +8,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.proyecto.trabajo.Mapper.SolicitudesMapper;
-import com.proyecto.trabajo.dto.SolicitudesDto;
 import com.proyecto.trabajo.dto.SolicitudeCreateDto;
+import com.proyecto.trabajo.dto.SolicitudesDto;
 import com.proyecto.trabajo.dto.SolicitudesUpdateDtos;
-import com.proyecto.trabajo.models.Solicitudes;
-import com.proyecto.trabajo.models.Usuarios;
+import com.proyecto.trabajo.models.Elemento_Solicitudes;
+import com.proyecto.trabajo.models.Elementos;
 import com.proyecto.trabajo.models.Espacio;
 import com.proyecto.trabajo.models.Prestamos;
-import com.proyecto.trabajo.models.Elementos;
-import com.proyecto.trabajo.models.Elemento_Solicitudes;
 import com.proyecto.trabajo.models.Prestamos_Elemento;
+import com.proyecto.trabajo.models.Solicitudes;
+import com.proyecto.trabajo.models.Usuarios;
+import com.proyecto.trabajo.repository.ElementosRepository;
+import com.proyecto.trabajo.repository.EspacioRepository;
+import com.proyecto.trabajo.repository.PrestamosElementoRepository;
+import com.proyecto.trabajo.repository.PrestamosRepository;
 import com.proyecto.trabajo.repository.SolicitudesRepository;
 import com.proyecto.trabajo.repository.UsuariosRepository;
-import com.proyecto.trabajo.repository.EspacioRepository;
-import com.proyecto.trabajo.repository.PrestamosRepository;
-import com.proyecto.trabajo.repository.ElementosRepository;
-import com.proyecto.trabajo.repository.PrestamosElementoRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -194,15 +194,7 @@ public class SolicitudesServicesImple implements SolicitudesServices {
         Solicitudes solicitudes = solicitudesRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada"));
 
-    solicitudesMapper.updateSolicitudesFromUpdateDto(dto, solicitudes);
-
-        if (dto != null && dto.getEstado() != null) {
-            Byte est = dto.getEstado();
-            if (est != 0 && est != 1) {
-                throw new IllegalArgumentException("Estado inválido. Debe ser 1 (activo) o 0 (inactivo)");
-            }
-            solicitudes.setEstado(est);
-        }
+        solicitudesMapper.updateSolicitudesFromUpdateDto(dto, solicitudes);
         boolean aprobado = dto != null && dto.getId_est_soli() != null && dto.getId_est_soli() == 1;
         boolean sinPrestamo = solicitudes.getPrestamos() == null || solicitudes.getPrestamos().isEmpty();
 
