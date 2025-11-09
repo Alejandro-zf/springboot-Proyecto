@@ -88,19 +88,25 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
             if (nombreEstado != null && !nombreEstado.isEmpty()) {
                 dto.setEst_soli(nombreEstado);
             } else {
-                switch (entity.getEstado_solicitudes().getId()) {
-                    case 1:
-                        dto.setEst_soli("Activo");
-                        break;
-                    case 2:
-                        dto.setEst_soli("Inactivo");
-                        break;
-                    case 3:
-                        dto.setEst_soli("Pendiente");
-                        break;
-                    default:
-                        dto.setEst_soli("Desconocido");
-                }
+                    switch (entity.getEstado_solicitudes().getId()) {
+                        case 1:
+                            dto.setEst_soli("Pendiente");
+                            break;
+                        case 2:
+                            dto.setEst_soli("Aprobado");
+                            break;
+                        case 3:
+                            dto.setEst_soli("Rechazado");
+                            break;
+                        case 4:
+                            dto.setEst_soli("En uso");
+                            break;
+                        case 5:
+                            dto.setEst_soli("Finalizado");
+                            break;
+                        default:
+                            dto.setEst_soli("Desconocido");
+                    }
             }
         }
         if (entity.getUsuario() != null) {
@@ -188,10 +194,46 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
         if (updateDto.getFecha_fn() != null) {
             entity.setFecha_fin(updateDto.getFecha_fn());
         }
+        if (updateDto.getAmbient() != null) {
+            entity.setAmbiente(updateDto.getAmbient());
+        }
+        if (updateDto.getNum_fich() != null) {
+            entity.setNum_ficha(updateDto.getNum_fich());
+        }
         if (updateDto.getId_est_soli() != null) {
             Estado_solicitudes estadoSolicitudes = estadoSolicitudesRepository.findById(updateDto.getId_est_soli())
                     .orElseThrow(() -> new EntityNotFoundException("Estado de solicitud no encontrado"));
             entity.setEstado_solicitudes(estadoSolicitudes);
+            try {
+                entity.setEstadosolicitud(updateDto.getId_est_soli().byteValue());
+            } catch (Exception e) {
+            }
+        }
+        if (updateDto.getId_usu() != null) {
+            Usuarios usuario = usuariosRepository.findById(updateDto.getId_usu())
+                    .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
+            entity.setUsuario(usuario);
+        }
+        if (updateDto.getId_esp() != null) {
+            Espacio espacio = espacioRepository.findById(updateDto.getId_esp().intValue())
+                    .orElseThrow(() -> new EntityNotFoundException("Espacio no encontrado"));
+            entity.setEspacio(espacio);
+        }
+
+        if (updateDto.getIds_elem() != null) {
+            if (entity.getElemento() != null) {
+                entity.getElemento().clear();
+            }
+            Set<Long> uniqueElemIds = new LinkedHashSet<>(updateDto.getIds_elem());
+            for (Long idElem : uniqueElemIds) {
+                if (idElem == null) continue;
+                Elementos elemento = elementosRepository.findById(idElem)
+                        .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
+                Elemento_Solicitudes es = new Elemento_Solicitudes();
+                es.setSolicitudes(entity);
+                es.setElementos(elemento);
+                entity.getElemento().add(es);
+            }
         }
     }
 }
