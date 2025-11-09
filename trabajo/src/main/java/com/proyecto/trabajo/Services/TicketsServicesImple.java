@@ -44,7 +44,7 @@ public class TicketsServicesImple implements TicketsServices {
     private void sincronizarEstadoElementoPorTicket(Tickets ticket) {
         if (ticket == null) return;
         Elementos elemento = ticket.getElementos();
-        Estado_ticket estado = ticket.getEstado_ticket();
+    Estado_ticket estado = ticket.getId_est_tick();
         if (elemento == null || estado == null || estado.getId_estado() == null) return;
 
         
@@ -78,10 +78,10 @@ public class TicketsServicesImple implements TicketsServices {
 
         Tickets tickets = ticketsMapper.toTicketsFromCreateDto(dto);
 
-        if (tickets.getEstado_ticket() == null) {
+        if (tickets.getId_est_tick() == null) {
             Estado_ticket estadoPendiente = estadoTicketRepository.findById((byte)2)
                 .orElseThrow(() -> new EntityNotFoundException("Estado de ticket 'pendiente' (2) no encontrado"));
-            tickets.setEstado_ticket(estadoPendiente);
+            tickets.setId_est_tick(estadoPendiente);
         }
 
         if (tickets.getProblemas() == null && dto.getId_problem() != null) {
@@ -150,11 +150,11 @@ public class TicketsServicesImple implements TicketsServices {
         if (dto.getFecha_fin() != null) {
             tickets.setFecha_finn(dto.getFecha_fin());
         }
-        if (dto.getId_est_tick() != null) {
-            Estado_ticket estado = estadoTicketRepository.findById(dto.getId_est_tick().byteValue())
-                    .orElseThrow(() -> new EntityNotFoundException("Estado de ticket no encontrado"));
-            tickets.setEstado_ticket(estado);
-        }
+    if (dto.getId_est_tick() != null) {
+        Estado_ticket estado = estadoTicketRepository.findById(dto.getId_est_tick().byteValue())
+            .orElseThrow(() -> new EntityNotFoundException("Estado de ticket no encontrado"));
+        tickets.setId_est_tick(estado);
+    }
 
         Tickets actualizado = ticketsRepository.save(tickets);
         sincronizarEstadoElementoPorTicket(actualizado);

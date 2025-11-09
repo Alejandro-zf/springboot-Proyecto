@@ -26,6 +26,6 @@ public class Estado_ticket {
     @Column (nullable = false, length =15)
     private String nom_estado;
 
-    @OneToMany(mappedBy = "estado_ticket", cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "id_est_tick", cascade = CascadeType.ALL,orphanRemoval = true)
     private List <Tickets> tickets = new ArrayList<>();
 }   

@@ -22,5 +22,5 @@ public class TicketsCreateDto {
 
     private Long id_elem;
 
-    private Long est_tick;
+    private Long id_est_tick;
 }

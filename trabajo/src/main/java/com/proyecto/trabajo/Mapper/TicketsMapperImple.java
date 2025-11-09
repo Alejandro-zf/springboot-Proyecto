@@ -48,7 +48,7 @@ public class TicketsMapperImple implements TicketsMapper {
         if (ticketsDtos.getId_est_tick() != null) {
             Estado_ticket estado = estadoTicketRepository.findById(ticketsDtos.getId_est_tick().byteValue())
                 .orElseThrow(() -> new EntityNotFoundException("Estado de ticket no encontrado"));
-            tickets.setEstado_ticket(estado);
+            tickets.setId_est_tick(estado);
         }
         if (ticketsDtos.getId_eleme() != null) {
             Elementos elemento = elementosRepository.findById(ticketsDtos.getId_eleme())
@@ -79,9 +79,9 @@ public class TicketsMapperImple implements TicketsMapper {
             ticketsDtos.setId_usuario(0L);
             ticketsDtos.setNom_usu("");
         }
-        if (tickets.getEstado_ticket() != null) {
-            ticketsDtos.setId_est_tick(tickets.getEstado_ticket().getId_estado().longValue());
-            switch (tickets.getEstado_ticket().getId_estado()) {
+        if (tickets.getId_est_tick() != null) {
+            ticketsDtos.setId_est_tick(tickets.getId_est_tick().getId_estado().longValue());
+            switch (tickets.getId_est_tick().getId_estado()) {
                 case 1:
                     ticketsDtos.setTip_est_ticket("Aprobado");
                     break;
@@ -126,11 +126,11 @@ public class TicketsMapperImple implements TicketsMapper {
         tickets.setAmbiente(createDto.getAmbient());
         tickets.setObservaciones(createDto.getObser());
         
-        if (createDto.getEst_tick() != null) {
-            tickets.setEstado(createDto.getEst_tick().byteValue());
-            Estado_ticket estado = estadoTicketRepository.findById(createDto.getEst_tick().byteValue())
-                .orElseThrow(() -> new EntityNotFoundException("Estado de ticket no encontrado"));
-            tickets.setEstado_ticket(estado);
+            if (createDto.getId_est_tick() != null) {
+        tickets.setEstado(createDto.getId_est_tick().byteValue());
+        Estado_ticket estado = estadoTicketRepository.findById(createDto.getId_est_tick().byteValue())
+            .orElseThrow(() -> new EntityNotFoundException("Estado de ticket no encontrado"));
+        tickets.setId_est_tick(estado);
         }
         if (createDto.getId_usu() != null) {
             Usuarios usuario = usuariosRepository.findById(createDto.getId_usu())

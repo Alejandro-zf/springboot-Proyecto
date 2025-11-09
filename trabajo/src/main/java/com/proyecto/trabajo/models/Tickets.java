@@ -47,8 +47,8 @@ public class Tickets {
     private Usuarios usuario;
 
     @ManyToOne
-    @JoinColumn(name = "estado_ticket", nullable = false, foreignKey = @ForeignKey(name = "FK_Id_estado"))
-    private Estado_ticket estado_ticket;
+    @JoinColumn(name = "id_est_tick", nullable = false, foreignKey = @ForeignKey(name = "FK_Id_estado"))
+    private Estado_ticket id_est_tick;
 
     @ManyToOne 
     @JoinColumn(name = "problemas",nullable = false, foreignKey = @ForeignKey(name = "Fk_Id_Problemas"))
