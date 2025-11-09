@@ -11,8 +11,7 @@ import com.proyecto.trabajo.models.Solicitudes;
 
 public interface SolicitudesRepository extends JpaRepository<Solicitudes, Long> {
 
-	// Recupera solicitudes cuya fecha_inicio ya pasó y que no estén ya marcadas como inactivas (3)
-	@Query("SELECT s FROM Solicitudes s WHERE s.fecha_inicio < :now AND s.estadosolicitud <> 3")
+	@Query("SELECT s FROM Solicitudes s WHERE s.fecha_fin < :now AND s.estadosolicitud = 2")
 	List<Solicitudes> findVencidasNoExpiradas(@Param("now") LocalDateTime now);
 
 }

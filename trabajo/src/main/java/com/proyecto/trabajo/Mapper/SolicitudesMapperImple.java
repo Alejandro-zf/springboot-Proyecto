@@ -109,6 +109,12 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
                     }
             }
         }
+
+        try {
+            dto.setEstado(entity.getEstado());
+        } catch (Exception e) {
+
+        }
         if (entity.getUsuario() != null) {
             dto.setId_usu(entity.getUsuario().getId());
             dto.setNom_usu(entity.getUsuario().getNom_usu());
@@ -158,6 +164,11 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
         .orElseThrow(() -> new EntityNotFoundException("Estado de solicitud no encontrado"));
     solicitudes.setEstado_solicitudes(estadoSolicitudes);
     solicitudes.setEstadosolicitud(estadoId.byteValue());
+    try {
+        solicitudes.setEstado(createDto.getEstado() != null ? createDto.getEstado() : (byte)1);
+    } catch (Exception ex) {
+        solicitudes.setEstado((byte)1);
+    }
         if (createDto.getId_usu() != null) {
             Usuarios usuario = usuariosRepository.findById(createDto.getId_usu())
                     .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
@@ -207,6 +218,13 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
             try {
                 entity.setEstadosolicitud(updateDto.getId_est_soli().byteValue());
             } catch (Exception e) {
+            }
+        }
+        if (updateDto.getEstado() != null) {
+            try {
+                entity.setEstado(updateDto.getEstado());
+            } catch (Exception e) {
+                // ignore invalid
             }
         }
         if (updateDto.getId_usu() != null) {

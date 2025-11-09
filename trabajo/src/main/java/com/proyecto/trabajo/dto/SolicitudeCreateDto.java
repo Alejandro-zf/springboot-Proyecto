@@ -3,11 +3,12 @@ package com.proyecto.trabajo.dto;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,6 +23,7 @@ public class SolicitudeCreateDto {
     private Integer cantid;
     @JsonAlias({"id_estado_soli", "estadosoli"})
     private Integer id_estado_soli;
+    private Byte estado;
     private String mensaj;
 
     private Long id_categoria;

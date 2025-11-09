@@ -195,6 +195,14 @@ public class SolicitudesServicesImple implements SolicitudesServices {
                 .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada"));
 
     solicitudesMapper.updateSolicitudesFromUpdateDto(dto, solicitudes);
+
+        if (dto != null && dto.getEstado() != null) {
+            Byte est = dto.getEstado();
+            if (est != 0 && est != 1) {
+                throw new IllegalArgumentException("Estado inválido. Debe ser 1 (activo) o 0 (inactivo)");
+            }
+            solicitudes.setEstado(est);
+        }
         boolean aprobado = dto != null && dto.getId_est_soli() != null && dto.getId_est_soli() == 1;
         boolean sinPrestamo = solicitudes.getPrestamos() == null || solicitudes.getPrestamos().isEmpty();
 
