@@ -16,7 +16,6 @@ private LocalDateTime fecha_fn;
 private String ambient;
 private Integer num_fich;
 	private String est_soli;
-private Byte estado;
 private String mensaj;
 private Integer cantid;
 

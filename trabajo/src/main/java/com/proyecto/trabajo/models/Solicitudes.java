@@ -69,7 +69,5 @@ public class Solicitudes {
     @JoinColumn(name = "id_categoria", nullable = true, foreignKey = @ForeignKey(name = "FK_Id_categoria"))
     private Categoria categoria;
     
-    @Column(name = "estado", nullable = false)
-    private Byte estado = 1; 
     
 }

@@ -23,7 +23,6 @@ public class SolicitudeCreateDto {
     private Integer cantid;
     @JsonAlias({"id_estado_soli", "estadosoli"})
     private Integer id_estado_soli;
-    private Byte estado;
     private String mensaj;
 
     private Long id_categoria;
