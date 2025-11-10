@@ -6,15 +6,19 @@ import com.proyecto.trabajo.dto.SolicitudesDto;
 import com.proyecto.trabajo.dto.SolicitudeCreateDto;
 import com.proyecto.trabajo.dto.SolicitudesUpdateDtos;
 import com.proyecto.trabajo.models.Solicitudes;
+import com.proyecto.trabajo.models.Sub_categoria;
 import com.proyecto.trabajo.models.Usuarios;
 import com.proyecto.trabajo.models.Espacio;
 import com.proyecto.trabajo.models.Elementos;
+import com.proyecto.trabajo.models.Categoria;
 import com.proyecto.trabajo.models.Elemento_Solicitudes;
 import com.proyecto.trabajo.models.Estado_solicitudes;
 import com.proyecto.trabajo.repository.EspacioRepository;
 import com.proyecto.trabajo.repository.UsuariosRepository;
 import com.proyecto.trabajo.repository.ElementosRepository;
 import com.proyecto.trabajo.repository.Estado_solicitudesRepository;
+import com.proyecto.trabajo.repository.CategoriaRepository;
+import com.proyecto.trabajo.repository.Sub_categoriaRepository;
 import java.util.Set;
 import java.util.LinkedHashSet;
 
@@ -27,12 +31,23 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
     private final EspacioRepository espacioRepository;
     private final ElementosRepository elementosRepository;
     private final Estado_solicitudesRepository estadoSolicitudesRepository;
+    private final CategoriaRepository categoriaRepository;
+    private final Sub_categoriaRepository subCategoriaRepository;
 
-    public SolicitudesMapperImple(UsuariosRepository usuariosRepository, EspacioRepository espacioRepository, ElementosRepository elementosRepository, Estado_solicitudesRepository estadoSolicitudesRepository) {
+    public SolicitudesMapperImple(
+        UsuariosRepository usuariosRepository,
+        EspacioRepository espacioRepository,
+        ElementosRepository elementosRepository,
+        Estado_solicitudesRepository estadoSolicitudesRepository,
+        CategoriaRepository categoriaRepository,
+        Sub_categoriaRepository subCategoriaRepository
+    ) {
         this.usuariosRepository = usuariosRepository;
         this.espacioRepository = espacioRepository;
         this.elementosRepository = elementosRepository;
         this.estadoSolicitudesRepository = estadoSolicitudesRepository;
+        this.categoriaRepository = categoriaRepository;
+        this.subCategoriaRepository = subCategoriaRepository;
     }
 
     @Override
@@ -141,6 +156,16 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
             dto.setId_elem(idsJoin.toString());
             dto.setNom_elem(namesJoin.toString());
         }
+        // Mapeo de categoría
+        if (entity.getCategoria() != null) {
+            dto.setId_cat(entity.getCategoria().getId().longValue());
+            dto.setNom_cat(entity.getCategoria().getNom_categoria());
+        }
+        // Mapeo de subcategoría
+        if (entity.getSub_categoria() != null) {
+            dto.setId_subcat(entity.getSub_categoria().getId());
+            dto.setNom_subcat(entity.getSub_categoria().getNom_subcategoria());
+        }
         return dto;
     }
 
@@ -180,6 +205,18 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
                 es.setElementos(elemento);
                 solicitudes.getElemento().add(es);
             }
+        }
+        // Mapeo de categoría
+        if (createDto.getId_categoria() != null) {
+            Categoria categoria = categoriaRepository.findById(createDto.getId_categoria().byteValue())
+                .orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada"));
+            solicitudes.setCategoria(categoria);
+        }
+        // Mapeo de subcategoría
+        if (createDto.getId_subcategoria() != null) {
+            Sub_categoria subCategoria = subCategoriaRepository.findById(createDto.getId_subcategoria())
+                .orElseThrow(() -> new EntityNotFoundException("Subcategoría no encontrada"));
+            solicitudes.setSub_categoria(subCategoria);
         }
         return solicitudes;
     }
