@@ -11,12 +11,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
+@Data
 @Entity
 public class Espacio {
     @Id
@@ -25,10 +26,15 @@ public class Espacio {
     @Column(nullable = false,length = 25)
     private String nom_espa;
 
-    // Setter temporal para pruebas
-    public void setNom_espa(String nom_espa) {
-        this.nom_espa = nom_espa;
-    }
+
+    @Column(nullable = false,length = 900)
+    private String descripcion;
+
+    @Column(nullable = false)
+    private Byte estadoespacio;
+
+    @Column(columnDefinition = "LONGTEXT")
+    private String imagenes;
 
 
     @OneToMany(mappedBy = "espacio", cascade = CascadeType.ALL, orphanRemoval = true)

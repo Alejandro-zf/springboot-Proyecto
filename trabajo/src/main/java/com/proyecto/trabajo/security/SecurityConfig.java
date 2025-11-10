@@ -52,6 +52,7 @@ public class SecurityConfig {
                 // Permitir acceso sin autenticación a estas rutas
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/api/public/**").permitAll()
+                .requestMatchers("/uploads/**").permitAll() // Permitir acceso público a archivos subidos
                 .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/Usuarios").permitAll() // Permitir POST público para crear usuario
 
                 // Todas las rutas API requieren autenticación (los permisos específicos están en @PreAuthorize de cada método)
