@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 
 
 
@@ -83,6 +84,21 @@ public class PrestamosController {
     public ResponseEntity<List<PrestamosDto>> listarActivos() {
         List<PrestamosDto> activos = prestamosServices.listarActivos();
         return ResponseEntity.ok(activos);
+    }
+
+    // Actualizar préstamo - Acceso: Administrador y Tecnico
+    @PutMapping
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico')")
+    public ResponseEntity<?> actualizar(@Valid @RequestBody PrestamosDto dto) {
+        try {
+            PrestamosDto actualizado = prestamosServices.actualizarPrestamo(dto);
+            return ResponseEntity.ok(Map.of("mensaje", "Préstamo actualizado", "data", actualizado));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", ex.getMessage()));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error al actualizar el préstamo", "detalle", ex.getMessage()));
+        }
     }
 
     //Eliminar prestamos por el id - Acceso: Administrador y Tecnico
