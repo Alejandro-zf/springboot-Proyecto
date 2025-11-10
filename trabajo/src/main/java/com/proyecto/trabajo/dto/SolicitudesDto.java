@@ -28,8 +28,8 @@ private String nom_espa;
 private String id_elem;
 private String nom_elem;
 
-private Long id_categoria;
-private String nom_categoria;
-private Long id_subcategoria;
-private String nom_subcategoria;
+private Long id_cat;
+private String nom_cat;
+private Long id_subcat;
+private String nom_subcat;
 }
