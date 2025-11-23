@@ -14,6 +14,7 @@ public class TicketsUpdateDtos {
     private LocalDateTime fecha_in;
     private LocalDateTime fecha_fin;
     private Byte estado;
+    private String imageness; 
 
     private Long id_est_tick;
     

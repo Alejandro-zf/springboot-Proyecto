@@ -4,12 +4,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.proyecto.trabajo.Services.TicketsServices;
+import com.proyecto.trabajo.Services.FileStorageService;
 import com.proyecto.trabajo.dto.TicketsCreateDto;
 import com.proyecto.trabajo.dto.TicketsDtos;
 import com.proyecto.trabajo.dto.TicketsUpdateDtos;
 
 import jakarta.validation.Valid;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -37,9 +39,36 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class TicketsController {
 
     private final TicketsServices ticketsServices;
+    private final FileStorageService fileStorageService;
 
-    public TicketsController(TicketsServices ticketsServices) {
+    public TicketsController(TicketsServices ticketsServices, FileStorageService fileStorageService) {
         this.ticketsServices = ticketsServices;
+        this.fileStorageService = fileStorageService;
+    }
+
+    //Subir imágenes y obtener URLs - Para tickets
+    @PostMapping("/upload-images")
+    @PreAuthorize("hasAnyRole('ROLE_Administrador', 'ROLE_Tecnico', 'ROLE_Instructor')")
+    public ResponseEntity<?> uploadImages(@RequestBody Map<String, List<String>> request) {
+        try {
+            List<String> base64Images = request.get("images");
+            if (base64Images == null || base64Images.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("error", "No se proporcionaron imágenes"));
+            }
+
+            List<String> imageUrls = new ArrayList<>();
+            for (String base64Image : base64Images) {
+                // Guardar en la carpeta "tickets"
+                String imageUrl = fileStorageService.saveBase64Image(base64Image, "tickets");
+                imageUrls.add(imageUrl);
+            }
+
+            return ResponseEntity.ok(Map.of("urls", imageUrls));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error al subir las imágenes", "detalle", ex.getMessage()));
+        }
     }
 
     //Crear ticket - Acceso: Administrador, Tecnico, Instructor

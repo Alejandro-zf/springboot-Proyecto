@@ -16,6 +16,7 @@ public class TicketsDtos {
     private String ambient;
     private String Obser;
     private Byte estado;
+    private String imageness; 
     
     private Long probloem_id;
     private String nom_problm;

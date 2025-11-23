@@ -15,6 +15,9 @@ public class TicketsCreateDto {
     private LocalDateTime fecha_fin;
     private String ambient;
     private String obser;
+    
+    // Campo opcional: URLs de imágenes en formato JSON (puede ser null)
+    private String imageness;
 
     private Long id_problem;
 

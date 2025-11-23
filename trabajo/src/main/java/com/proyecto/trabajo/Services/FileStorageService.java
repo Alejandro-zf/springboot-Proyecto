@@ -16,12 +16,18 @@ import java.util.UUID;
 @Service
 public class FileStorageService {
 
-    @Value("${file.upload-dir:uploads/espacios}")
-    private String uploadDir;
+    @Value("${file.upload-dir:uploads}")
+    private String baseUploadDir;
 
+    // Método para guardar imágenes (por defecto en espacios para compatibilidad)
     public String saveBase64Image(String base64Image) throws IOException {
+        return saveBase64Image(base64Image, "espacios");
+    }
+
+    // Método sobrecargado para especificar la carpeta
+    public String saveBase64Image(String base64Image, String folder) throws IOException {
         // Crear directorio si no existe
-        Path uploadPath = Paths.get(uploadDir);
+        Path uploadPath = Paths.get(baseUploadDir, folder);
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
         }
@@ -49,7 +55,7 @@ public class FileStorageService {
         }
 
         // Retornar la URL relativa
-        return "/uploads/espacios/" + fileName;
+        return "/uploads/" + folder + "/" + fileName;
     }
 
     private String getExtensionFromMimeType(String mimeType) {
@@ -67,9 +73,10 @@ public class FileStorageService {
 
     public boolean deleteImage(String imageUrl) {
         try {
-            if (imageUrl != null && imageUrl.startsWith("/uploads/espacios/")) {
-                String fileName = imageUrl.substring("/uploads/espacios/".length());
-                Path filePath = Paths.get(uploadDir, fileName);
+            if (imageUrl != null && imageUrl.startsWith("/uploads/")) {
+                // Extraer la ruta relativa después de /uploads/
+                String relativePath = imageUrl.substring("/uploads/".length());
+                Path filePath = Paths.get(baseUploadDir, relativePath);
                 Files.deleteIfExists(filePath);
                 return true;
             }

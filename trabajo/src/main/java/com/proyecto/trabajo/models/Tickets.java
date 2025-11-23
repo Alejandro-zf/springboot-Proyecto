@@ -33,14 +33,15 @@ public class Tickets {
     @Column(nullable = false, length = 30)
     private String ambiente;
 
-
-
     @Column(nullable = true, length = 255)
     private String observaciones;
 
 
     @Column(nullable = false)
     private Byte estado = 2; // 1=activo/pendiente, 2=inactivo, 3=solucionado
+
+    @Column(columnDefinition = "LONGTEXT")
+    private String imageness;
     
     @ManyToOne
     @JoinColumn(name = "id_usu", nullable = false, foreignKey = @ForeignKey(name = "FK_Id_usu"))
