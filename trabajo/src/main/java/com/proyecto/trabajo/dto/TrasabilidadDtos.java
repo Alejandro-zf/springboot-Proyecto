@@ -18,6 +18,7 @@ public class TrasabilidadDtos {
     private String nom_us;
 
     private Long id_ticet;
+    private String nom_problm;
 
     private Long id_elemen;
     private String nom_elemen;
