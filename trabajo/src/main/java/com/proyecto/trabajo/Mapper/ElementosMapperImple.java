@@ -65,8 +65,8 @@ public class ElementosMapperImple implements ElementosMapper {
         Byte estadoSincronizado = elementos.getEstadosoelement() != null ? elementos.getEstadosoelement() : 1;
         if (elementos.getTickets() != null && !elementos.getTickets().isEmpty()) {
             for (var ticket : elementos.getTickets()) {
-                if (ticket != null && ticket.getId_est_tick() != null && ticket.getId_est_tick().getId_estado() != null) {
-                    byte estadoTicket = ticket.getId_est_tick().getId_estado();
+                if (ticket != null && ticket.getIdEstTick() != null && ticket.getIdEstTick().getIdEstado() != null) {
+                    byte estadoTicket = ticket.getIdEstTick().getIdEstado();
                     if (estadoTicket == 1 || estadoTicket == 2) {
                         estadoSincronizado = 0;
                         break;

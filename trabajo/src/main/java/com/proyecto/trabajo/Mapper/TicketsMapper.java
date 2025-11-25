@@ -9,10 +9,10 @@ public interface TicketsMapper {
     TicketsDtos toTicketsDto(Tickets tickets);
     Tickets toTicketsFromCreateDto(TicketsCreateDto createDto);
     default void mapEstadoTicket(Tickets ticket, TicketsDtos dto) {
-        if (ticket.getId_est_tick() != null) {
-            Byte idEstado = ticket.getId_est_tick().getId_estado();
+        if (ticket.getIdEstTick() != null) {
+            Byte idEstado = ticket.getIdEstTick().getIdEstado();
             dto.setId_est_tick(idEstado != null ? idEstado.longValue() : null);
-            switch (ticket.getId_est_tick().getId_estado()) {
+            switch (ticket.getIdEstTick().getIdEstado()) {
                 case 1:
                     dto.setTip_est_ticket("Aprobado");
                     break;

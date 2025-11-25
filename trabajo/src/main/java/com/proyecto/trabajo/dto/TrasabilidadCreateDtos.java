@@ -18,4 +18,6 @@ public class TrasabilidadCreateDtos {
 
     private Long id_ticet;
 
+    private Long id_elemen;
+
 }

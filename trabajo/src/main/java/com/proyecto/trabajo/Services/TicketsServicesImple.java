@@ -11,12 +11,10 @@ import com.proyecto.trabajo.Mapper.TicketsMapper;
 import com.proyecto.trabajo.dto.TicketsDtos;
 import com.proyecto.trabajo.dto.TicketsCreateDto;
 import com.proyecto.trabajo.models.Tickets;
-//
 import com.proyecto.trabajo.models.Estado_ticket;
 import com.proyecto.trabajo.models.Problemas;
 import com.proyecto.trabajo.models.Elementos;
 import com.proyecto.trabajo.repository.TicketsRepository;
-//
 import com.proyecto.trabajo.repository.Estado_TicketRepository;
 import com.proyecto.trabajo.repository.ProblemasRepository;
 import com.proyecto.trabajo.repository.ElementosRepository;
@@ -28,7 +26,6 @@ public class TicketsServicesImple implements TicketsServices {
 
     private final TicketsRepository ticketsRepository;
     private final TicketsMapper ticketsMapper;
-    //
     private final Estado_TicketRepository estadoTicketRepository;
     private final ProblemasRepository problemasRepository;
     private final ElementosRepository elementosRepository;
@@ -41,14 +38,14 @@ public class TicketsServicesImple implements TicketsServices {
         this.problemasRepository = problemasRepository;
         this.elementosRepository = elementosRepository;
     }
+
     private void sincronizarEstadoElementoPorTicket(Tickets ticket) {
         if (ticket == null) return;
         Elementos elemento = ticket.getElementos();
-    Estado_ticket estado = ticket.getId_est_tick();
-        if (elemento == null || estado == null || estado.getId_estado() == null) return;
+        Estado_ticket estado = ticket.getIdEstTick();
+        if (elemento == null || estado == null || estado.getIdEstado() == null) return;
 
-        
-        final byte nuevoEstadoElemento = (estado.getId_estado() == 3) ? (byte) 1 : (byte) 0;
+        final byte nuevoEstadoElemento = (estado.getIdEstado() == 3) ? (byte) 1 : (byte) 0;
 
         if (elemento.getEstadosoelement() == null || elemento.getEstadosoelement() != nuevoEstadoElemento) {
             elemento.setEstadosoelement(nuevoEstadoElemento);
@@ -81,11 +78,21 @@ public class TicketsServicesImple implements TicketsServices {
         }
 
         Tickets tickets = ticketsMapper.toTicketsFromCreateDto(dto);
-
-        if (tickets.getId_est_tick() == null) {
+        // Asegura que siempre se asigne un estado
+        if (tickets.getIdEstTick() == null) {
             Estado_ticket estadoPendiente = estadoTicketRepository.findById((byte)2)
                 .orElseThrow(() -> new EntityNotFoundException("Estado de ticket 'pendiente' (2) no encontrado"));
-            tickets.setId_est_tick(estadoPendiente);
+            tickets.setIdEstTick(estadoPendiente);
+        }
+
+        if (dto.getId_est_tick() != null) {
+            Estado_ticket estado = estadoTicketRepository.findById(dto.getId_est_tick().byteValue())
+                .orElseThrow(() -> new EntityNotFoundException("Estado de ticket no encontrado"));
+            tickets.setIdEstTick(estado);
+        } else if (tickets.getIdEstTick() == null) {
+            Estado_ticket estadoPendiente = estadoTicketRepository.findById((byte)2)
+                .orElseThrow(() -> new EntityNotFoundException("Estado de ticket 'pendiente' (2) no encontrado"));
+            tickets.setIdEstTick(estadoPendiente);
         }
 
         if (tickets.getProblemas() == null && dto.getId_problem() != null) {
@@ -124,14 +131,26 @@ public class TicketsServicesImple implements TicketsServices {
                 .collect(Collectors.toList());
     }
 
-        @Override
-        @Transactional(readOnly = true)
-        public List<TicketsDtos> listarActivos() {
-            return ticketsRepository.findByEstado((byte)1)
-                    .stream()
-                    .map(ticketsMapper::toTicketsDto)
-                    .collect(Collectors.toList());
-        }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<TicketsDtos> listarActivos() {
+        // Estado ACTIVO = 1 (idEstTick -> idEstado)
+        return ticketsRepository.findByIdEstTick_IdEstado((byte)1)
+                .stream()
+                .map(ticketsMapper::toTicketsDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<TicketsDtos> listarPendientes() {
+        // Estado PENDIENTE = 3 (idEstTick -> idEstado)
+        return ticketsRepository.findByIdEstTick_IdEstado((byte)3)
+                .stream()
+                .map(ticketsMapper::toTicketsDto)
+                .collect(Collectors.toList());
+    }
 
     @Override
     @Transactional
@@ -160,12 +179,19 @@ public class TicketsServicesImple implements TicketsServices {
     if (dto.getId_est_tick() != null) {
         Estado_ticket estado = estadoTicketRepository.findById(dto.getId_est_tick().byteValue())
             .orElseThrow(() -> new EntityNotFoundException("Estado de ticket no encontrado"));
-        tickets.setId_est_tick(estado);
+        tickets.setIdEstTick(estado);
     }
 
         Tickets actualizado = ticketsRepository.save(tickets);
         sincronizarEstadoElementoPorTicket(actualizado);
         return ticketsMapper.toTicketsDto(actualizado);
+    }
+    @Override
+    public com.proyecto.trabajo.models.Estado_ticket getEstadoTicketByNombre(String nombre) {
+        if (nombre == null) return null;
+        return estadoTicketRepository.findAll().stream()
+            .filter(e -> e.getNom_estado() != null && e.getNom_estado().equalsIgnoreCase(nombre))
+            .findFirst().orElse(null);
     }
 }
 

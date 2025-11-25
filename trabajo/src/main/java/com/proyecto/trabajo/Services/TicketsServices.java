@@ -10,6 +10,10 @@ public interface TicketsServices {
     TicketsDtos buscarPorId(Long id);
     List<TicketsDtos> listarTodos();
     List<TicketsDtos> listarActivos();
+    List<TicketsDtos> listarPendientes();
     void eliminar(Long id);
     TicketsDtos actualizar(Long id, com.proyecto.trabajo.dto.TicketsUpdateDtos dto);
+
+    // Buscar Estado_ticket por nombre (ej: "ACTIVO")
+    com.proyecto.trabajo.models.Estado_ticket getEstadoTicketByNombre(String nombre);
 }

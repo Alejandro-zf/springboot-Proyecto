@@ -77,13 +77,13 @@ public class AuthController {
     @GetMapping("/me")
     public ResponseEntity<?> me(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.status(401).body("No autenticado");
+            return ResponseEntity.status(401).body(java.util.Collections.singletonMap("error", "No autenticado"));
         }
 
         String username = authentication.getName(); // correo
         Usuarios usuario = usuariosRepository.findByCorreo(username).orElse(null);
         if (usuario == null) {
-            return ResponseEntity.status(404).body("Usuario no encontrado");
+            return ResponseEntity.status(404).body(java.util.Collections.singletonMap("error", "Usuario no encontrado"));
         }
 
         UserInfoDto dto = new UserInfoDto();

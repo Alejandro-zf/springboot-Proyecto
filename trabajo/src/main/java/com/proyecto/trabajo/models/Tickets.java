@@ -36,7 +36,6 @@ public class Tickets {
     @Column(nullable = true, length = 255)
     private String observaciones;
 
-
     @Column(nullable = false)
     private Byte estado = 2; // 1=activo/pendiente, 2=inactivo, 3=solucionado
 
@@ -49,7 +48,7 @@ public class Tickets {
 
     @ManyToOne
     @JoinColumn(name = "id_est_tick", nullable = false, foreignKey = @ForeignKey(name = "FK_Id_estado"))
-    private Estado_ticket id_est_tick;
+    private Estado_ticket idEstTick;
 
     @ManyToOne 
     @JoinColumn(name = "problemas",nullable = false, foreignKey = @ForeignKey(name = "Fk_Id_Problemas"))
@@ -61,4 +60,12 @@ public class Tickets {
     @ManyToOne
     @JoinColumn(name = "elementos", nullable = false, foreignKey = @ForeignKey(name = "FK_Id_elementos"))
     private Elementos elementos;
+
+    public Estado_ticket getIdEstTick() {
+        return idEstTick;
+    }
+
+    public void setIdEstTick(Estado_ticket idEstTick) {
+        this.idEstTick = idEstTick;
+    }
 }

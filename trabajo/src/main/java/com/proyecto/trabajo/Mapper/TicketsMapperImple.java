@@ -49,7 +49,7 @@ public class TicketsMapperImple implements TicketsMapper {
         if (ticketsDtos.getId_est_tick() != null) {
             Estado_ticket estado = estadoTicketRepository.findById(ticketsDtos.getId_est_tick().byteValue())
                 .orElseThrow(() -> new EntityNotFoundException("Estado de ticket no encontrado"));
-            tickets.setId_est_tick(estado);
+            tickets.setIdEstTick(estado);
         }
         if (ticketsDtos.getId_eleme() != null) {
             Elementos elemento = elementosRepository.findById(ticketsDtos.getId_eleme())
@@ -81,9 +81,9 @@ public class TicketsMapperImple implements TicketsMapper {
             ticketsDtos.setId_usuario(0L);
             ticketsDtos.setNom_usu("");
         }
-        if (tickets.getId_est_tick() != null) {
-            ticketsDtos.setId_est_tick(tickets.getId_est_tick().getId_estado().longValue());
-            switch (tickets.getId_est_tick().getId_estado()) {
+        if (tickets.getIdEstTick() != null) {
+            ticketsDtos.setId_est_tick(tickets.getIdEstTick().getIdEstado().longValue());
+            switch (tickets.getIdEstTick().getIdEstado()) {
                 case 1:
                     ticketsDtos.setTip_est_ticket("Aprobado");
                     break;
@@ -133,7 +133,7 @@ public class TicketsMapperImple implements TicketsMapper {
         tickets.setEstado(createDto.getId_est_tick().byteValue());
         Estado_ticket estado = estadoTicketRepository.findById(createDto.getId_est_tick().byteValue())
             .orElseThrow(() -> new EntityNotFoundException("Estado de ticket no encontrado"));
-        tickets.setId_est_tick(estado);
+                tickets.setIdEstTick(estado);
         }
         if (createDto.getId_usu() != null) {
             Usuarios usuario = usuariosRepository.findById(createDto.getId_usu())

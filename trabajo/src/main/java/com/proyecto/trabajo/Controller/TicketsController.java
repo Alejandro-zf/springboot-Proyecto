@@ -48,7 +48,7 @@ public class TicketsController {
 
     //Subir imágenes y obtener URLs - Para tickets
     @PostMapping("/upload-images")
-    @PreAuthorize("hasAnyRole('ROLE_Administrador', 'ROLE_Tecnico', 'ROLE_Instructor')")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
     public ResponseEntity<?> uploadImages(@RequestBody Map<String, List<String>> request) {
         try {
             List<String> base64Images = request.get("images");
@@ -115,9 +115,17 @@ public class TicketsController {
     @GetMapping("/activos")
     @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
     public ResponseEntity<List<TicketsDtos>> listarActivos() {
-            List<TicketsDtos> tickets = ticketsServices.listarActivos();
-            return ResponseEntity.ok(tickets);
-        }
+        List<TicketsDtos> tickets = ticketsServices.listarActivos();
+        return ResponseEntity.ok(tickets);
+    }
+
+    // Listar solo tickets pendientes - Acceso: Administrador, Técnico, Instructor
+    @GetMapping("/pendientes")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
+    public ResponseEntity<List<TicketsDtos>> listarPendientes() {
+        List<TicketsDtos> tickets = ticketsServices.listarPendientes();
+        return ResponseEntity.ok(tickets);
+    }
     //Eliminar tickets - Acceso: Administrador y Tecnico
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('Administrador', 'Tecnico')")
@@ -139,6 +147,36 @@ public class TicketsController {
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("error", "Error al actualizar el ticket", "detalle", ex.getMessage()));
+        }
+    }
+
+    // Actualizar solo el estado del ticket (usado por el frontend técnico)
+    @PutMapping("/{id}/estado")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico')")
+    public ResponseEntity<?> actualizarEstado(@PathVariable Long id, @RequestBody Map<String, Object> body) {
+        try {
+            // Buscar el estado por nombre (ejemplo: 'ACTIVO')
+            String nuevoEstadoNombre = (String) body.get("estado");
+            String observacion = (String) body.getOrDefault("observacion", "");
+            if (nuevoEstadoNombre == null) {
+                return ResponseEntity.badRequest().body(Map.of("error", "El campo 'estado' es obligatorio"));
+            }
+            // Buscar el Estado_ticket correspondiente
+            // (asume que los nombres en la tabla son 'ACTIVO', 'PENDIENTE', etc.)
+            com.proyecto.trabajo.models.Estado_ticket estadoTicket = ticketsServices
+                .getEstadoTicketByNombre(nuevoEstadoNombre);
+            if (estadoTicket == null) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Estado no válido: " + nuevoEstadoNombre));
+            }
+            com.proyecto.trabajo.dto.TicketsUpdateDtos dto = new com.proyecto.trabajo.dto.TicketsUpdateDtos();
+            dto.setId_est_tick((long) estadoTicket.getIdEstado());
+            // Puedes agregar aquí la observación si tu modelo lo soporta
+            // dto.setObservaciones(observacion);
+            com.proyecto.trabajo.dto.TicketsDtos actualizado = ticketsServices.actualizar(id, dto);
+            return ResponseEntity.ok(Map.of("mensaje", "Estado actualizado correctamente", "data", actualizado));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Error al actualizar el estado", "detalle", ex.getMessage()));
         }
     }
 

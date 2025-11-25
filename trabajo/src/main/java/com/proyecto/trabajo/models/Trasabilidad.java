@@ -34,4 +34,9 @@ public class Trasabilidad {
     @ManyToOne
     @JoinColumn(name = "id_ticket", nullable = false, foreignKey = @ForeignKey(name = "FK_id_ticket"))
     private Tickets tickets;
+    
+    @ManyToOne
+    @JoinColumn(name = "id_elemento", nullable = false, foreignKey = @ForeignKey(name = "FK_id_elemento"))
+    private Elementos elementos;
+    
 }
