@@ -182,14 +182,6 @@ public class SolicitudesServicesImple implements SolicitudesServices {
 
     @Override
     @Transactional
-    public void eliminar(Long id) {
-        Solicitudes solicitudes = solicitudesRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada"));
-        solicitudesRepository.delete(solicitudes);
-    }
-
-    @Override
-    @Transactional
     public SolicitudesDto actualizarSolicitud(Long id, SolicitudesUpdateDtos dto) {
         Solicitudes solicitudes = solicitudesRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada"));

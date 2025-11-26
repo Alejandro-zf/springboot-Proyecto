@@ -91,14 +91,6 @@ public class SolicitudesController {
         List<SolicitudesDto> solicitudes = solicitudesServices.listarTodos();
         return ResponseEntity.ok(solicitudes);
     }
-
-    //Eliminar solicitud - Acceso: Administrador y Tecnico
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico')")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id){
-        solicitudesServices.eliminar(id);
-        return ResponseEntity.noContent().build();
-    }
     // Expirar solicitudes vencidas manualmente - Acceso: Administrador, Tecnico, Instructor
     @PostMapping("/expirar")
     @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
