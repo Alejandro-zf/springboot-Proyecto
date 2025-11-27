@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.proyecto.trabajo.Mapper.SolicitudesMapper;
@@ -29,6 +31,7 @@ import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class SolicitudesServicesImple implements SolicitudesServices {
+    private static final Logger logger = LoggerFactory.getLogger(SolicitudesServicesImple.class);
 
 
     private final SolicitudesRepository solicitudesRepository;
@@ -91,11 +94,18 @@ public class SolicitudesServicesImple implements SolicitudesServices {
 
     @Override
     @Transactional
-    public SolicitudesDto guardar(SolicitudeCreateDto dto) {
-        if (dto.getId_usu() == null) {
-            throw new IllegalArgumentException("id_usu es obligatorio");
+    public SolicitudesDto guardar(SolicitudeCreateDto dto, String username) {
+        // Log para depuración
+        logger.info("[Solicitudes] Username autenticado recibido: {}", username);
+        Usuarios usuario = usuariosRepository.findByCorreo(username).orElse(null);
+        if (usuario == null) {
+            logger.error("[Solicitudes] No se encontró usuario con correo: {}", username);
+            throw new EntityNotFoundException("Usuario no encontrado para el usuario autenticado: " + username);
+        } else {
+            logger.info("[Solicitudes] Usuario encontrado: id={}, correo={}", usuario.getId(), usuario.getCorreo());
         }
         Solicitudes solicitudes = solicitudesMapper.toSolicitudesFromCreateDto(dto);
+        solicitudes.setUsuario(usuario); // Siempre desde sesión
         if (solicitudes.getEstadosolicitud() == null) {
             solicitudes.setEstadosolicitud((byte) 2);
         }
@@ -112,27 +122,18 @@ public class SolicitudesServicesImple implements SolicitudesServices {
                 solicitudes.getElemento().add(es);
             }
         }
-        if (solicitudes.getUsuario() == null && dto.getId_usu() != null) {
-            Usuarios usuario = usuariosRepository.findById(dto.getId_usu())
-                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
-            solicitudes.setUsuario(usuario);
-        }
         if (solicitudes.getEspacio() == null && dto.getId_esp() != null) {
             Espacio espacio = espacioRepository.findById(dto.getId_esp().intValue())
                 .orElseThrow(() -> new EntityNotFoundException("Espacio no encontrado"));
             solicitudes.setEspacio(espacio);
         }
-        if (solicitudes.getUsuario() == null) {
-            throw new IllegalArgumentException("El usuario no puede ser null para la solicitud");
-        }
         Solicitudes guardado = solicitudesRepository.save(solicitudes);
         Solicitudes solicitudFullPostSave = solicitudesRepository.findById(guardado.getId())
             .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada tras guardar"));
-    expirarSolicitudesVencidas();
-    sincronizarEstadoElementos(solicitudFullPostSave);
+        expirarSolicitudesVencidas();
+        sincronizarEstadoElementos(solicitudFullPostSave);
 
         if (guardado.getEstadosolicitud() != null && guardado.getEstadosolicitud() == 1) {
-            
             boolean sinPrestamo = guardado.getPrestamos() == null || guardado.getPrestamos().isEmpty();
             if (sinPrestamo) {
                 Solicitudes solicitudFull = solicitudesRepository.findById(guardado.getId())
@@ -142,7 +143,6 @@ public class SolicitudesServicesImple implements SolicitudesServices {
                 }
                 Prestamos p = prestamosMapper.fromSolicitudAprobada(solicitudFull);
                 Prestamos prestamoGuardado = prestamosRepository.save(p);
-                
                 if (solicitudFull.getElemento() != null) {
                     for (Elemento_Solicitudes es : solicitudFull.getElemento()) {
                         if (es != null && es.getElementos() != null) {

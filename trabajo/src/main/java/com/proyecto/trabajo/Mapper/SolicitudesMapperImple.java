@@ -184,11 +184,7 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
         .orElseThrow(() -> new EntityNotFoundException("Estado de solicitud no encontrado"));
     solicitudes.setEstado_solicitudes(estadoSolicitudes);
     solicitudes.setEstadosolicitud(estadoId.byteValue());
-        if (createDto.getId_usu() != null) {
-            Usuarios usuario = usuariosRepository.findById(createDto.getId_usu())
-                    .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
-            solicitudes.setUsuario(usuario);
-        }
+        // Usuario se asigna en el servicio usando el usuario autenticado
         if (createDto.getId_esp() != null) {
             Espacio espacio = espacioRepository.findById(createDto.getId_esp().intValue())
                     .orElseThrow(() -> new EntityNotFoundException("Espacio no encontrado"));

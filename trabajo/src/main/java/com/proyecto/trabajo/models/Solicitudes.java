@@ -41,7 +41,7 @@ public class Solicitudes {
     private String mensaje;
 
     @ManyToOne
-    @JoinColumn(name = "id_usuari", nullable = false, foreignKey = @ForeignKey(name = "FK_Id_usuari"))
+    @JoinColumn(name = "id_usuari", nullable = true, foreignKey = @ForeignKey(name = "FK_Id_usuari"))
     private Usuarios usuario;
 
     @ManyToOne
