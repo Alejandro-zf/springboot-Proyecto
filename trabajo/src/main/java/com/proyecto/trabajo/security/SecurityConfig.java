@@ -46,7 +46,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .cors(cors -> cors.configure(http))
+            .cors(cors -> cors.disable())  // Deshabilitamos CORS de Security, usamos la config global
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 // Permitir acceso sin autenticación a estas rutas
@@ -103,7 +103,7 @@ class CorsGlobalConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-            .allowedOrigins("http://localhost:5173", "http://localhost:3000")
+            .allowedOriginPatterns("*")  // Permite CUALQUIER origen en desarrollo
             .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
             .allowedHeaders("*")
             .allowCredentials(true);
