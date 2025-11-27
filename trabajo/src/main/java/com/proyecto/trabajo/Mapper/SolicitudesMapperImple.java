@@ -166,43 +166,6 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
             dto.setId_subcat(entity.getSub_categoria().getId());
             dto.setNom_subcat(entity.getSub_categoria().getNom_subcategoria());
         }
-        // Si la solicitud tiene préstamos asociados, mapear el primero para mostrar info rápida
-        if (entity.getPrestamos() != null && !entity.getPrestamos().isEmpty()) {
-            // Escoger el primer préstamo asociado (normalmente habrá 1 creado automáticamente al aprobar)
-            com.proyecto.trabajo.models.Prestamos p = entity.getPrestamos().get(0);
-            if (p != null) {
-                dto.setId_prestamo(p.getId());
-                dto.setFecha_entrega_prestamo(p.getFecha_entre());
-                dto.setFecha_recepcion_prestamo(p.getFecha_recep());
-                dto.setTipo_prestamo(p.getTipo_prest());
-                dto.setEstado_prestamo(p.getEstado());
-                if (p.getPrestamoss() != null && !p.getPrestamoss().isEmpty()) {
-                    StringBuilder idsJoin = new StringBuilder();
-                    StringBuilder namesJoin = new StringBuilder();
-                    boolean first = true;
-                    for (com.proyecto.trabajo.models.Prestamos_Elemento pe : p.getPrestamoss()) {
-                        if (pe != null && pe.getElementos() != null) {
-                            var el = pe.getElementos();
-                            if (!first) {
-                                idsJoin.append(",");
-                                namesJoin.append(", ");
-                            }
-                            if (el.getId() != null) idsJoin.append(el.getId());
-                            if (el.getNom_elemento() != null) {
-                                // Incluir número de serie si está disponible: "Nombre (serie: XXX)"
-                                namesJoin.append(el.getNom_elemento());
-                                if (el.getNum_serie() != null && !el.getNum_serie().isEmpty()) {
-                                    namesJoin.append(" (serie: ").append(el.getNum_serie()).append(")");
-                                }
-                            }
-                            first = false;
-                        }
-                    }
-                    dto.setId_elem_prestamo(idsJoin.toString());
-                    dto.setNom_elem_prestamo(namesJoin.toString());
-                }
-            }
-        }
         return dto;
     }
 
@@ -221,11 +184,7 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
         .orElseThrow(() -> new EntityNotFoundException("Estado de solicitud no encontrado"));
     solicitudes.setEstado_solicitudes(estadoSolicitudes);
     solicitudes.setEstadosolicitud(estadoId.byteValue());
-        if (createDto.getId_usu() != null) {
-            Usuarios usuario = usuariosRepository.findById(createDto.getId_usu())
-                    .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
-            solicitudes.setUsuario(usuario);
-        }
+        // Usuario se asigna en el servicio usando el usuario autenticado
         if (createDto.getId_esp() != null) {
             Espacio espacio = espacioRepository.findById(createDto.getId_esp().intValue())
                     .orElseThrow(() -> new EntityNotFoundException("Espacio no encontrado"));
