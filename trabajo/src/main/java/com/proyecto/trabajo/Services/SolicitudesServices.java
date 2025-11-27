@@ -7,7 +7,7 @@ import com.proyecto.trabajo.dto.SolicitudeCreateDto;
 import com.proyecto.trabajo.dto.SolicitudesUpdateDtos;
 
 public interface SolicitudesServices {
-    SolicitudesDto guardar(SolicitudeCreateDto dto);
+    SolicitudesDto guardar(SolicitudeCreateDto dto, String username);
     SolicitudesDto buscarPorId(Long id);
     List<SolicitudesDto> listarTodos();
     void eliminar(Long id);

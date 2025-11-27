@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -63,14 +64,19 @@ public class SolicitudesController {
     @PostMapping
     @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
 
-    public ResponseEntity<?> crear (@Valid @RequestBody SolicitudeCreateDto dto){
-        try{
-            SolicitudesDto creado = solicitudesServices.guardar(dto);
+    public ResponseEntity<?> crear(@Valid @RequestBody SolicitudeCreateDto dto, Authentication authentication) {
+        try {
+            if (authentication == null || !authentication.isAuthenticated()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of("error", "No autenticado"));
+            }
+            String username = authentication.getName();
+            SolicitudesDto creado = solicitudesServices.guardar(dto, username);
             return ResponseEntity.status(HttpStatus.CREATED)
-            .body(Map.of("mensaje","Solicitud creada exitosamente","data",creado));
-        }catch (IllegalStateException ex) {
+                    .body(Map.of("mensaje", "Solicitud creada exitosamente", "data", creado));
+        } catch (IllegalStateException ex) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(Map.of("errores1", ex.getMessage()));
+                    .body(Map.of("errores1", ex.getMessage()));
         }
     }
 
