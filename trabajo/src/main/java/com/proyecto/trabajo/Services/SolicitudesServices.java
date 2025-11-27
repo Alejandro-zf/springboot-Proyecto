@@ -10,7 +10,6 @@ public interface SolicitudesServices {
     SolicitudesDto guardar(SolicitudeCreateDto dto, String username);
     SolicitudesDto buscarPorId(Long id);
     List<SolicitudesDto> listarTodos();
-    void eliminar(Long id);
     SolicitudesDto actualizarSolicitud(Long id, SolicitudesUpdateDtos dto);
     void expirarSolicitudesVencidas();
 }
