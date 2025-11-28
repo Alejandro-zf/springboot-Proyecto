@@ -37,11 +37,11 @@ public class UsuariosServicesImple implements UsuariosServices {
     private final com.proyecto.trabajo.repository.Tip_documentoRepository tipDocRepository;
 
     public UsuariosServicesImple(UsuariosRepository usuariosRepository,
-                                 UsuariosMapper usuariosMapper,
-                                 RolesRepository rolesRepository,
-                                 Roles_UsuarioRepository rolesUsuarioRepository,
-                                 PasswordEncoder passwordEncoder,
-                                 com.proyecto.trabajo.repository.Tip_documentoRepository tipDocRepository) {
+    UsuariosMapper usuariosMapper,
+    RolesRepository rolesRepository,
+    Roles_UsuarioRepository rolesUsuarioRepository,
+    PasswordEncoder passwordEncoder,
+    com.proyecto.trabajo.repository.Tip_documentoRepository tipDocRepository) {
         this.usuariosRepository = usuariosRepository;
         this.usuariosMapper = usuariosMapper;
         this.rolesRepository = rolesRepository;
@@ -168,7 +168,7 @@ public class UsuariosServicesImple implements UsuariosServices {
 
     @Override
     @Transactional
-    public UsuariosDto actualizarMiPerfil(String correoAutenticado, UsuariosUpdateDto dto) {
+    public UsuariosDto actualizarMiPerfil(String correoAutenticado, String contraseñaAutenticada, UsuariosUpdateDto dto) {
         // Buscar el usuario por su correo autenticado
         Usuarios usuarios = usuariosRepository.findByCorreo(correoAutenticado)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
