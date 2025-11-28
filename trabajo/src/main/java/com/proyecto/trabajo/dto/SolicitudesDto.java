@@ -33,11 +33,4 @@ private String nom_cat;
 private Long id_subcat;
 private String nom_subcat;
 
-private Long id_prestamo;
-private LocalDateTime fecha_entrega_prestamo;
-private LocalDateTime fecha_recepcion_prestamo;
-private String tipo_prestamo;
-private Byte estado_prestamo;
-private String id_elem_prestamo;
-private String nom_elem_prestamo;
 }
