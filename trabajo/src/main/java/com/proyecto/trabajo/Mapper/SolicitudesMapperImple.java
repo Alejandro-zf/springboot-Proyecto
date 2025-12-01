@@ -247,6 +247,12 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
             } catch (Exception e) {
             }
         }
+        if (updateDto.getCantid() != null) {
+            try {
+                entity.setCantidad(updateDto.getCantid());
+            } catch (Exception e) {
+            }
+        }
         // 'estado' removed: do not map updateDto.estado
         if (updateDto.getId_usu() != null) {
             Usuarios usuario = usuariosRepository.findById(updateDto.getId_usu())
