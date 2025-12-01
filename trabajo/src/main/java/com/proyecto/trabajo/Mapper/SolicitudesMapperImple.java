@@ -98,6 +98,7 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
         dto.setFecha_fn(entity.getFecha_fin());
         dto.setAmbient(entity.getAmbiente());
         dto.setNum_fich(entity.getNum_ficha());
+        dto.setCantid(entity.getCantidad());
         if (entity.getEstado_solicitudes() != null) {
             String nombreEstado = entity.getEstado_solicitudes().getNom_esta();
             if (nombreEstado != null && !nombreEstado.isEmpty()) {
@@ -201,6 +202,9 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
                 es.setElementos(elemento);
                 solicitudes.getElemento().add(es);
             }
+        }
+        if (createDto.getCantid() != null) {
+            solicitudes.setCantidad(createDto.getCantid());
         }
         // Mapeo de categoría
         if (createDto.getId_categoria() != null) {
