@@ -1,3 +1,4 @@
+
     package com.proyecto.trabajo.Services;
 
 import java.util.List;
@@ -11,4 +12,5 @@ public interface TrasabilidadServices {
     List<TrasabilidadDtos> listarTodos();
     void eliminar(Long id);
     TrasabilidadDtos actualizar(TrasabilidadDtos dto);
+    List<TrasabilidadDtos> buscarPorTicketId(Long ticketId);
 }

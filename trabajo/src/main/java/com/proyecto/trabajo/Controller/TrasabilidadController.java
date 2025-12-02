@@ -11,7 +11,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
 
 
 @RestController
@@ -27,9 +27,16 @@ public class TrasabilidadController {
 
     //Obtener por el ID
     @GetMapping("/{id}")
-    public ResponseEntity<TrasabilidadDtos> obtenerPorId(@RequestParam Long id) {
+    public ResponseEntity<TrasabilidadDtos> obtenerPorId(@PathVariable Long id) {
         TrasabilidadDtos trasabilidad = trasabilidadServices.buscarPorId(id);
         return ResponseEntity.ok(trasabilidad);
+    }
+
+    // Obtener historial por id de ticket
+    @GetMapping("/ticket/{id}")
+    public ResponseEntity<List<TrasabilidadDtos>> obtenerPorTicketId(@PathVariable Long id) {
+        List<TrasabilidadDtos> historial = trasabilidadServices.buscarPorTicketId(id);
+        return ResponseEntity.ok(historial);
     }
     
 
@@ -41,8 +48,8 @@ public class TrasabilidadController {
     }
 
     //Eliminar trasabilidad
-    @DeleteMapping("/id")
-    public ResponseEntity<Void> eliminar(@RequestParam Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         trasabilidadServices.eliminar(id);
         return ResponseEntity.noContent().build();
     }

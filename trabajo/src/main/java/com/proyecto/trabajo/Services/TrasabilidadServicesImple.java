@@ -1,3 +1,4 @@
+
 package com.proyecto.trabajo.Services;
 
 import java.util.List;
@@ -18,6 +19,11 @@ import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class TrasabilidadServicesImple implements TrasabilidadServices {
+    @Override
+    public List<TrasabilidadDtos> buscarPorTicketId(Long ticketId) {
+        List<Trasabilidad> lista = trasabilidadRepository.findByTicketsId(ticketId);
+        return trasabilidadMapper.toTrasabilidadDtoList(lista);
+    }
 
     private final TrasabilidadRepository trasabilidadRepository;
     private final UsuariosRepository usuariosRepository;
