@@ -261,7 +261,7 @@ public class UsuariosServicesImple implements UsuariosServices {
 
     @Override
     @Transactional
-    public UsuariosDto actualizarMiPerfil(String correoAutenticado, String contraseñaAutenticada, UsuariosUpdateDto dto) {
+    public UsuariosDto actualizarMiPerfil(String correoAutenticado, UsuariosUpdateDto dto) {
         // Buscar el usuario por su correo autenticado
         Usuarios usuarios = usuariosRepository.findByCorreo(correoAutenticado)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
