@@ -10,5 +10,6 @@ public interface TrasabilidadMapper {
     Trasabilidad toTrasabilidad(TrasabilidadDtos dto);
     TrasabilidadDtos toTrasabilidadDto(Trasabilidad entity);
     Trasabilidad toTrasabilidadFromCreateDto(TrasabilidadCreateDtos createDto);
+    void updateTrasabilidadFromUpdateDto(com.proyecto.trabajo.dto.TrasabilidadUpdateDtos updateDto, Trasabilidad entity);
     List<TrasabilidadDtos> toTrasabilidadDtoList(List<Trasabilidad> trasabilidades);
 }

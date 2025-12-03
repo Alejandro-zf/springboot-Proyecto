@@ -113,4 +113,14 @@ public class TrasabilidadServicesImple implements TrasabilidadServices {
         Trasabilidad actualizado = trasabilidadRepository.save(entity);
         return trasabilidadMapper.toTrasabilidadDto(actualizado);
     }
+
+    @Override
+    public TrasabilidadDtos actualizarTrasabilidad(Long id, com.proyecto.trabajo.dto.TrasabilidadUpdateDtos dto) {
+        Trasabilidad entity = trasabilidadRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Trasabilidad no encontrada con id: " + id));
+        trasabilidadMapper.updateTrasabilidadFromUpdateDto(dto, entity);
+
+        Trasabilidad actualizado = trasabilidadRepository.save(entity);
+        return trasabilidadMapper.toTrasabilidadDto(actualizado);
+    }
 }
