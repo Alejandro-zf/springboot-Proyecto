@@ -25,6 +25,29 @@ public class WebConfig {
                 // Servir archivos estáticos desde la carpeta uploads
                 registry.addResourceHandler("/uploads/**")
                         .addResourceLocations("file:uploads/");
+
+                // Logging para depuración de acceso a archivos
+                registry.setOrder(0); // Prioridad alta
+                System.out.println("[WebConfig] addResourceHandlers configurado para /uploads/**");
+                java.nio.file.Path uploadsDir = java.nio.file.Paths.get("uploads/espacios");
+                try {
+                    if (java.nio.file.Files.exists(uploadsDir)) {
+                        System.out.println("[WebConfig] uploads/espacios existe");
+                        int count = 0;
+                        for (java.nio.file.Path path : java.nio.file.Files.newDirectoryStream(uploadsDir)) {
+                            System.out.println("[WebConfig] Archivo: " + path.getFileName() + " - Permisos: " + java.nio.file.Files.isReadable(path));
+                            count++;
+                            if (count >= 20) {
+                                System.out.println("[WebConfig] ...más archivos no mostrados");
+                                break;
+                            }
+                        }
+                    } else {
+                        System.out.println("[WebConfig] uploads/espacios NO existe");
+                    }
+                } catch (Exception e) {
+                    System.out.println("[WebConfig] Error al listar archivos de uploads/espacios: " + e.getMessage());
+                }
             }
         };
     }
