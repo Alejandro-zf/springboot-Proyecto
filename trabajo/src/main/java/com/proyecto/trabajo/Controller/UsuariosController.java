@@ -97,15 +97,15 @@ public ResponseEntity<?> actualizarMiPerfil(@Valid @RequestBody UsuariosUpdateDt
     try {
         // Obtener el correo del usuario autenticado
         String correoAutenticado = authentication.getName();
-        String contraseñaAutenticada  = authentication.getCredentials().toString();
         
         // Actualizar solo el perfil del usuario autenticado
-        UsuariosDto actualizado = usuariosServices.actualizarMiPerfil(correoAutenticado, contraseñaAutenticada, dto);
+        UsuariosDto actualizado = usuariosServices.actualizarMiPerfil(correoAutenticado, dto);
         return ResponseEntity.ok(actualizado);
     } catch (IllegalStateException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(Map.of("error", ex.getMessage()));
     } catch (Exception ex) {
+        ex.printStackTrace(); // Log del error en consola
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("error", "Error al actualizar el perfil", "detalle", ex.getMessage()));
     }

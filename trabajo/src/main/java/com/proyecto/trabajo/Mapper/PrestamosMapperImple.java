@@ -19,13 +19,13 @@ import java.util.Arrays;
 public class PrestamosMapperImple implements PrestamosMapper {
 
     private static final Set<String> TIPOS_VALIDOS = new HashSet<>(
-        Arrays.asList("Portátiles", "Equipo de mesa", "Televisores")
+        Arrays.asList("Portátiles", "Equipo de mesa", "Televisores", "AUTO", "Espacios")
     );
 
     private static void validarTipo(String tipo) {
         if (tipo == null || !TIPOS_VALIDOS.contains(tipo)) {
             throw new IllegalArgumentException(
-                "Tipo de préstamo inválido. Debe ser uno de: Portátiles, Equipo de mesa, Televisores");
+                "Tipo de préstamo inválido. Debe ser uno de: Portátiles, Equipo de mesa, Televisores, AUTO, Espacios");
         }
     }
 
@@ -34,7 +34,17 @@ public class PrestamosMapperImple implements PrestamosMapper {
         if (solicitud == null) return null;
         Prestamos p = new Prestamos();
         p.setFecha_entre(java.time.LocalDateTime.now());
-        p.setTipo_prest("Portátiles");
+        
+        // Determinar el tipo según lo que tenga la solicitud
+        String tipo = "AUTO";
+        if (solicitud.getEspacio() != null && (solicitud.getElemento() == null || solicitud.getElemento().isEmpty())) {
+            tipo = "Espacios";
+        } else if (solicitud.getElemento() != null && !solicitud.getElemento().isEmpty()) {
+            // Determinar tipo según la categoría o subcategoría de los elementos
+            tipo = "Portátiles"; // Default, podría mejorarse con lógica adicional
+        }
+        
+        p.setTipo_prest(tipo);
         p.setUsuario(solicitud.getUsuario());
         p.setEspacio(solicitud.getEspacio());
         p.setSolicitudes(solicitud);
