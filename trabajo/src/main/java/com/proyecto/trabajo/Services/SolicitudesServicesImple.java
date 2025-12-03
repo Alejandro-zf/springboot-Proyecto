@@ -214,31 +214,57 @@ public class SolicitudesServicesImple implements SolicitudesServices {
                 .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada"));
 
         solicitudesMapper.updateSolicitudesFromUpdateDto(dto, solicitudes);
-        boolean aprobado = dto != null && dto.getId_est_soli() != null && dto.getId_est_soli() == 1;
-        boolean sinPrestamo = solicitudes.getPrestamos() == null || solicitudes.getPrestamos().isEmpty();
-
+        
         Solicitudes actualizado = solicitudesRepository.save(solicitudes);
         sincronizarEstadoElementos(actualizado);
 
         expirarSolicitudesVencidas();
 
-        if (aprobado) {
-            if (sinPrestamo) {
-                boolean crearPrestamo = actualizado.getEstadosolicitud() != null && actualizado.getEstadosolicitud() == 1;
-                if (crearPrestamo && actualizado.getUsuario() == null) {
-                    throw new IllegalArgumentException("No se puede crear el préstamo automáticamente porque la solicitud no tiene usuario asignado. Asigna un usuario antes de aprobar la solicitud.");
-                }
-                if (crearPrestamo) {
-                    Prestamos p = new Prestamos();
-                    p.setFecha_entre(LocalDateTime.now());
-                    p.setTipo_prest("AUTO");
-                    p.setUsuario(actualizado.getUsuario());
-                    p.setEspacio(actualizado.getEspacio());
-                    p.setSolicitudes(actualizado);
-                    prestamosRepository.save(p);
-                }
+        // Verificar si se debe crear préstamo (estado 2 = Aprobado)
+        boolean aprobado = dto != null && dto.getId_est_soli() != null && dto.getId_est_soli() == 2;
+        boolean sinPrestamo = actualizado.getPrestamos() == null || actualizado.getPrestamos().isEmpty();
+        
+        System.out.println("DEBUG - actualizarSolicitud:");
+        System.out.println("  - dto.getId_est_soli(): " + (dto != null ? dto.getId_est_soli() : "null"));
+        System.out.println("  - actualizado.getEstadosolicitud(): " + actualizado.getEstadosolicitud());
+        System.out.println("  - aprobado: " + aprobado);
+        System.out.println("  - sinPrestamo: " + sinPrestamo);
+        System.out.println("  - tiene usuario: " + (actualizado.getUsuario() != null));
+        System.out.println("  - tiene espacio: " + (actualizado.getEspacio() != null));
+
+        if (aprobado && sinPrestamo) {
+            if (actualizado.getUsuario() == null) {
+                throw new IllegalArgumentException("No se puede crear el préstamo automáticamente porque la solicitud no tiene usuario asignado. Asigna un usuario antes de aprobar la solicitud.");
             }
+            System.out.println("DEBUG - Creando préstamo automático...");
+            System.out.println("  - Espacio ID: " + (actualizado.getEspacio() != null ? actualizado.getEspacio().getId() : "null"));
+            System.out.println("  - Elementos en solicitud: " + (actualizado.getElemento() != null ? actualizado.getElemento().size() : 0));
+            
+            Prestamos p = new Prestamos();
+            p.setFecha_entre(LocalDateTime.now());
+            p.setTipo_prest("AUTO");
+            p.setUsuario(actualizado.getUsuario());
+            p.setEspacio(actualizado.getEspacio());
+            p.setSolicitudes(actualizado);
+            
+            // Guardar el préstamo primero
+            Prestamos prestamoGuardado = prestamosRepository.save(p);
+            
+            // Si la solicitud tiene elementos, crear Prestamos_Elemento para cada uno
+            if (actualizado.getElemento() != null && !actualizado.getElemento().isEmpty()) {
+                for (Elemento_Solicitudes es : actualizado.getElemento()) {
+                    Prestamos_Elemento pe = new Prestamos_Elemento();
+                    pe.setPrestamos(prestamoGuardado);
+                    pe.setElementos(es.getElementos());
+                    pe.setCantidad(1); // O usar la cantidad de la solicitud si existe
+                    prestamoGuardado.getPrestamoss().add(pe);
+                }
+                prestamosRepository.save(prestamoGuardado);
+            }
+            
+            System.out.println("DEBUG - Préstamo creado exitosamente con ID: " + prestamoGuardado.getId());
         }
+        
         return solicitudesMapper.toSolicitudesDto(actualizado);
     }
 }
