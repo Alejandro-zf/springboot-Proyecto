@@ -8,6 +8,10 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Drawing;
+import org.apache.poi.ss.usermodel.ClientAnchor;
+import org.apache.poi.ss.usermodel.Comment;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -53,17 +57,106 @@ public class UsuariosServicesImple implements UsuariosServices {
     @Override
     public byte[] generarPlantillaUsuarios() throws Exception {
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+            CreationHelper creationHelper = workbook.getCreationHelper();
             Sheet sheet = workbook.createSheet("usuarios_template");
-            Row header = sheet.createRow(0);
+            Row titleRow = sheet.createRow(0);
+            org.apache.poi.ss.usermodel.Cell titleCell = titleRow.createCell(0);
+            titleCell.setCellValue("Plantilla importación - Usuarios");
+            org.apache.poi.ss.usermodel.CellStyle titleStyle = workbook.createCellStyle();
+            org.apache.poi.ss.usermodel.Font titleFont = workbook.createFont();
+            titleFont.setBold(true);
+            titleFont.setFontHeightInPoints((short)14);
+            titleStyle.setFont(titleFont);
+            titleStyle.setAlignment(org.apache.poi.ss.usermodel.HorizontalAlignment.CENTER);
+            titleStyle.setFillForegroundColor(org.apache.poi.ss.usermodel.IndexedColors.LIGHT_CORNFLOWER_BLUE.getIndex());
+            titleStyle.setFillPattern(org.apache.poi.ss.usermodel.FillPatternType.SOLID_FOREGROUND);
+            titleCell.setCellStyle(titleStyle);
+            workbook.getSheet("usuarios_template").addMergedRegion(new org.apache.poi.ss.util.CellRangeAddress(0,0,0,6));
+            Row header = sheet.createRow(1);
             String[] headers = new String[] {"Nombre", "Apellido", "Correo", "Contraseña", "NúmeroDocumento", "IdTipoDocumento", "IdRole"};
+
+            org.apache.poi.ss.usermodel.CellStyle headerStyle = workbook.createCellStyle();
+            org.apache.poi.ss.usermodel.Font headerFont = workbook.createFont();
+            headerFont.setBold(true);
+            headerStyle.setFont(headerFont);
+            headerStyle.setFillForegroundColor(org.apache.poi.ss.usermodel.IndexedColors.GREY_25_PERCENT.getIndex());
+            headerStyle.setFillPattern(org.apache.poi.ss.usermodel.FillPatternType.SOLID_FOREGROUND);
+            headerStyle.setBorderBottom(org.apache.poi.ss.usermodel.BorderStyle.THIN);
+            headerStyle.setBorderTop(org.apache.poi.ss.usermodel.BorderStyle.THIN);
+            headerStyle.setBorderLeft(org.apache.poi.ss.usermodel.BorderStyle.THIN);
+            headerStyle.setBorderRight(org.apache.poi.ss.usermodel.BorderStyle.THIN);
+
             for (int i = 0; i < headers.length; i++) {
                 Cell c = header.createCell(i);
                 c.setCellValue(headers[i]);
+                c.setCellStyle(headerStyle);
             }
+            Sheet listas = workbook.createSheet("dicce_list");
+            Row lheader = listas.createRow(0);
+            lheader.createCell(0).setCellValue("Id_TipoDocumento - Nombre");
+            lheader.createCell(2).setCellValue("Id_Rol - Nombre");
+            Row noteRow = listas.createRow(1);
+            noteRow.createCell(0).setCellValue("NOTA: Ejemplos -> 1 = Cédula de Ciudadanía; 2 = Pasaporte; 3 = Cédula de Extranjería");
 
-            for (int i = 0; i < headers.length; i++) {
-                sheet.autoSizeColumn(i);
+            int rowIdx = 2;
+            try {
+                var tipos = tipDocRepository.findAll();
+                for (var td : tipos) {
+                    Row r = listas.getRow(rowIdx) == null ? listas.createRow(rowIdx) : listas.getRow(rowIdx);
+                    r.createCell(0).setCellValue(String.valueOf(td.getId()) + " - " + td.getTipo_doc());
+                    rowIdx++;
+                }
+            } catch (Exception e) {
             }
+            int rolesRow = 2;
+            Row r0 = listas.getRow(rolesRow) == null ? listas.createRow(rolesRow) : listas.getRow(rolesRow);
+            r0.createCell(2).setCellValue("1 - instructor (Predeterminado)");
+            rolesRow++;
+            try {
+                var roles = rolesRepository.findAll();
+                for (var rl : roles) {
+                    if (rl.getId() != null && rl.getId().equals(1L)) continue;
+                    Row r = listas.getRow(rolesRow) == null ? listas.createRow(rolesRow) : listas.getRow(rolesRow);
+                    r.createCell(2).setCellValue(String.valueOf(rl.getId()) + " - " + rl.getNom_rol());
+                    rolesRow++;
+                }
+            } catch (Exception e) {
+            }
+            int listasIndex = workbook.getSheetIndex(listas);
+            workbook.setSheetHidden(listasIndex, true);
+
+            Drawing<?> drawing = sheet.createDrawingPatriarch();
+            ClientAnchor anchorTipo = creationHelper.createClientAnchor();
+            anchorTipo.setCol1(5);
+            anchorTipo.setCol2(6);
+            anchorTipo.setRow1(1);
+            anchorTipo.setRow2(4);
+            Comment commentTipo = drawing.createCellComment(anchorTipo);
+            commentTipo.setString(creationHelper.createRichTextString("Seleccione el IdTipoDocumento (ver hoja oculta 'dicce_list' para la lista de ids y nombres). Ej: 1 = Cédula de Ciudadanía; 2 = Pasaporte; 3 = Cédula de Extranjería."));
+            sheet.getRow(1).getCell(5).setCellComment(commentTipo);
+
+            ClientAnchor anchorRole = creationHelper.createClientAnchor();
+            anchorRole.setCol1(6);
+            anchorRole.setCol2(7);
+            anchorRole.setRow1(1);
+            anchorRole.setRow2(4);
+            Comment commentRole = drawing.createCellComment(anchorRole);
+            commentRole.setString(creationHelper.createRichTextString("IdRole: coloque el id numérico del rol. Nota: 1 = instructor (Predeterminado) y debe mantenerse así para el flujo predeterminado. Revise 'dicce_list'."));
+            sheet.getRow(1).getCell(6).setCellComment(commentRole);
+
+            ClientAnchor anchorInstr = creationHelper.createClientAnchor();
+            anchorInstr.setCol1(0);
+            anchorInstr.setCol2(3);
+            anchorInstr.setRow1(0);
+            anchorInstr.setRow2(2);
+            Comment commentInstr = drawing.createCellComment(anchorInstr);
+            commentInstr.setString(creationHelper.createRichTextString("Esta plantilla importa usuarios. Rellene cada fila con los datos solicitados. Use la hoja oculta 'dicce_list' para ver los ids de Tipos de documento y Roles. No modifique la fila de encabezado."));
+            sheet.getRow(0).getCell(0).setCellComment(commentInstr);
+            int[] widths = new int[] {7000,7000,10000,7000,7000,6000,6000};
+            for (int i = 0; i < headers.length; i++) {
+                sheet.setColumnWidth(i, widths[i]);
+            }
+            sheet.createFreezePane(0,2);
 
             workbook.write(bos);
             return bos.toByteArray();
