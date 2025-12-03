@@ -12,5 +12,6 @@ public interface TrasabilidadServices {
     List<TrasabilidadDtos> listarTodos();
     void eliminar(Long id);
     TrasabilidadDtos actualizar(TrasabilidadDtos dto);
+    TrasabilidadDtos actualizarTrasabilidad(Long id, com.proyecto.trabajo.dto.TrasabilidadUpdateDtos dto);
     List<TrasabilidadDtos> buscarPorTicketId(Long ticketId);
 }

@@ -12,6 +12,7 @@ import com.proyecto.trabajo.models.Trasabilidad;
 import com.proyecto.trabajo.models.Usuarios;
 import com.proyecto.trabajo.repository.TicketsRepository;
 import com.proyecto.trabajo.repository.UsuariosRepository;
+import com.proyecto.trabajo.repository.ElementosRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -20,10 +21,12 @@ public class TrasabilidadMapperImple implements TrasabilidadMapper {
 
     private final UsuariosRepository usuariosRepository;
     private final TicketsRepository ticketsRepository;
+    private final com.proyecto.trabajo.repository.ElementosRepository elementosRepository;
 
-    public TrasabilidadMapperImple(UsuariosRepository usuariosRepository, TicketsRepository ticketsRepository) {
+    public TrasabilidadMapperImple(UsuariosRepository usuariosRepository, TicketsRepository ticketsRepository, ElementosRepository elementosRepository) {
         this.usuariosRepository = usuariosRepository;
         this.ticketsRepository = ticketsRepository;
+        this.elementosRepository = elementosRepository;
     }
 
     @Override
@@ -110,5 +113,39 @@ public class TrasabilidadMapperImple implements TrasabilidadMapper {
         }
         
         return trasabilidadDtos;
+    }
+
+    @Override
+    public void updateTrasabilidadFromUpdateDto(com.proyecto.trabajo.dto.TrasabilidadUpdateDtos updateDto, Trasabilidad entity) {
+        if (updateDto == null || entity == null) return;
+
+        if (updateDto.getFech() != null) {
+            entity.setFecha(updateDto.getFech());
+        }
+
+        if (updateDto.getObser() != null) {
+            entity.setObservacion(updateDto.getObser());
+        }
+
+        if (updateDto.getId_usu() != null) {
+            Usuarios usuario = usuariosRepository.findById(updateDto.getId_usu())
+                    .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
+            entity.setUsuario(usuario);
+        }
+
+        if (updateDto.getId_ticet() != null) {
+            Tickets tickets = ticketsRepository.findById(updateDto.getId_ticet())
+                    .orElseThrow(() -> new EntityNotFoundException("Ticket no encontrado"));
+            entity.setTickets(tickets);
+        }
+
+        if (updateDto.getId_elemen() != null) {
+            if (this.elementosRepository == null) {
+                throw new IllegalStateException("ElementosRepository no disponible en TrasabilidadMapperImple");
+            }
+            com.proyecto.trabajo.models.Elementos elemento = elementosRepository.findById(updateDto.getId_elemen())
+                    .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
+            entity.setElementos(elemento);
+        }
     }
 }

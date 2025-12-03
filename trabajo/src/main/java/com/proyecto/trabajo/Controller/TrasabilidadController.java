@@ -8,10 +8,14 @@ import com.proyecto.trabajo.dto.TrasabilidadDtos;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
@@ -52,6 +56,17 @@ public class TrasabilidadController {
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         trasabilidadServices.eliminar(id);
         return ResponseEntity.noContent().build();
+    }
+    
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('Administrador')")
+    public ResponseEntity<?> actualizar(@PathVariable Long id, @RequestBody com.proyecto.trabajo.dto.TrasabilidadUpdateDtos dto) {
+        try {
+            var actualizado = trasabilidadServices.actualizarTrasabilidad(id, dto);
+            return ResponseEntity.ok(java.util.Map.of("mensaje", "Trasabilidad actualizada", "data", actualizado));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(java.util.Map.of("error", ex.getMessage()));
+        }
     }
     
 }
