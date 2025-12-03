@@ -31,6 +31,7 @@ public class TrasabilidadController {
 
     //Obtener por el ID
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('Administrador','Tecnico')")
     public ResponseEntity<TrasabilidadDtos> obtenerPorId(@PathVariable Long id) {
         TrasabilidadDtos trasabilidad = trasabilidadServices.buscarPorId(id);
         return ResponseEntity.ok(trasabilidad);
@@ -38,6 +39,7 @@ public class TrasabilidadController {
 
     // Obtener historial por id de ticket
     @GetMapping("/ticket/{id}")
+    @PreAuthorize("hasAnyRole('Administrador','Tecnico')")
     public ResponseEntity<List<TrasabilidadDtos>> obtenerPorTicketId(@PathVariable Long id) {
         List<TrasabilidadDtos> historial = trasabilidadServices.buscarPorTicketId(id);
         return ResponseEntity.ok(historial);
@@ -46,6 +48,7 @@ public class TrasabilidadController {
 
     //Listar trasabilidad 
     @GetMapping
+    @PreAuthorize("hasAnyRole('Administrador','Tecnico')")
     public ResponseEntity<List<TrasabilidadDtos>> listarTodos() {
         List<TrasabilidadDtos> trasabilidades = trasabilidadServices.listarTodos();
         return ResponseEntity.ok(trasabilidades);
@@ -53,6 +56,7 @@ public class TrasabilidadController {
 
     //Eliminar trasabilidad
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('Administrador','Tecnico')")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         trasabilidadServices.eliminar(id);
         return ResponseEntity.noContent().build();

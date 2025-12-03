@@ -39,7 +39,7 @@ public class EspacioController {
 
     //Subir imágenes y obtener URLs
     @PostMapping("/upload-images")
-    @PreAuthorize("hasAnyRole('ROLE_Administrador', 'ROLE_Tecnico', 'ROLE_Instructor')")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
     public ResponseEntity<?> uploadImages(@RequestBody Map<String, List<String>> request) {
         try {
             List<String> base64Images = request.get("images");
@@ -61,9 +61,8 @@ public class EspacioController {
         }
     }
 
-    //Crear espacio - TEMPORAL: Instructor puede crear para pruebas
     @PostMapping
-    @PreAuthorize("hasAnyRole('ROLE_Administrador', 'ROLE_Tecnico', 'ROLE_Instructor')")
+    @PreAuthorize("hasRole('Administrador')")
     public ResponseEntity<?> crear(@Valid @RequestBody EspacioCreateDto dto) {
         try {
             EspacioDto creado = espacioServices.guardar(dto);
