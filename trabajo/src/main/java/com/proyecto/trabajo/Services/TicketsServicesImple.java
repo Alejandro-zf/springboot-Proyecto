@@ -3,6 +3,7 @@ package com.proyecto.trabajo.Services;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,8 @@ import com.proyecto.trabajo.repository.TicketsRepository;
 import com.proyecto.trabajo.repository.Estado_TicketRepository;
 import com.proyecto.trabajo.repository.ProblemasRepository;
 import com.proyecto.trabajo.repository.ElementosRepository;
+import com.proyecto.trabajo.repository.TrasabilidadRepository;
+import com.proyecto.trabajo.models.Trasabilidad;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -29,14 +32,17 @@ public class TicketsServicesImple implements TicketsServices {
     private final Estado_TicketRepository estadoTicketRepository;
     private final ProblemasRepository problemasRepository;
     private final ElementosRepository elementosRepository;
+    private final TrasabilidadRepository trasabilidadRepository;
 
     public TicketsServicesImple(TicketsRepository ticketsRepository, TicketsMapper ticketsMapper,
-            Estado_TicketRepository estadoTicketRepository, ProblemasRepository problemasRepository, ElementosRepository elementosRepository) {
+            Estado_TicketRepository estadoTicketRepository, ProblemasRepository problemasRepository, ElementosRepository elementosRepository,
+            TrasabilidadRepository trasabilidadRepository) {
         this.ticketsRepository = ticketsRepository;
         this.ticketsMapper = ticketsMapper;
         this.estadoTicketRepository = estadoTicketRepository;
         this.problemasRepository = problemasRepository;
         this.elementosRepository = elementosRepository;
+        this.trasabilidadRepository = trasabilidadRepository;
     }
 
     private void sincronizarEstadoElementoPorTicket(Tickets ticket) {
@@ -110,6 +116,17 @@ public class TicketsServicesImple implements TicketsServices {
         }
 
         Tickets guardado = ticketsRepository.save(tickets);
+        try {
+            Trasabilidad tr = new Trasabilidad();
+            tr.setFecha(LocalDate.now());
+            tr.setObservacion(null);
+            tr.setUsuario(guardado.getUsuario());
+            tr.setTickets(guardado);
+            tr.setElementos(guardado.getElementos());
+            trasabilidadRepository.save(tr);
+        } catch (Exception ex) {
+        }
+
         sincronizarEstadoElementoPorTicket(guardado);
         return ticketsMapper.toTicketsDto(guardado);
     }
