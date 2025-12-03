@@ -11,7 +11,14 @@ import com.proyecto.trabajo.models.Solicitudes;
 
 public interface SolicitudesRepository extends JpaRepository<Solicitudes, Long> {
 
-	@Query("SELECT s FROM Solicitudes s WHERE s.fecha_fin < :now AND s.estadosolicitud = 2")
-	List<Solicitudes> findVencidasNoExpiradas(@Param("now") LocalDateTime now);
-
+    @Query("SELECT s FROM Solicitudes s WHERE s.fecha_fin < :now AND s.estadosolicitud = 2")
+    List<Solicitudes> findVencidasNoExpiradas(@Param("now") LocalDateTime now);
+    
+    // 💡 NUEVA CONSULTA: Carga forzada de relaciones
+    @Query("SELECT s FROM Solicitudes s " +
+           "LEFT JOIN FETCH s.usuario u " + 
+           "LEFT JOIN FETCH s.sub_categoria sc " + // <--- Carga la subcategoría
+           "LEFT JOIN FETCH s.estado_solicitudes es " +
+           "ORDER BY s.id DESC")
+    List<Solicitudes> findAllWithDetails();
 }

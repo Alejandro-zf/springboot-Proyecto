@@ -19,6 +19,7 @@ import com.proyecto.trabajo.models.Espacio;
 import com.proyecto.trabajo.models.Prestamos;
 import com.proyecto.trabajo.models.Prestamos_Elemento;
 import com.proyecto.trabajo.models.Solicitudes;
+import com.proyecto.trabajo.models.Sub_categoria; // Importar Entidad Sub_categoria
 import com.proyecto.trabajo.models.Usuarios;
 import com.proyecto.trabajo.repository.ElementosRepository;
 import com.proyecto.trabajo.repository.EspacioRepository;
@@ -26,13 +27,13 @@ import com.proyecto.trabajo.repository.PrestamosElementoRepository;
 import com.proyecto.trabajo.repository.PrestamosRepository;
 import com.proyecto.trabajo.repository.SolicitudesRepository;
 import com.proyecto.trabajo.repository.UsuariosRepository;
+import com.proyecto.trabajo.repository.Sub_categoriaRepository; // Repositorio de Subcategoría
 
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class SolicitudesServicesImple implements SolicitudesServices {
     private static final Logger logger = LoggerFactory.getLogger(SolicitudesServicesImple.class);
-
 
     private final SolicitudesRepository solicitudesRepository;
     private final SolicitudesMapper solicitudesMapper;
@@ -42,12 +43,14 @@ public class SolicitudesServicesImple implements SolicitudesServices {
     private final ElementosRepository elementosRepository;
     private final com.proyecto.trabajo.Mapper.PrestamosMapper prestamosMapper;
     private final PrestamosElementoRepository prestamosElementoRepository;
+    private final Sub_categoriaRepository subCategoriaRepository;
 
     public SolicitudesServicesImple(SolicitudesRepository solicitudesRepository, SolicitudesMapper solicitudesMapper,
             UsuariosRepository usuariosRepository, EspacioRepository espacioRepository,
             PrestamosRepository prestamosRepository, ElementosRepository elementosRepository,
             com.proyecto.trabajo.Mapper.PrestamosMapper prestamosMapper,
-            PrestamosElementoRepository prestamosElementoRepository) {
+            PrestamosElementoRepository prestamosElementoRepository,
+            Sub_categoriaRepository subCategoriaRepository) {
         this.solicitudesRepository = solicitudesRepository;
         this.solicitudesMapper = solicitudesMapper;
         this.usuariosRepository = usuariosRepository;
@@ -56,6 +59,7 @@ public class SolicitudesServicesImple implements SolicitudesServices {
         this.elementosRepository = elementosRepository;
         this.prestamosMapper = prestamosMapper;
         this.prestamosElementoRepository = prestamosElementoRepository;
+        this.subCategoriaRepository = subCategoriaRepository;
     }
 
     @Transactional
@@ -95,7 +99,6 @@ public class SolicitudesServicesImple implements SolicitudesServices {
     @Override
     @Transactional
     public SolicitudesDto guardar(SolicitudeCreateDto dto, String username) {
-        // Log para depuración
         logger.info("[Solicitudes] Username autenticado recibido: {}", username);
         Usuarios usuario = usuariosRepository.findByCorreo(username).orElse(null);
         if (usuario == null) {
@@ -104,14 +107,36 @@ public class SolicitudesServicesImple implements SolicitudesServices {
         } else {
             logger.info("[Solicitudes] Usuario encontrado: id={}, correo={}", usuario.getId(), usuario.getCorreo());
         }
+        
+        // 🚀 LÍNEA DE DIAGNÓSTICO: ¿Qué ID recibimos del DTO?
+        logger.info("[DIAGNÓSTICO] ID Subcategoría recibido en DTO: {}", dto.getId_subcategoria());
+
         Solicitudes solicitudes = solicitudesMapper.toSolicitudesFromCreateDto(dto);
-        solicitudes.setUsuario(usuario); // Siempre desde sesión
+        
+        // 🚀 CORRECCIÓN DEFINITIVA: Buscar y asignar la Entidad Sub_categoria
+        if (dto.getId_subcategoria() != null) {
+    // 1. Busca la Entidad Sub_categoria por el ID
+    Sub_categoria subCategoria = subCategoriaRepository.findById(dto.getId_subcategoria())
+        .orElseThrow(() -> new EntityNotFoundException("Subcategoría no encontrada con ID: " + dto.getId_subcategoria()));
+    
+    // 2. Asigna el objeto completo al campo 'sub_categoria' de la Solicitud
+    solicitudes.setSub_categoria(subCategoria);
+    
+    // 💡 LOG SIMPLIFICADO: Solo usamos subCategoria.getId()
+    // Esto evita el error de compilación "getNom_subcateg() is undefined"
+    logger.info("[DIAGNÓSTICO] Subcategoría ID {} asignada correctamente a la Entidad.", subCategoria.getId());
+    
+} else {
+     logger.warn("[DIAGNÓSTICO] El ID de subcategoría recibido es NULL. Revisar el frontend o el DTO.");
+}
+
+        solicitudes.setUsuario(usuario); // Asignación de Usuario
         if (solicitudes.getEstadosolicitud() == null) {
             solicitudes.setEstadosolicitud((byte) 2);
         }
 
         if (dto.getIds_elem() != null && !dto.getIds_elem().isEmpty()
-            && (solicitudes.getElemento() == null || solicitudes.getElemento().isEmpty())) {
+                && (solicitudes.getElemento() == null || solicitudes.getElemento().isEmpty())) {
             for (Long idElem : dto.getIds_elem()) {
                 if (idElem == null) continue;
                 Elementos elemento = elementosRepository.findById(idElem)
@@ -122,11 +147,13 @@ public class SolicitudesServicesImple implements SolicitudesServices {
                 solicitudes.getElemento().add(es);
             }
         }
+        
         if (solicitudes.getEspacio() == null && dto.getId_esp() != null) {
             Espacio espacio = espacioRepository.findById(dto.getId_esp().intValue())
                 .orElseThrow(() -> new EntityNotFoundException("Espacio no encontrado"));
             solicitudes.setEspacio(espacio);
         }
+        
         Solicitudes guardado = solicitudesRepository.save(solicitudes);
         Solicitudes solicitudFullPostSave = solicitudesRepository.findById(guardado.getId())
             .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada tras guardar"));
@@ -164,20 +191,20 @@ public class SolicitudesServicesImple implements SolicitudesServices {
     @Override
     @Transactional(readOnly = true)
     public SolicitudesDto buscarPorId(Long id) {
-    expirarSolicitudesVencidas();
-    Solicitudes solicitudes = solicitudesRepository.findById(id)
-        .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada"));
+        expirarSolicitudesVencidas();
+        Solicitudes solicitudes = solicitudesRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada"));
         return solicitudesMapper.toSolicitudesDto(solicitudes);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<SolicitudesDto> listarTodos() {
-    expirarSolicitudesVencidas();
-    return solicitudesRepository.findAll()
-        .stream()
-        .map(solicitudesMapper::toSolicitudesDto)
-        .collect(Collectors.toList());
+        expirarSolicitudesVencidas();
+        return solicitudesRepository.findAllWithDetails()
+            .stream()
+            .map(solicitudesMapper::toSolicitudesDto)
+            .collect(Collectors.toList());
     }
 
     @Override
@@ -193,7 +220,7 @@ public class SolicitudesServicesImple implements SolicitudesServices {
         Solicitudes actualizado = solicitudesRepository.save(solicitudes);
         sincronizarEstadoElementos(actualizado);
 
-    expirarSolicitudesVencidas();
+        expirarSolicitudesVencidas();
 
         if (aprobado) {
             if (sinPrestamo) {
@@ -215,4 +242,3 @@ public class SolicitudesServicesImple implements SolicitudesServices {
         return solicitudesMapper.toSolicitudesDto(actualizado);
     }
 }
-
