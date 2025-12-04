@@ -164,6 +164,17 @@ public class UsuariosServicesImple implements UsuariosServices {
     }
 
     public UsuariosDto guardar(com.proyecto.trabajo.dto.UsuariosCreateDto dto) {
+        // ✅ VALIDACIÓN: No permitir crear usuarios con rol de Administrador
+        if (dto.getId_role() != null) {
+            Roles rol = rolesRepository.findById(dto.getId_role())
+                    .orElseThrow(() -> new EntityNotFoundException("Rol no encontrado"));
+            
+            // Verificar si el rol es Administrador (ID = 3 según la estructura)
+            if ("Administrador".equalsIgnoreCase(rol.getNom_rol()) || dto.getId_role() == 3) {
+                throw new IllegalStateException("No se pueden crear usuarios con rol de Administrador. Solo puede existir un administrador en el sistema.");
+            }
+        }
+        
         Usuarios usuarios = usuariosMapper.toUsuariosFromCreateDto(dto);
 
         // Cifrar la contraseña antes de guardar
