@@ -67,8 +67,13 @@ public class SolicitudesServicesImple implements SolicitudesServices {
         List<Solicitudes> vencidas = solicitudesRepository.findVencidasNoExpiradas(LocalDateTime.now());
         if (vencidas == null || vencidas.isEmpty()) return;
         for (Solicitudes s : vencidas) {
-            s.setEstadosolicitud((byte) 3);
-            solicitudesRepository.save(s);
+            // Cambia el estado a Expirada (id=3) usando la relación
+            if (s.getEstado_solicitudes() == null || s.getEstado_solicitudes().getId() != 3) {
+                com.proyecto.trabajo.models.Estado_solicitudes estadoExpirada = new com.proyecto.trabajo.models.Estado_solicitudes();
+                estadoExpirada.setId(3); // Debe existir en la BD
+                s.setEstado_solicitudes(estadoExpirada);
+                solicitudesRepository.save(s);
+            }
             if (s.getElemento() != null) {
                 for (Elemento_Solicitudes es : s.getElemento()) {
                     Elementos elem = es.getElementos();
@@ -83,10 +88,9 @@ public class SolicitudesServicesImple implements SolicitudesServices {
 
     private void sincronizarEstadoElementos(Solicitudes solicitud) {
         if (solicitud == null || solicitud.getElemento() == null) return;
-        Byte estadoSolicitud = solicitud.getEstadosolicitud();
-        if (estadoSolicitud == null) return;
-
-        final byte estadoFinal = (estadoSolicitud == 1) ? (byte) 2 : (byte) 1;
+        if (solicitud.getEstado_solicitudes() == null) return;
+        // Si el estado es Aprobado (id=2), poner elementos en estado 2, si no, en 1
+        final byte estadoFinal = (solicitud.getEstado_solicitudes().getId() == 2) ? (byte) 2 : (byte) 1;
         solicitud.getElemento().forEach(es -> {
             Elementos elem = es.getElementos();
             if (elem != null && (elem.getEstadosoelement() == null || elem.getEstadosoelement() != estadoFinal)) {
@@ -131,9 +135,6 @@ public class SolicitudesServicesImple implements SolicitudesServices {
 }
 
         solicitudes.setUsuario(usuario); // Asignación de Usuario
-        if (solicitudes.getEstadosolicitud() == null) {
-            solicitudes.setEstadosolicitud((byte) 2);
-        }
 
         if (dto.getIds_elem() != null && !dto.getIds_elem().isEmpty()
                 && (solicitudes.getElemento() == null || solicitudes.getElemento().isEmpty())) {
@@ -160,7 +161,7 @@ public class SolicitudesServicesImple implements SolicitudesServices {
         expirarSolicitudesVencidas();
         sincronizarEstadoElementos(solicitudFullPostSave);
 
-        if (guardado.getEstadosolicitud() != null && guardado.getEstadosolicitud() == 1) {
+        if (guardado.getEstado_solicitudes() != null && guardado.getEstado_solicitudes().getId() == 2) {
             boolean sinPrestamo = guardado.getPrestamos() == null || guardado.getPrestamos().isEmpty();
             if (sinPrestamo) {
                 Solicitudes solicitudFull = solicitudesRepository.findById(guardado.getId())
@@ -226,7 +227,7 @@ public class SolicitudesServicesImple implements SolicitudesServices {
         
         System.out.println("DEBUG - actualizarSolicitud:");
         System.out.println("  - dto.getId_est_soli(): " + (dto != null ? dto.getId_est_soli() : "null"));
-        System.out.println("  - actualizado.getEstadosolicitud(): " + actualizado.getEstadosolicitud());
+        System.out.println("  - actualizado.getEstado_solicitudes(): " + (actualizado.getEstado_solicitudes() != null ? actualizado.getEstado_solicitudes().getId() : "null"));
         System.out.println("  - aprobado: " + aprobado);
         System.out.println("  - sinPrestamo: " + sinPrestamo);
         System.out.println("  - tiene usuario: " + (actualizado.getUsuario() != null));

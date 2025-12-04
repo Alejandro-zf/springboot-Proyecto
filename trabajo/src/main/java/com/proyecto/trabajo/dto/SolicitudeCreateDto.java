@@ -28,6 +28,14 @@ public class SolicitudeCreateDto {
     private Long id_categoria;
     private Long id_subcategoria;
 
+    public Long getId_subcategoria() {
+        return id_subcategoria;
+    }
+
+    public void setId_subcategoria(Long id_subcategoria) {
+        this.id_subcategoria = id_subcategoria;
+    }
+
     private Long id_usu;
 
     private Long id_esp;
