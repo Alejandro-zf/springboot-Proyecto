@@ -285,6 +285,17 @@ public class UsuariosServicesImple implements UsuariosServices {
 
         // Actualizar contraseña si se proporciona
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+            // Validar que se proporcionó la contraseña actual
+            if (dto.getCurrentPassword() == null || dto.getCurrentPassword().isBlank()) {
+                throw new IllegalArgumentException("Debes proporcionar tu contraseña actual para poder cambiarla");
+            }
+            
+            // Verificar que la contraseña actual sea correcta
+            if (!passwordEncoder.matches(dto.getCurrentPassword(), usuarios.getPassword())) {
+                throw new IllegalArgumentException("La contraseña actual es incorrecta");
+            }
+            
+            // Si todo es correcto, actualizar a la nueva contraseña
             usuarios.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
 

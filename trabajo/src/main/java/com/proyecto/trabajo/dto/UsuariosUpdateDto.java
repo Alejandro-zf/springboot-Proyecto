@@ -13,6 +13,7 @@ public class UsuariosUpdateDto {
     private String nom_us;
     private String ape_us;
     private String corre;
+    private String currentPassword; // Contraseña actual para validación
     private String password;
     private Long num_docu;
     private Byte id_td;
