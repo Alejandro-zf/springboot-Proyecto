@@ -164,6 +164,17 @@ public class UsuariosServicesImple implements UsuariosServices {
     }
 
     public UsuariosDto guardar(com.proyecto.trabajo.dto.UsuariosCreateDto dto) {
+        // ✅ VALIDACIÓN: No permitir crear usuarios con rol de Administrador
+        if (dto.getId_role() != null) {
+            Roles rol = rolesRepository.findById(dto.getId_role())
+                    .orElseThrow(() -> new EntityNotFoundException("Rol no encontrado"));
+            
+            // Verificar si el rol es Administrador (ID = 3 según la estructura)
+            if ("Administrador".equalsIgnoreCase(rol.getNom_rol()) || dto.getId_role() == 3) {
+                throw new IllegalStateException("No se pueden crear usuarios con rol de Administrador. Solo puede existir un administrador en el sistema.");
+            }
+        }
+        
         Usuarios usuarios = usuariosMapper.toUsuariosFromCreateDto(dto);
 
         // Cifrar la contraseña antes de guardar
@@ -261,7 +272,7 @@ public class UsuariosServicesImple implements UsuariosServices {
 
     @Override
     @Transactional
-    public UsuariosDto actualizarMiPerfil(String correoAutenticado, String contraseñaAutenticada, UsuariosUpdateDto dto) {
+    public UsuariosDto actualizarMiPerfil(String correoAutenticado, UsuariosUpdateDto dto) {
         // Buscar el usuario por su correo autenticado
         Usuarios usuarios = usuariosRepository.findByCorreo(correoAutenticado)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
@@ -285,6 +296,17 @@ public class UsuariosServicesImple implements UsuariosServices {
 
         // Actualizar contraseña si se proporciona
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+            // Validar que se proporcionó la contraseña actual
+            if (dto.getCurrentPassword() == null || dto.getCurrentPassword().isBlank()) {
+                throw new IllegalArgumentException("Debes proporcionar tu contraseña actual para poder cambiarla");
+            }
+            
+            // Verificar que la contraseña actual sea correcta
+            if (!passwordEncoder.matches(dto.getCurrentPassword(), usuarios.getPassword())) {
+                throw new IllegalArgumentException("La contraseña actual es incorrecta");
+            }
+            
+            // Si todo es correcto, actualizar a la nueva contraseña
             usuarios.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
 

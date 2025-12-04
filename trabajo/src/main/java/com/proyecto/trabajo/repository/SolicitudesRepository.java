@@ -11,7 +11,7 @@ import com.proyecto.trabajo.models.Solicitudes;
 
 public interface SolicitudesRepository extends JpaRepository<Solicitudes, Long> {
 
-    @Query("SELECT s FROM Solicitudes s WHERE s.fecha_fin < :now AND s.estadosolicitud = 2")
+    @Query("SELECT s FROM Solicitudes s WHERE s.fecha_fin < :now AND s.estado_solicitudes.id = 2")
     List<Solicitudes> findVencidasNoExpiradas(@Param("now") LocalDateTime now);
     
     // 💡 NUEVA CONSULTA: Carga forzada de relaciones

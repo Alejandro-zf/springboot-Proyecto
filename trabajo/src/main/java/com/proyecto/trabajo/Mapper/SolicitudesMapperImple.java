@@ -129,6 +129,7 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
         if (entity.getUsuario() != null) {
             dto.setId_usu(entity.getUsuario().getId());
             dto.setNom_usu(entity.getUsuario().getNom_usu());
+            dto.setCorreo(entity.getUsuario().getCorreo());
         }
         if (entity.getEspacio() != null) {
             dto.setId_espa(entity.getEspacio().getId().longValue());
@@ -184,7 +185,6 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
     Estado_solicitudes estadoSolicitudes = estadoSolicitudesRepository.findById(estadoId)
         .orElseThrow(() -> new EntityNotFoundException("Estado de solicitud no encontrado"));
     solicitudes.setEstado_solicitudes(estadoSolicitudes);
-    solicitudes.setEstadosolicitud(estadoId.byteValue());
         // Usuario se asigna en el servicio usando el usuario autenticado
         if (createDto.getId_esp() != null) {
             Espacio espacio = espacioRepository.findById(createDto.getId_esp().intValue())
@@ -242,10 +242,6 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
             Estado_solicitudes estadoSolicitudes = estadoSolicitudesRepository.findById(updateDto.getId_est_soli())
                     .orElseThrow(() -> new EntityNotFoundException("Estado de solicitud no encontrado"));
             entity.setEstado_solicitudes(estadoSolicitudes);
-            try {
-                entity.setEstadosolicitud(updateDto.getId_est_soli().byteValue());
-            } catch (Exception e) {
-            }
         }
         if (updateDto.getCantid() != null) {
             try {

@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class SolicitudesDto {
+	private String correo;
 private Long id_soli;
 private LocalDateTime fecha_ini;
 private LocalDateTime fecha_fn;
