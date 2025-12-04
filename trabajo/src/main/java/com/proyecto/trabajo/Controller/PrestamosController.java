@@ -35,9 +35,8 @@ public class PrestamosController {
         this.prestamosServices = prestamosServices;
     }
 
-    //Crear prestamo - Acceso: Administrador y Tecnico
+    //Crear prestamo - Acceso: Administrador, Tecnico e Instructor
     @PostMapping
-    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico')")
     public ResponseEntity<?> crear(@Valid @RequestBody PrestamosCreateDto dto) {
         try{
             PrestamosDto creado = prestamosServices.guardar(dto);
@@ -81,6 +80,22 @@ public class PrestamosController {
     public ResponseEntity<List<PrestamosDto>> listarActivos() {
         List<PrestamosDto> activos = prestamosServices.listarActivos();
         return ResponseEntity.ok(activos);
+    }
+
+    // Listar préstamos por estado - Acceso: Admin, Tecnico, Instructor
+    @GetMapping("/estado/{estado}")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
+    public ResponseEntity<List<PrestamosDto>> listarPorEstado(@PathVariable Integer estado) {
+        List<PrestamosDto> prestamos = prestamosServices.listarPorEstado(estado);
+        return ResponseEntity.ok(prestamos);
+    }
+
+    // Listar préstamos finalizados (estado=0) - Acceso: Admin, Tecnico, Instructor
+    @GetMapping("/finalizados")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
+    public ResponseEntity<List<PrestamosDto>> listarFinalizados() {
+        List<PrestamosDto> finalizados = prestamosServices.listarPorEstado(0);
+        return ResponseEntity.ok(finalizados);
     }
 
     // Actualizar préstamo - Acceso: Administrador y Tecnico

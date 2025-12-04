@@ -208,6 +208,16 @@ public class SolicitudesServicesImple implements SolicitudesServices {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<SolicitudesDto> listarPendientes() {
+        expirarSolicitudesVencidas();
+        return solicitudesRepository.findByEstado()
+            .stream()
+            .map(solicitudesMapper::toSolicitudesDto)
+            .collect(Collectors.toList());
+    }
+
+    @Override
     @Transactional
     public SolicitudesDto actualizarSolicitud(Long id, SolicitudesUpdateDtos dto) {
         Solicitudes solicitudes = solicitudesRepository.findById(id)

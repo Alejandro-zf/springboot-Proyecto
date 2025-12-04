@@ -60,7 +60,15 @@ public class TrasabilidadMapperImple implements TrasabilidadMapper {
         
         dto.setId_trsa(entity.getId());
         dto.setFech(entity.getFecha());
-        dto.setObser(entity.getObservacion());
+        
+        // obser: extrae la observación del ticket
+        if (entity.getTickets() != null) {
+            dto.setObser(entity.getTickets().getObservaciones() != null ? entity.getTickets().getObservaciones() : "");
+            dto.setId_ticet(entity.getTickets().getId());
+        }
+        
+        // obse: observación de trasabilidad
+        dto.setObse(entity.getObservacion());
         
         if (entity.getUsuario() != null) {
             dto.setId_usu(entity.getUsuario().getId());
@@ -68,10 +76,12 @@ public class TrasabilidadMapperImple implements TrasabilidadMapper {
         }
         
         if (entity.getTickets() != null) {
-            dto.setId_ticet(entity.getTickets().getId());
             if (entity.getTickets().getElementos() != null) {
                 dto.setId_elemen(entity.getTickets().getElementos().getId());
                 dto.setNom_elemen(entity.getTickets().getElementos().getNom_elemento());
+            }
+            if (entity.getTickets().getProblemas() != null) {
+                dto.setNom_problm(entity.getTickets().getProblemas().getDesc_problema());
             }
         }
         
@@ -96,6 +106,12 @@ public class TrasabilidadMapperImple implements TrasabilidadMapper {
             Tickets tickets = ticketsRepository.findById(createDto.getId_ticet())
                 .orElseThrow(() -> new EntityNotFoundException("Ticket no encontrado"));
             entity.setTickets(tickets);
+        }
+        
+        if (createDto.getId_elemen() != null) {
+            com.proyecto.trabajo.models.Elementos elemento = elementosRepository.findById(createDto.getId_elemen())
+                .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
+            entity.setElementos(elemento);
         }
         
         return entity;

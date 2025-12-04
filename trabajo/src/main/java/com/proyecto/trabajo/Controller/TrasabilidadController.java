@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.proyecto.trabajo.Services.TrasabilidadServices;
 import com.proyecto.trabajo.dto.TrasabilidadDtos;
+import com.proyecto.trabajo.dto.TrasabilidadCreateDtos;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -49,6 +51,17 @@ public class TrasabilidadController {
     public ResponseEntity<List<TrasabilidadDtos>> listarTodos() {
         List<TrasabilidadDtos> trasabilidades = trasabilidadServices.listarTodos();
         return ResponseEntity.ok(trasabilidades);
+    }
+
+    // Crear trasabilidad
+    @PostMapping
+    public ResponseEntity<?> crear(@RequestBody TrasabilidadCreateDtos dto) {
+        try {
+            TrasabilidadDtos nueva = trasabilidadServices.guardar(dto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(nueva);
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(java.util.Map.of("error", ex.getMessage()));
+        }
     }
 
     //Eliminar trasabilidad

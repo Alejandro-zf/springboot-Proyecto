@@ -11,6 +11,7 @@ public interface TicketsServices {
     List<TicketsDtos> listarTodos();
     List<TicketsDtos> listarActivos();
     List<TicketsDtos> listarPendientes();
+    List<TicketsDtos> listarFinalizados();
     void eliminar(Long id);
     TicketsDtos actualizar(Long id, com.proyecto.trabajo.dto.TicketsUpdateDtos dto);
 

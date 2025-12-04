@@ -4,6 +4,7 @@ package com.proyecto.trabajo.Services;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.proyecto.trabajo.Mapper.TrasabilidadMapper;
 import com.proyecto.trabajo.dto.TrasabilidadCreateDtos;
@@ -55,11 +56,14 @@ public class TrasabilidadServicesImple implements TrasabilidadServices {
     }
 
     @Override
+    @Transactional
     public TrasabilidadDtos guardar(TrasabilidadCreateDtos dto) {
         validarTrasabilidad(dto);
         
         Trasabilidad entity = trasabilidadMapper.toTrasabilidadFromCreateDto(dto);
+        
         Trasabilidad guardado = trasabilidadRepository.save(entity);
+        
         return trasabilidadMapper.toTrasabilidadDto(guardado);
     }
 
