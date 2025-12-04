@@ -105,8 +105,14 @@ public class SolicitudesController {
         return ResponseEntity.ok(solicitudes);
     }
 
+    //Listar solicitudes pendientes - Acceso: Administrador, Tecnico, Instructor
+    @GetMapping("/pendientes")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
+    public ResponseEntity<List<SolicitudesDto>> listarPendientes(){
+        List<SolicitudesDto> solicitudes = solicitudesServices.listarPendientes();
+        return ResponseEntity.ok(solicitudes);
+    }
 
-    
     //Listar todas las solicitudes - Acceso: Administrador, Tecnico, Instructor
     @GetMapping
     @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")

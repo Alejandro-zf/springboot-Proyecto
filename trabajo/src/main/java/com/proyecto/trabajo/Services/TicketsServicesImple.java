@@ -1,6 +1,7 @@
 package com.proyecto.trabajo.Services;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.time.LocalDateTime;
 import java.time.LocalDate;
@@ -162,9 +163,25 @@ public class TicketsServicesImple implements TicketsServices {
     @Override
     @Transactional(readOnly = true)
     public List<TicketsDtos> listarPendientes() {
-        // Estado PENDIENTE = 3 (idEstTick -> idEstado)
-        return ticketsRepository.findByIdEstTick_IdEstado((byte)3)
+        // Estado PENDIENTE = 2 (idEstTick -> idEstado)
+        return ticketsRepository.findByIdEstTick_IdEstado((byte)2)
                 .stream()
+                .map(ticketsMapper::toTicketsDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<TicketsDtos> listarFinalizados() {
+        // Estados TERMINADO = 3 e INACTIVO = 4
+        List<Tickets> terminados = ticketsRepository.findByIdEstTick_IdEstado((byte)3);
+        List<Tickets> inactivos = ticketsRepository.findByIdEstTick_IdEstado((byte)4);
+        
+        List<Tickets> todos = new ArrayList<>();
+        todos.addAll(terminados);
+        todos.addAll(inactivos);
+        
+        return todos.stream()
                 .map(ticketsMapper::toTicketsDto)
                 .collect(Collectors.toList());
     }

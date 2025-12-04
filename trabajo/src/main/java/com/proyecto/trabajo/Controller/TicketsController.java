@@ -126,6 +126,15 @@ public class TicketsController {
         List<TicketsDtos> tickets = ticketsServices.listarPendientes();
         return ResponseEntity.ok(tickets);
     }
+
+    // Listar tickets terminados e inactivos - Acceso: Administrador, Técnico, Instructor
+    @GetMapping("/finalizados")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
+    public ResponseEntity<List<TicketsDtos>> listarFinalizados() {
+        List<TicketsDtos> tickets = ticketsServices.listarFinalizados();
+        return ResponseEntity.ok(tickets);
+    }
+
     //Eliminar tickets - Acceso: Administrador y Tecnico
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('Administrador', 'Tecnico')")

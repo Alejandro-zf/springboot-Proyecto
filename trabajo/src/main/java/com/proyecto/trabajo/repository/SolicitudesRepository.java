@@ -21,4 +21,12 @@ public interface SolicitudesRepository extends JpaRepository<Solicitudes, Long> 
            "LEFT JOIN FETCH s.estado_solicitudes es " +
            "ORDER BY s.id DESC")
     List<Solicitudes> findAllWithDetails();
+
+    @Query("SELECT s FROM Solicitudes s " +
+           "LEFT JOIN FETCH s.usuario u " + 
+           "LEFT JOIN FETCH s.sub_categoria sc " +
+           "LEFT JOIN FETCH s.estado_solicitudes es " +
+           "WHERE s.estado_solicitudes.id = 1 " +
+           "ORDER BY s.id DESC")
+    List<Solicitudes> findByEstado();
 }

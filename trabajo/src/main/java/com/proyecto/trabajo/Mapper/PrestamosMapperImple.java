@@ -33,7 +33,7 @@ public class PrestamosMapperImple implements PrestamosMapper {
     public Prestamos fromSolicitudAprobada(com.proyecto.trabajo.models.Solicitudes solicitud) {
         if (solicitud == null) return null;
         Prestamos p = new Prestamos();
-        p.setFecha_entre(java.time.LocalDateTime.now());
+        p.setFecha_recep(java.time.LocalDateTime.now());
         
         // Determinar el tipo según lo que tenga la solicitud
         String tipo = "AUTO";
@@ -89,7 +89,12 @@ public class PrestamosMapperImple implements PrestamosMapper {
         if (createDto == null) return null;
         Prestamos prestamos = new Prestamos();
         prestamos.setFecha_entre(createDto.getFechaEntreg());
-        prestamos.setFecha_recep(createDto.getFechaRepc());
+        // Si no viene fecha de recepción, asignar la fecha actual
+        if (createDto.getFechaRepc() != null) {
+            prestamos.setFecha_recep(createDto.getFechaRepc());
+        } else {
+            prestamos.setFecha_recep(java.time.LocalDateTime.now());
+        }
         validarTipo(createDto.getTipoPres());
         prestamos.setTipo_prest(createDto.getTipoPres());
         if (createDto.getEstado() != null) {
@@ -120,7 +125,12 @@ public class PrestamosMapperImple implements PrestamosMapper {
         PrestamosDto prestamosDto = new PrestamosDto();
         prestamosDto.setId_prest(prestamos.getId());
         prestamosDto.setFecha_entreg(prestamos.getFecha_entre());
-        prestamosDto.setFecha_repc(prestamos.getFecha_recep());
+        // Si fecha_recep es null, asignar la fecha actual como fallback
+        if (prestamos.getFecha_recep() != null) {
+            prestamosDto.setFecha_repc(prestamos.getFecha_recep());
+        } else {
+            prestamosDto.setFecha_repc(java.time.LocalDateTime.now());
+        }
         prestamosDto.setTipo_pres(prestamos.getTipo_prest());
         prestamosDto.setEstado(prestamos.getEstado());
         if (prestamos.getUsuario() != null) {
