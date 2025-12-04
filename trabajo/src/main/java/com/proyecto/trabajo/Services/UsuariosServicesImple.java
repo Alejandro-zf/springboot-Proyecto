@@ -169,8 +169,7 @@ public class UsuariosServicesImple implements UsuariosServices {
             Roles rol = rolesRepository.findById(dto.getId_role())
                     .orElseThrow(() -> new EntityNotFoundException("Rol no encontrado"));
             
-            // Verificar si el rol es Administrador (ID = 3 según la estructura)
-            if ("Administrador".equalsIgnoreCase(rol.getNom_rol()) || dto.getId_role() == 3) {
+            if ("Administrador".equalsIgnoreCase(rol.getNom_rol()) || dto.getId_role() == 2) {
                 throw new IllegalStateException("No se pueden crear usuarios con rol de Administrador. Solo puede existir un administrador en el sistema.");
             }
         }

@@ -40,8 +40,14 @@ public class SolicitudesController {
         } catch (Exception ex) {
             ex.printStackTrace();
             String msg = ex.getMessage() != null ? ex.getMessage() : "Error inesperado al actualizar solicitud";
+            // Obtener la causa raíz del error
+            Throwable cause = ex;
+            while (cause.getCause() != null) {
+                cause = cause.getCause();
+            }
+            String detalle = cause.getMessage() != null ? cause.getMessage() : cause.toString();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(Map.of("error", msg));
+                .body(Map.of("error", msg, "detalle", detalle));
         }
     }
     // Actualizar estado de solicitud - Acceso: Administrador, Tecnico e Instructor
@@ -54,8 +60,14 @@ public class SolicitudesController {
         } catch (Exception ex) {
             ex.printStackTrace();
             String msg = ex.getMessage() != null ? ex.getMessage() : "Error inesperado al actualizar estado";
+            // Obtener la causa raíz del error
+            Throwable cause = ex;
+            while (cause.getCause() != null) {
+                cause = cause.getCause();
+            }
+            String detalle = cause.getMessage() != null ? cause.getMessage() : cause.toString();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(Map.of("error", msg));
+                .body(Map.of("error", msg, "detalle", detalle, "causa", cause.getClass().getSimpleName()));
         }
     }
 

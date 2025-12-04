@@ -178,6 +178,7 @@ public class SolicitudesServicesImple implements SolicitudesServices {
                             pe.setPrestamos(prestamoGuardado);
                             pe.setElementos(es.getElementos());
                             pe.setObser_prest("AUTO");
+                            pe.setCantidad(1);
                             prestamosElementoRepository.save(pe);
                         }
                     }
@@ -224,25 +225,30 @@ public class SolicitudesServicesImple implements SolicitudesServices {
         // Verificar si se debe crear préstamo (estado 2 = Aprobado)
         boolean aprobado = dto != null && dto.getId_est_soli() != null && dto.getId_est_soli() == 2;
         boolean sinPrestamo = actualizado.getPrestamos() == null || actualizado.getPrestamos().isEmpty();
+        boolean tieneElementos = actualizado.getElemento() != null && !actualizado.getElemento().isEmpty();
         
         System.out.println("DEBUG - actualizarSolicitud:");
         System.out.println("  - dto.getId_est_soli(): " + (dto != null ? dto.getId_est_soli() : "null"));
         System.out.println("  - actualizado.getEstado_solicitudes(): " + (actualizado.getEstado_solicitudes() != null ? actualizado.getEstado_solicitudes().getId() : "null"));
         System.out.println("  - aprobado: " + aprobado);
         System.out.println("  - sinPrestamo: " + sinPrestamo);
+        System.out.println("  - tieneElementos: " + tieneElementos);
         System.out.println("  - tiene usuario: " + (actualizado.getUsuario() != null));
         System.out.println("  - tiene espacio: " + (actualizado.getEspacio() != null));
 
-        if (aprobado && sinPrestamo) {
+        // ✅ Solo crear préstamo si tiene elementos (solicitudes de equipos)
+        // Las solicitudes de espacios sin elementos NO generan préstamo
+        if (aprobado && sinPrestamo && tieneElementos) {
             if (actualizado.getUsuario() == null) {
                 throw new IllegalArgumentException("No se puede crear el préstamo automáticamente porque la solicitud no tiene usuario asignado. Asigna un usuario antes de aprobar la solicitud.");
             }
             System.out.println("DEBUG - Creando préstamo automático...");
             System.out.println("  - Espacio ID: " + (actualizado.getEspacio() != null ? actualizado.getEspacio().getId() : "null"));
-            System.out.println("  - Elementos en solicitud: " + (actualizado.getElemento() != null ? actualizado.getElemento().size() : 0));
+            System.out.println("  - Elementos en solicitud: " + actualizado.getElemento().size());
             
             Prestamos p = new Prestamos();
             p.setFecha_entre(LocalDateTime.now());
+            p.setEstado((byte) 1); // ✅ Establecer estado explícitamente
             p.setTipo_prest("AUTO");
             p.setUsuario(actualizado.getUsuario());
             p.setEspacio(actualizado.getEspacio());
@@ -251,19 +257,20 @@ public class SolicitudesServicesImple implements SolicitudesServices {
             // Guardar el préstamo primero
             Prestamos prestamoGuardado = prestamosRepository.save(p);
             
-            // Si la solicitud tiene elementos, crear Prestamos_Elemento para cada uno
-            if (actualizado.getElemento() != null && !actualizado.getElemento().isEmpty()) {
-                for (Elemento_Solicitudes es : actualizado.getElemento()) {
-                    Prestamos_Elemento pe = new Prestamos_Elemento();
-                    pe.setPrestamos(prestamoGuardado);
-                    pe.setElementos(es.getElementos());
-                    pe.setCantidad(1); // O usar la cantidad de la solicitud si existe
-                    prestamoGuardado.getPrestamoss().add(pe);
-                }
-                prestamosRepository.save(prestamoGuardado);
+            // Crear Prestamos_Elemento para cada elemento
+            for (Elemento_Solicitudes es : actualizado.getElemento()) {
+                Prestamos_Elemento pe = new Prestamos_Elemento();
+                pe.setPrestamos(prestamoGuardado);
+                pe.setElementos(es.getElementos());
+                pe.setCantidad(1); // O usar la cantidad de la solicitud si existe
+                pe.setObser_prest("Préstamo automático generado al aprobar solicitud"); // ✅ Campo obligatorio
+                prestamoGuardado.getPrestamoss().add(pe);
             }
+            prestamosRepository.save(prestamoGuardado);
             
             System.out.println("DEBUG - Préstamo creado exitosamente con ID: " + prestamoGuardado.getId());
+        } else if (aprobado && !tieneElementos) {
+            System.out.println("DEBUG - Solicitud aprobada SIN elementos (solicitud de espacio). No se crea préstamo.");
         }
         
         return solicitudesMapper.toSolicitudesDto(actualizado);

@@ -77,22 +77,22 @@ public class EspacioController {
         }
     }
 
-    //Obtener espacio por id 
+    //Obtener espacio por ID 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
-    public ResponseEntity<?> obtener(@PathVariable Integer id) {
+    @PreAuthorize("isAuthenticated()") // Permitir a cualquier usuario autenticado ver un espacio
+    public ResponseEntity<?> obtenerPorId(@PathVariable Integer id) {
         try {
             EspacioDto espacio = espacioServices.buscarPorId(id);
             return ResponseEntity.ok(espacio);
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", ex.getMessage()));
+                    .body(Map.of("error", "Espacio no encontrado"));
         }
     }
 
     //Listar espacios 
     @GetMapping
-    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
+    @PreAuthorize("isAuthenticated()") // Permitir a cualquier usuario autenticado ver los espacios
     public ResponseEntity<List<EspacioDto>> listarTodos() {
         List<EspacioDto> espacios = espacioServices.listarTodos();
         return ResponseEntity.ok(espacios);
