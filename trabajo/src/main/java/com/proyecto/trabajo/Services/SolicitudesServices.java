@@ -13,4 +13,5 @@ public interface SolicitudesServices {
     List<SolicitudesDto> listarPendientes();
     SolicitudesDto actualizarSolicitud(Long id, SolicitudesUpdateDtos dto);
     void expirarSolicitudesVencidas();
+    void eliminar(Long id);
 }

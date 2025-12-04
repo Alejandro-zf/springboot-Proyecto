@@ -132,6 +132,21 @@ public class SolicitudesController {
                 .body(Map.of("error", ex.getMessage()));
             }
         }
+    //Eliminar solicitud - Acceso: Administrador y Tecnico
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico')")
+    public ResponseEntity<Map<String, String>> eliminar(@PathVariable Long id) {
+        try {
+            solicitudesServices.eliminar(id);
+            return ResponseEntity.ok(Map.of("mensaje", "Solicitud eliminada exitosamente"));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            String msg = ex.getMessage() != null ? ex.getMessage() : "Error al eliminar solicitud";
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", msg));
+        }
+    }
+
     // Cancelar solicitud - Solo Instructor dueño puede cancelar
     @PutMapping("/cancelar/{id}")
     @PreAuthorize("hasAnyRole('Instructor', 'Administrador', 'Tecnico')")

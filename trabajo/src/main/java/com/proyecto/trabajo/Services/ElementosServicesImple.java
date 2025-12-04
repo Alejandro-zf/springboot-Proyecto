@@ -202,7 +202,25 @@ public class ElementosServicesImple implements ElementosServices {
 
     @Override
     public void eliminar(Long id) {
-        elementosRepository.deleteById(id);
+        Elementos elemento = elementosRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado con id: " + id));
+        
+        // Verificar si tiene préstamos asociados
+        if (elemento.getPrestamosselemen() != null && !elemento.getPrestamosselemen().isEmpty()) {
+            throw new IllegalStateException("No se puede eliminar el elemento porque tiene " + 
+                elemento.getPrestamosselemen().size() + " préstamo(s) asociado(s). " +
+                "Primero debe eliminar los préstamos relacionados.");
+        }
+        
+        // Verificar si tiene tickets asociados
+        if (elemento.getTickets() != null && !elemento.getTickets().isEmpty()) {
+            throw new IllegalStateException("No se puede eliminar el elemento porque tiene " + 
+                elemento.getTickets().size() + " ticket(s) asociado(s). " +
+                "Primero debe eliminar los tickets relacionados.");
+        }
+        
+        // Las relaciones Elemento_Solicitudes se eliminan automáticamente por cascade
+        elementosRepository.delete(elemento);
     }
 
     @Override

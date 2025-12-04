@@ -285,4 +285,43 @@ public class SolicitudesServicesImple implements SolicitudesServices {
         
         return solicitudesMapper.toSolicitudesDto(actualizado);
     }
+
+    @Override
+    @Transactional
+    public void eliminar(Long id) {
+        Solicitudes solicitud = solicitudesRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada"));
+        
+        logger.info("[ELIMINAR] Iniciando eliminación de solicitud ID: {}", id);
+        
+        // 1. Eliminar relaciones con Prestamos_Elemento
+        if (solicitud.getPrestamos() != null && !solicitud.getPrestamos().isEmpty()) {
+            logger.info("[ELIMINAR] Eliminando {} préstamos relacionados", solicitud.getPrestamos().size());
+            for (Prestamos prestamo : solicitud.getPrestamos()) {
+                if (prestamo.getPrestamoss() != null && !prestamo.getPrestamoss().isEmpty()) {
+                    logger.info("[ELIMINAR] Eliminando {} elementos del préstamo ID: {}", 
+                        prestamo.getPrestamoss().size(), prestamo.getId());
+                    prestamosElementoRepository.deleteAll(prestamo.getPrestamoss());
+                }
+            }
+            // 2. Eliminar Prestamos
+            prestamosRepository.deleteAll(solicitud.getPrestamos());
+        }
+        
+        // 3. Restaurar estado de elementos a disponible (estado 1)
+        if (solicitud.getElemento() != null && !solicitud.getElemento().isEmpty()) {
+            logger.info("[ELIMINAR] Restaurando estado de {} elementos", solicitud.getElemento().size());
+            for (Elemento_Solicitudes es : solicitud.getElemento()) {
+                if (es.getElementos() != null) {
+                    es.getElementos().setEstadosoelement((byte) 1);
+                    elementosRepository.save(es.getElementos());
+                }
+            }
+        }
+        
+        // 4. Las relaciones Elemento_Solicitudes se eliminan automáticamente por cascade
+        logger.info("[ELIMINAR] Eliminando solicitud ID: {}", id);
+        solicitudesRepository.delete(solicitud);
+        logger.info("[ELIMINAR] Solicitud eliminada exitosamente");
+    }
 }

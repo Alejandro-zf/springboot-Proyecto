@@ -105,8 +105,18 @@ public class SubcategoriaServicesImple implements SubcategoriaServices {
         Sub_categoria subcategoria = subcategoriaRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Subcategoría no encontrada con id: " + id));
         
+        // Verificar si tiene elementos asociados
         if (subcategoria.getElementos() != null && !subcategoria.getElementos().isEmpty()) {
-            throw new IllegalStateException("No se puede eliminar la subcategoría porque tiene elementos asociados");
+            throw new IllegalStateException("No se puede eliminar la subcategoría porque tiene " + 
+                subcategoria.getElementos().size() + " elemento(s) asociado(s). " +
+                "Primero debe eliminar o reasignar los elementos.");
+        }
+        
+        // Verificar si tiene solicitudes asociadas
+        if (subcategoria.getSolicitudes() != null && !subcategoria.getSolicitudes().isEmpty()) {
+            throw new IllegalStateException("No se puede eliminar la subcategoría porque tiene " + 
+                subcategoria.getSolicitudes().size() + " solicitud(es) asociada(s). " +
+                "Primero debe eliminar las solicitudes o cambiar su subcategoría.");
         }
         
         subcategoriaRepository.delete(subcategoria);

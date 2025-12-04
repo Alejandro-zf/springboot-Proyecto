@@ -81,8 +81,18 @@ public class SubcategoriaController {
     // Eliminar Subcategoria - Acceso: Solo Admin (Tecnico e Instructor NO pueden)
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('Administrador')")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        subcategoriaServices.eliminar(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> eliminar(@PathVariable Long id) {
+        try {
+            subcategoriaServices.eliminar(id);
+            return ResponseEntity.ok(Map.of("mensaje", "Subcategoría eliminada exitosamente"));
+        } catch (IllegalStateException ex) {
+            // Error de validación de negocio (elementos o solicitudes asociadas)
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Map.of("error", ex.getMessage()));
+        } catch (Exception ex) {
+            // Error inesperado
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Error al eliminar la subcategoría", "detalle", ex.getMessage()));
+        }
     }
 }

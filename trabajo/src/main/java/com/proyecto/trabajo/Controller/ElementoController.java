@@ -79,9 +79,19 @@ public class ElementoController {
     //Eliminar elementos - Acceso: Solo Admin (Tecnico e Instructor NO pueden)
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('Administrador')")
-    public ResponseEntity<Void> eliminar (@PathVariable Long id){
-        elementosServices.eliminar(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> eliminar (@PathVariable Long id){
+        try {
+            elementosServices.eliminar(id);
+            return ResponseEntity.ok(Map.of("mensaje", "Elemento eliminado exitosamente"));
+        } catch (IllegalStateException ex) {
+            // Error de validación de negocio (préstamos o tickets asociados)
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Map.of("error", ex.getMessage()));
+        } catch (Exception ex) {
+            // Error inesperado
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Error al eliminar el elemento", "detalle", ex.getMessage()));
+        }
     }
 
     // Actualizar elemento (por ejemplo cambiar estado) - Acceso: Solo Administrador
