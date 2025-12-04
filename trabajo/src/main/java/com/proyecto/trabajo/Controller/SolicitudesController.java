@@ -116,7 +116,7 @@ public class SolicitudesController {
         }
     // Cancelar solicitud - Solo Instructor dueño puede cancelar
     @PutMapping("/cancelar/{id}")
-    @PreAuthorize("hasRole('Instructor')")
+    @PreAuthorize("hasAnyRole('Instructor', 'Administrador', 'Tecnico')")
     public ResponseEntity<?> cancelarSolicitud(@PathVariable Long id, @RequestBody SolicitudesUpdateDtos dto, Authentication authentication) {
         try {
             if (authentication == null || !authentication.isAuthenticated()) {
@@ -124,18 +124,34 @@ public class SolicitudesController {
                         .body(Map.of("error", "No autenticado"));
             }
             String username = authentication.getName();
-            // Buscar la solicitud y validar que el usuario sea el dueño
+            List<String> roles = authentication.getAuthorities().stream()
+                .map(a -> a.getAuthority())
+                .toList();
+            boolean isAdminOrTecnico = roles.contains("ROLE_Administrador") || roles.contains("ROLE_Tecnico");
             SolicitudesDto solicitud = solicitudesServices.buscarPorId(id);
-            if (solicitud == null || solicitud.getCorreo() == null || !solicitud.getCorreo().equals(username)) {
+            System.out.println("[CANCELAR] Usuario: " + username);
+            System.out.println("[CANCELAR] Roles: " + roles);
+            System.out.println("[CANCELAR] Correo solicitud: " + (solicitud != null ? solicitud.getCorreo() : "null"));
+            System.out.println("[CANCELAR] Id usuario solicitud: " + (solicitud != null ? solicitud.getId_usu() : "null"));
+            // Permitir si es el dueño (por correo o id_usu) o si es admin/tecnico
+            boolean isOwner = false;
+            if (solicitud != null) {
+                // Si el username es igual al correo o al id_usu (como string)
+                isOwner = username.equals(solicitud.getCorreo()) || username.equals(String.valueOf(solicitud.getId_usu()));
+            }
+            if (solicitud == null || (!isOwner && !isAdminOrTecnico)) {
+                System.out.println("[CANCELAR] Permiso denegado: username=" + username + ", correoSolicitud=" + (solicitud != null ? solicitud.getCorreo() : "null") + ", id_usu=" + (solicitud != null ? solicitud.getId_usu() : "null"));
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body(Map.of("error", "No tienes permiso para cancelar esta solicitud"));
             }
             // Solo permitir cancelar (por ejemplo, id_est_soli = 4)
             if (dto.getId_est_soli() == null || dto.getId_est_soli() != 4) {
+                System.out.println("[CANCELAR] id_est_soli inválido: " + dto.getId_est_soli());
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(Map.of("error", "Solo se permite cancelar la solicitud (id_est_soli=4)"));
             }
             SolicitudesDto actualizado = solicitudesServices.actualizarSolicitud(id, dto);
+            System.out.println("[CANCELAR] Solicitud cancelada correctamente");
             return ResponseEntity.ok(Map.of("mensaje", "Solicitud cancelada correctamente", "data", actualizado));
         } catch (Exception ex) {
             ex.printStackTrace();
