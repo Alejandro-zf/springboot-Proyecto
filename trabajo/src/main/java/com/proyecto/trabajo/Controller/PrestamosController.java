@@ -57,44 +57,39 @@ public class PrestamosController {
             .body(Map.of("errores2", "Error3 al crear el prestamo", "detalle", ex.getMessage()));
         }
 }
-    //Obtener prestamos por el id - Acceso: Admin, Tecnico, Instructor
+    //Obtener prestamos por el id
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
     public ResponseEntity<PrestamosDto> buscarPorId(@PathVariable Long id) {
         PrestamosDto prestamo = prestamosServices.buscarPorId(id);
         return ResponseEntity.ok(prestamo);
     }
     
 
-    // Listar todos los préstamos - Acceso: Admin, Tecnico, Instructor
+    // Listar todos los préstamos
     @GetMapping
-    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
     public ResponseEntity<List<PrestamosDto>> listarTodos() {
         List<PrestamosDto> prestamos = prestamosServices.listarTodos();
         return ResponseEntity.ok(prestamos);
     }
 
     // Listar préstamos activos (estado=1) - Acceso: Admin, Tecnico, Instructor
+    // Listar préstamos activos (estado=1)
     @GetMapping("/activos")
-    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
-    public ResponseEntity<List<PrestamosDto>> listarActivos() {
-        List<PrestamosDto> activos = prestamosServices.listarActivos();
+    public ResponseEntity<List<PrestamosDto>> listarActivos() {tivos();
         return ResponseEntity.ok(activos);
     }
 
     // Listar préstamos por estado - Acceso: Admin, Tecnico, Instructor
+    // Listar préstamos por estado
     @GetMapping("/estado/{estado}")
-    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
     public ResponseEntity<List<PrestamosDto>> listarPorEstado(@PathVariable Integer estado) {
-        List<PrestamosDto> prestamos = prestamosServices.listarPorEstado(estado);
         return ResponseEntity.ok(prestamos);
     }
 
     // Listar préstamos finalizados (estado=0) - Acceso: Admin, Tecnico, Instructor
+    // Listar préstamos finalizados (estado=0)
     @GetMapping("/finalizados")
-    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
-    public ResponseEntity<List<PrestamosDto>> listarFinalizados() {
-        List<PrestamosDto> finalizados = prestamosServices.listarPorEstado(0);
+    public ResponseEntity<List<PrestamosDto>> listarFinalizados() {rEstado(0);
         return ResponseEntity.ok(finalizados);
     }
 
@@ -114,9 +109,8 @@ public class PrestamosController {
 
     //Eliminar prestamos por el id - Acceso: Administrador y Tecnico
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico')")
+    //Eliminar prestamos por el id
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        prestamosServices.eliminar(id);
-        return ResponseEntity.noContent().build();
     }
 }
