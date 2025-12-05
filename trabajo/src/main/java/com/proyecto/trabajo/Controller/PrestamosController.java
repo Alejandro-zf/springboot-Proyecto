@@ -72,24 +72,24 @@ public class PrestamosController {
         return ResponseEntity.ok(prestamos);
     }
 
-    // Listar préstamos activos (estado=1) - Acceso: Admin, Tecnico, Instructor
     // Listar préstamos activos (estado=1)
     @GetMapping("/activos")
-    public ResponseEntity<List<PrestamosDto>> listarActivos() {tivos();
+    public ResponseEntity<List<PrestamosDto>> listarActivos() {
+        List<PrestamosDto> activos = prestamosServices.listarActivos();
         return ResponseEntity.ok(activos);
     }
 
-    // Listar préstamos por estado - Acceso: Admin, Tecnico, Instructor
     // Listar préstamos por estado
     @GetMapping("/estado/{estado}")
     public ResponseEntity<List<PrestamosDto>> listarPorEstado(@PathVariable Integer estado) {
+        List<PrestamosDto> prestamos = prestamosServices.listarPorEstado(estado);
         return ResponseEntity.ok(prestamos);
     }
 
-    // Listar préstamos finalizados (estado=0) - Acceso: Admin, Tecnico, Instructor
     // Listar préstamos finalizados (estado=0)
     @GetMapping("/finalizados")
-    public ResponseEntity<List<PrestamosDto>> listarFinalizados() {rEstado(0);
+    public ResponseEntity<List<PrestamosDto>> listarFinalizados() {
+        List<PrestamosDto> finalizados = prestamosServices.listarPorEstado(0);
         return ResponseEntity.ok(finalizados);
     }
 
@@ -109,8 +109,8 @@ public class PrestamosController {
 
     //Eliminar prestamos por el id - Acceso: Administrador y Tecnico
     @DeleteMapping("/{id}")
-    //Eliminar prestamos por el id
-    @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        prestamosServices.eliminar(id);
+        return ResponseEntity.noContent().build();
     }
 }
