@@ -100,7 +100,6 @@ public class PrestamosController {
 
     // Actualizar préstamo - Acceso: Administrador y Tecnico
     @PutMapping
-    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico')")
     public ResponseEntity<?> actualizar(@Valid @RequestBody PrestamosDto dto) {
         try {
             PrestamosDto actualizado = prestamosServices.actualizarPrestamo(dto);

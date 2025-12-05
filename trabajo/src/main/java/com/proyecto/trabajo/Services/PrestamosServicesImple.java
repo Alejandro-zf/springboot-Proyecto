@@ -84,6 +84,12 @@ public class PrestamosServicesImple implements PrestamosServices {
                     System.out.println("DEBUG - Procesando elemento con ID: " + idElem);
                     Elementos elemento = elementosRepository.findById(idElem)
                         .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
+                    
+                    // Cambiar el estado del elemento a 0 (inactivo/asignado)
+                    elemento.setEst((byte) 0);
+                    elementosRepository.save(elemento);
+                    System.out.println("DEBUG - Elemento " + idElem + " actualizado a estado 0 (inactivo)");
+                    
                     Prestamos_Elemento pe = new Prestamos_Elemento();
                     pe.setPrestamos(guardado);
                     pe.setElementos(elemento);
@@ -156,6 +162,16 @@ public class PrestamosServicesImple implements PrestamosServices {
     // Si se está marcando como finalizado (estado = 0) y no tiene fecha de recepción, asignar la actual
     if (dto.getEstado() != null && dto.getEstado() == 0 && prestamos.getFecha_recep() == null) {
         prestamos.setFecha_recep(java.time.LocalDateTime.now());
+        
+        // Cuando se finaliza el préstamo, reactivar todos los elementos (est = 1)
+        if (prestamos.getPrestamoss() != null && !prestamos.getPrestamoss().isEmpty()) {
+            for (Prestamos_Elemento prestamoElemento : prestamos.getPrestamoss()) {
+                if (prestamoElemento.getElementos() != null) {
+                    prestamoElemento.getElementos().setEst((byte) 1);
+                    elementosRepository.save(prestamoElemento.getElementos());
+                }
+            }
+        }
     } else if (dto.getFecha_repc() != null) {
         prestamos.setFecha_recep(dto.getFecha_repc());
     }
