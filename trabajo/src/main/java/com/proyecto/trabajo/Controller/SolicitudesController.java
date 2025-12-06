@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class SolicitudesController {
     // Actualizar solicitud - Acceso: Administrador y Tecnico
     @PutMapping("/actualizar/{id}")
-    @PreAuthorize("hasAnyRole('Administrador', 'Tecnico', 'Instructor')")
+    @PreAuthorize("hasAnyRole('Administrador', 'ADMINISTRADOR', 'Tecnico', 'TECNICO', 'Instructor', 'INSTRUCTOR')")
     public ResponseEntity<?> actualizarSolicitud(@PathVariable Long id, @RequestBody SolicitudesUpdateDtos dto) {
         try {
             SolicitudesDto actualizado = solicitudesServices.actualizarSolicitud(id, dto);
@@ -82,10 +82,14 @@ public class SolicitudesController {
     public ResponseEntity<?> crear(@Valid @RequestBody SolicitudeCreateDto dto, Authentication authentication) {
         try {
             if (authentication == null || !authentication.isAuthenticated()) {
+                System.out.println("[AUTH] Usuario no autenticado o authentication es null");
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body(Map.of("error", "No autenticado"));
             }
             String username = authentication.getName();
+            System.out.println("[AUTH] Usuario autenticado: " + username);
+            System.out.println("[AUTH] Roles del usuario:");
+            authentication.getAuthorities().forEach(auth -> System.out.println("[AUTH] - " + auth.getAuthority()));
             SolicitudesDto creado = solicitudesServices.guardar(dto, username);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(Map.of("mensaje", "Solicitud creada exitosamente", "data", creado));
