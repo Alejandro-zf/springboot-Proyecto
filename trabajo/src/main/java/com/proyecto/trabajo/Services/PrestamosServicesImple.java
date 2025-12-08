@@ -86,7 +86,7 @@ public class PrestamosServicesImple implements PrestamosServices {
                         .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
                     
                     // Cambiar el estado del elemento a 0 (inactivo/asignado)
-                    elemento.setEst((byte) 0);
+                    elemento.setEstadosoelement((byte) 0);
                     elementosRepository.save(elemento);
                     System.out.println("DEBUG - Elemento " + idElem + " actualizado a estado 0 (inactivo)");
                     
@@ -167,7 +167,7 @@ public class PrestamosServicesImple implements PrestamosServices {
         if (prestamos.getPrestamoss() != null && !prestamos.getPrestamoss().isEmpty()) {
             for (Prestamos_Elemento prestamoElemento : prestamos.getPrestamoss()) {
                 if (prestamoElemento.getElementos() != null) {
-                    prestamoElemento.getElementos().setEst((byte) 1);
+                    prestamoElemento.getElementos().setEstadosoelement((byte) 1);
                     elementosRepository.save(prestamoElemento.getElementos());
                 }
             }
