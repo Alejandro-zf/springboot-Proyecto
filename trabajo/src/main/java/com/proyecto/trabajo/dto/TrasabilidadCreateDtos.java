@@ -12,8 +12,7 @@ import lombok.NoArgsConstructor;
 public class TrasabilidadCreateDtos {
 
     private LocalDate fech;
-    private String obser;
-
+    private String obse;
     private Long id_usu;
 
     private Long id_ticet;

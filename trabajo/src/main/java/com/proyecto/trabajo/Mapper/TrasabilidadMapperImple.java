@@ -66,13 +66,16 @@ public class TrasabilidadMapperImple implements TrasabilidadMapper {
             dto.setObser(entity.getTickets().getObservaciones() != null ? entity.getTickets().getObservaciones() : "");
             dto.setId_ticet(entity.getTickets().getId());
         }
-        
-        // obse: observación de trasabilidad
-        dto.setObse(entity.getObservacion());
-        
+        dto.setObser(entity.getObservacion());
         if (entity.getUsuario() != null) {
             dto.setId_usu(entity.getUsuario().getId());
             dto.setNom_us(entity.getUsuario().getNom_usu());
+            dto.setNum_doc(entity.getUsuario().getNum_doc());
+        }
+        if (entity.getTickets() != null && entity.getTickets().getUsuario() != null) {
+            dto.setId_usu_reporta(entity.getTickets().getUsuario().getId());
+            dto.setNom_us_reporta(entity.getTickets().getUsuario().getNom_usu());
+            dto.setNum_doc_reporta(entity.getTickets().getUsuario().getNum_doc());
         }
         
         if (entity.getTickets() != null) {
@@ -94,7 +97,7 @@ public class TrasabilidadMapperImple implements TrasabilidadMapper {
         Trasabilidad entity = new Trasabilidad();
         
         entity.setFecha(createDto.getFech());
-        entity.setObservacion(createDto.getObser());
+        entity.setObservacion(createDto.getObse());
         
         if (createDto.getId_usu() != null) {
             Usuarios usuario = usuariosRepository.findById(createDto.getId_usu())
