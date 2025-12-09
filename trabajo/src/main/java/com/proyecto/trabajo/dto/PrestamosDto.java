@@ -22,11 +22,13 @@ private String nom_usu;
 
 private String id_elem;
 private String nom_elem;
+private String numero_serie;
 
 private Long id_espac;
 private String nom_espac;
 
 private String nom_cat;
+private String ambient;
 private Long id_tecnico;
 private String nombre_tecnico;
 

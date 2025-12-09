@@ -141,9 +141,26 @@ public class PrestamosMapperImple implements PrestamosMapper {
             prestamosDto.setId_espac(prestamos.getEspacio().getId().longValue());
             prestamosDto.setNom_espac(prestamos.getEspacio().getNom_espa());
         }
+        // Mapear categoría y ambiente desde la solicitud
+        if (prestamos.getSolicitudes() != null) {
+            if (prestamos.getSolicitudes().getCategoria() != null) {
+                prestamosDto.setNom_cat(prestamos.getSolicitudes().getCategoria().getNom_categoria());
+            }
+            if (prestamos.getSolicitudes().getAmbiente() != null) {
+                prestamosDto.setAmbient(prestamos.getSolicitudes().getAmbiente());
+            }
+        }
+        // Mapear datos del técnico
+        if (prestamos.getId_tecnico() != null) {
+            prestamosDto.setId_tecnico(prestamos.getId_tecnico());
+        }
+        if (prestamos.getNombre_tecnico() != null) {
+            prestamosDto.setNombre_tecnico(prestamos.getNombre_tecnico());
+        }
     if (prestamos.getPrestamoss() != null && !prestamos.getPrestamoss().isEmpty()) {
             StringBuilder idsJoin = new StringBuilder();
             StringBuilder namesJoin = new StringBuilder();
+            String numeroSerie = null;
             boolean first = true;
             for (com.proyecto.trabajo.models.Prestamos_Elemento pe : prestamos.getPrestamoss()) {
                 if (pe != null && pe.getElementos() != null) {
@@ -158,11 +175,18 @@ public class PrestamosMapperImple implements PrestamosMapper {
                     if (el.getNom_elemento() != null) {
                         namesJoin.append(el.getNom_elemento());
                     }
+                    // Obtener número de serie del primer elemento
+                    if (first && el.getNum_serie() != null) {
+                        numeroSerie = el.getNum_serie();
+                    }
                     first = false;
                 }
             }
             prestamosDto.setId_elem(idsJoin.toString());
             prestamosDto.setNom_elem(namesJoin.toString());
+            if (numeroSerie != null) {
+                prestamosDto.setNumero_serie(numeroSerie);
+            }
         }
         return prestamosDto;
     }
