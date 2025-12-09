@@ -50,7 +50,7 @@ public class TrasabilidadServicesImple implements TrasabilidadServices {
         if (dto.getId_ticet() == null) {
             throw new IllegalArgumentException("El ticket es obligatorio");
         }
-        if (dto.getObser() != null && dto.getObser().length() > 255) {
+        if (dto.getObse() != null && dto.getObse().length() > 255) {
             throw new IllegalArgumentException("La observación no puede exceder 255 caracteres");
         }
     }
