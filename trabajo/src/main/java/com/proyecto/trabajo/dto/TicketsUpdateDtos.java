@@ -16,6 +16,9 @@ public class TicketsUpdateDtos {
     private Byte estado;
     private String imageness; 
 
+    private Long id_problem;
+    private Long id_elem;
+    private Long id_usu;
     private Long id_est_tick;
     
 }

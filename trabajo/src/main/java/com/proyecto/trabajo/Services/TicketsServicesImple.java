@@ -215,6 +215,11 @@ public class TicketsServicesImple implements TicketsServices {
             .orElseThrow(() -> new EntityNotFoundException("Estado de ticket no encontrado"));
         tickets.setIdEstTick(estado);
     }
+    if (dto.getId_problem() != null) {
+        Problemas problema = problemasRepository.findById(dto.getId_problem().byteValue())
+            .orElseThrow(() -> new EntityNotFoundException("Problema no encontrado"));
+        tickets.setProblemas(problema);
+    }
 
         Tickets actualizado = ticketsRepository.save(tickets);
         sincronizarEstadoElementoPorTicket(actualizado);
