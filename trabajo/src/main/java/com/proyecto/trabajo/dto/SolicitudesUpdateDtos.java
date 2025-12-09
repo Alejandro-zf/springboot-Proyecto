@@ -27,4 +27,6 @@ public class SolicitudesUpdateDtos {
     private Long id_esp;
     private Long id_usu;
     private List<Long> ids_elem;
+    private Long id_tecnico;
+    private String nombre_tecnico;
 }

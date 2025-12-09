@@ -53,4 +53,10 @@ public class Prestamos {
     @ManyToOne
     @JoinColumn(name = "id_solicitud", nullable = false, foreignKey = @ForeignKey(name = "FK_Id_solicitud"))
     private Solicitudes solicitudes;
+
+    @Column(nullable = true)
+    private Long id_tecnico;
+
+    @Column(nullable = true, length = 100)
+    private String nombre_tecnico;
 }

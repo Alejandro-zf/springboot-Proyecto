@@ -27,5 +27,7 @@ private Long id_espac;
 private String nom_espac;
 
 private String nom_cat;
+private Long id_tecnico;
+private String nombre_tecnico;
 
 }

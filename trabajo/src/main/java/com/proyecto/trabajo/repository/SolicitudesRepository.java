@@ -27,6 +27,7 @@ public interface SolicitudesRepository extends JpaRepository<Solicitudes, Long> 
            "LEFT JOIN FETCH s.sub_categoria sc " +
            "LEFT JOIN FETCH s.estado_solicitudes es " +
            "WHERE s.estado_solicitudes.id = 1 " +
+           "AND s.espacio IS NULL " +
            "ORDER BY s.id DESC")
     List<Solicitudes> findByEstado();
 }

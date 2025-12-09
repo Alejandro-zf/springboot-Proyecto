@@ -66,6 +66,12 @@ public class Solicitudes {
     @ManyToOne
     @JoinColumn(name = "id_categoria", nullable = true, foreignKey = @ForeignKey(name = "FK_Id_categoria"))
     private Categoria categoria;
+
+    @Column(nullable = true)
+    private Long id_tecnico;
+
+    @Column(nullable = true, length = 100)
+    private String nombre_tecnico;
     
     
 }

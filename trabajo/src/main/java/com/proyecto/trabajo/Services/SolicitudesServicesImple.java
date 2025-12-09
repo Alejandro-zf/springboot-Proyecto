@@ -246,6 +246,17 @@ public class SolicitudesServicesImple implements SolicitudesServices {
         System.out.println("  - tiene usuario: " + (actualizado.getUsuario() != null));
         System.out.println("  - tiene espacio: " + (actualizado.getEspacio() != null));
 
+        // ✅ Si es aprobado, guardar id_tecnico y nombre_tecnico
+        if (aprobado) {
+            if (dto.getId_tecnico() != null) {
+                actualizado.setId_tecnico(dto.getId_tecnico());
+            }
+            if (dto.getNombre_tecnico() != null) {
+                actualizado.setNombre_tecnico(dto.getNombre_tecnico());
+            }
+            actualizado = solicitudesRepository.save(actualizado);
+        }
+
         // ✅ Solo crear préstamo si tiene elementos (solicitudes de equipos)
         // Las solicitudes de espacios sin elementos NO generan préstamo
         if (aprobado && sinPrestamo && tieneElementos) {
@@ -263,6 +274,14 @@ public class SolicitudesServicesImple implements SolicitudesServices {
             p.setUsuario(actualizado.getUsuario());
             p.setEspacio(actualizado.getEspacio());
             p.setSolicitudes(actualizado);
+            
+            // ✅ Guardar id_tecnico y nombre_tecnico en el préstamo
+            if (dto.getId_tecnico() != null) {
+                p.setId_tecnico(dto.getId_tecnico());
+            }
+            if (dto.getNombre_tecnico() != null) {
+                p.setNombre_tecnico(dto.getNombre_tecnico());
+            }
             
             // Guardar el préstamo primero
             Prestamos prestamoGuardado = prestamosRepository.save(p);
