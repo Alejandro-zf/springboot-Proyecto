@@ -19,7 +19,7 @@ import com.proyecto.trabajo.models.Espacio;
 import com.proyecto.trabajo.models.Prestamos;
 import com.proyecto.trabajo.models.Prestamos_Elemento;
 import com.proyecto.trabajo.models.Solicitudes;
-import com.proyecto.trabajo.models.Sub_categoria; // Importar Entidad Sub_categoria
+import com.proyecto.trabajo.models.Sub_categoria;
 import com.proyecto.trabajo.models.Usuarios;
 import com.proyecto.trabajo.repository.ElementosRepository;
 import com.proyecto.trabajo.repository.EspacioRepository;
@@ -27,8 +27,9 @@ import com.proyecto.trabajo.repository.PrestamosElementoRepository;
 import com.proyecto.trabajo.repository.PrestamosRepository;
 import com.proyecto.trabajo.repository.SolicitudesRepository;
 import com.proyecto.trabajo.repository.UsuariosRepository;
-import com.proyecto.trabajo.repository.Sub_categoriaRepository; // Repositorio de Subcategoría
+import com.proyecto.trabajo.repository.Sub_categoriaRepository;
 
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
@@ -44,13 +45,15 @@ public class SolicitudesServicesImple implements SolicitudesServices {
     private final com.proyecto.trabajo.Mapper.PrestamosMapper prestamosMapper;
     private final PrestamosElementoRepository prestamosElementoRepository;
     private final Sub_categoriaRepository subCategoriaRepository;
+    private final EntityManager entityManager;
 
     public SolicitudesServicesImple(SolicitudesRepository solicitudesRepository, SolicitudesMapper solicitudesMapper,
             UsuariosRepository usuariosRepository, EspacioRepository espacioRepository,
             PrestamosRepository prestamosRepository, ElementosRepository elementosRepository,
             com.proyecto.trabajo.Mapper.PrestamosMapper prestamosMapper,
             PrestamosElementoRepository prestamosElementoRepository,
-            Sub_categoriaRepository subCategoriaRepository) {
+            Sub_categoriaRepository subCategoriaRepository,
+            EntityManager entityManager) {
         this.solicitudesRepository = solicitudesRepository;
         this.solicitudesMapper = solicitudesMapper;
         this.usuariosRepository = usuariosRepository;
@@ -60,6 +63,7 @@ public class SolicitudesServicesImple implements SolicitudesServices {
         this.prestamosMapper = prestamosMapper;
         this.prestamosElementoRepository = prestamosElementoRepository;
         this.subCategoriaRepository = subCategoriaRepository;
+        this.entityManager = entityManager;
     }
 
     @Transactional
@@ -222,12 +226,34 @@ public class SolicitudesServicesImple implements SolicitudesServices {
     @Override
     @Transactional
     public SolicitudesDto actualizarSolicitud(Long id, SolicitudesUpdateDtos dto) {
+        logger.info("🔄 Iniciando actualizarSolicitud para solicitud ID: {}", id);
+        logger.info("📦 DTO recibido: id_est_soli={}", dto != null ? dto.getId_est_soli() : "null");
+        
         Solicitudes solicitudes = solicitudesRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada"));
+
+        logger.info("📝 Solicitud encontrada, elementos actuales: {}", 
+            solicitudes.getElemento() != null ? solicitudes.getElemento().size() : 0);
+
+        // ✅ CRUCIAL: Limpiar y refrescar la relación de elementos
+        if (solicitudes.getElemento() != null && !solicitudes.getElemento().isEmpty()) {
+            logger.info("🗑️ Eliminando {} elementos existentes de la solicitud", solicitudes.getElemento().size());
+            solicitudes.getElemento().clear();
+            entityManager.flush(); // ✅ Fuerza la eliminación en BD
+        }
 
         solicitudesMapper.updateSolicitudesFromUpdateDto(dto, solicitudes);
         
         Solicitudes actualizado = solicitudesRepository.save(solicitudes);
+        solicitudesRepository.flush(); // ✅ Forzar flush para asegurar que la BD se actualiza
+        logger.info("✅ Solicitud actualizada, nuevos elementos: {}", actualizado.getElemento().size());
+        logger.info("✅ Estado después de actualizar: {}", actualizado.getEstado_solicitudes() != null ? actualizado.getEstado_solicitudes().getId() : "null");
+        logger.info("✅ Estado nombre: {}", actualizado.getEstado_solicitudes() != null ? actualizado.getEstado_solicitudes().getNom_esta() : "null");
+        
+        SolicitudesDto dtoRetorno = solicitudesMapper.toSolicitudesDto(actualizado);
+        logger.info("✅ DTO de retorno est_soli: {}", dtoRetorno.getEst_soli());
+        logger.info("✅ DTO de retorno id_espa: {}", dtoRetorno.getId_espa());
+        
         sincronizarEstadoElementos(actualizado);
 
         expirarSolicitudesVencidas();
@@ -255,6 +281,7 @@ public class SolicitudesServicesImple implements SolicitudesServices {
                 actualizado.setNombre_tecnico(dto.getNombre_tecnico());
             }
             actualizado = solicitudesRepository.save(actualizado);
+            solicitudesRepository.flush(); // ✅ Forzar flush nuevamente
         }
 
         // ✅ Solo crear préstamo si tiene elementos (solicitudes de equipos)
