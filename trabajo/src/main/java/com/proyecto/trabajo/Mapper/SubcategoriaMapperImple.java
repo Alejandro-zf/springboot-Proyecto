@@ -12,7 +12,7 @@ import com.proyecto.trabajo.models.Sub_categoria;
 import com.proyecto.trabajo.models.Categoria;
 import com.proyecto.trabajo.repository.CategoriaRepository;
 
-import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.EntityNotFoundException ;
 
 @Component
 public class SubcategoriaMapperImple implements SubcategoriaMapper {
