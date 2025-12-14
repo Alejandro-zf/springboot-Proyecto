@@ -1,7 +1,9 @@
 package com.proyecto.trabajo.Services;
 
 import java.io.ByteArrayOutputStream;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -33,6 +35,7 @@ import jakarta.persistence.EntityNotFoundException;
 @Service
 public class UsuariosServicesImple implements UsuariosServices {
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     private final UsuariosRepository usuariosRepository;
     private final UsuariosMapper usuariosMapper;
@@ -45,13 +48,15 @@ public class UsuariosServicesImple implements UsuariosServices {
     RolesRepository rolesRepository,
     Roles_UsuarioRepository rolesUsuarioRepository,
     PasswordEncoder passwordEncoder,
-    com.proyecto.trabajo.repository.Tip_documentoRepository tipDocRepository) {
+    com.proyecto.trabajo.repository.Tip_documentoRepository tipDocRepository,
+    EmailService emailService) {
         this.usuariosRepository = usuariosRepository;
         this.usuariosMapper = usuariosMapper;
         this.rolesRepository = rolesRepository;
         this.rolesUsuarioRepository = rolesUsuarioRepository;
         this.passwordEncoder = passwordEncoder;
         this.tipDocRepository = tipDocRepository;
+        this.emailService = emailService;
     }
 
     @Override
@@ -326,5 +331,62 @@ public class UsuariosServicesImple implements UsuariosServices {
 
         Usuarios actualizado = usuariosRepository.save(usuarios);
         return usuariosMapper.toUsuariosDto(actualizado);
+    }
+
+    /**
+     * Solicita la recuperación de contraseña
+     * - Genera un token único
+     * - Establece la fecha de expiración (30 minutos)
+     * - Envía el correo con el enlace
+     */
+    @Override
+    @Transactional
+    public void requestPasswordReset(String email) {
+        // Buscar el usuario por correo
+        Usuarios usuario = usuariosRepository.findByCorreo(email)
+                .orElseThrow(() -> new EntityNotFoundException("No existe un usuario con ese correo"));
+
+        // Generar token único (UUID)
+        String token = UUID.randomUUID().toString();
+
+        // Establecer fecha de expiración (30 minutos desde ahora)
+        LocalDateTime expiry = LocalDateTime.now().plusMinutes(30);
+
+        // Guardar token y fecha de expiración
+        usuario.setResetToken(token);
+        usuario.setResetTokenExpiry(expiry);
+        usuariosRepository.save(usuario);
+
+        // Enviar correo con el enlace
+        emailService.sendPasswordResetEmail(email, token);
+    }
+
+    /**
+     * Restablece la contraseña usando el token
+     * - Valida que el token exista
+     * - Valida que no esté expirado
+     * - Actualiza la contraseña
+     * - Elimina el token
+     */
+    @Override
+    @Transactional
+    public void resetPassword(String token, String newPassword) {
+        // Buscar el usuario por el token
+        Usuarios usuario = usuariosRepository.findByResetToken(token)
+                .orElseThrow(() -> new IllegalArgumentException("Token inválido o expirado"));
+
+        // Validar que el token no haya expirado
+        if (usuario.getResetTokenExpiry().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("El token ha expirado. Solicita uno nuevo.");
+        }
+
+        // Actualizar la contraseña (encriptada)
+        usuario.setPassword(passwordEncoder.encode(newPassword));
+
+        // Limpiar el token y la fecha de expiración
+        usuario.setResetToken(null);
+        usuario.setResetTokenExpiry(null);
+
+        usuariosRepository.save(usuario);
     }
 }

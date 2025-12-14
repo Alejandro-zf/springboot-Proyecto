@@ -1,5 +1,6 @@
 package com.proyecto.trabajo.models;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +41,13 @@ public class Usuarios {
 
     @Column(nullable = false)
     private Byte estado = 1; 
+
+    // Campos para recuperación de contraseña
+    @Column(name = "reset_token")
+    private String resetToken;
+
+    @Column(name = "reset_token_expiry")
+    private LocalDateTime resetTokenExpiry;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Solicitudes> solicitudes = new ArrayList<>();

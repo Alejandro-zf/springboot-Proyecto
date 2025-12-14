@@ -14,4 +14,8 @@ public interface UsuariosServices {
     UsuariosDto actualizarUsuario(Long id, UsuariosUpdateDto dto);
     UsuariosDto actualizarMiPerfil(String correoAutenticado, UsuariosUpdateDto dto);
     byte[] generarPlantillaUsuarios() throws Exception;
+    
+    // Métodos para recuperación de contraseña
+    void requestPasswordReset(String email);
+    void resetPassword(String token, String newPassword);
 }
