@@ -262,14 +262,18 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
         }
 
         if (updateDto.getIds_elem() != null) {
-            if (entity.getElemento() != null) {
+            // Limpiar elementos existentes completamente
+            if (entity.getElemento() != null && !entity.getElemento().isEmpty()) {
                 entity.getElemento().clear();
             }
+            // Agregar nuevos elementos - usar merge para elementos existentes
             Set<Long> uniqueElemIds = new LinkedHashSet<>(updateDto.getIds_elem());
             for (Long idElem : uniqueElemIds) {
                 if (idElem == null) continue;
+                // Buscar elemento fresco (no en sesión actual)
                 Elementos elemento = elementosRepository.findById(idElem)
                         .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
+                // Crear nueva instancia de relación
                 Elemento_Solicitudes es = new Elemento_Solicitudes();
                 es.setSolicitudes(entity);
                 es.setElementos(elemento);

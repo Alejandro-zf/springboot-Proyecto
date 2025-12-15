@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.proyecto.trabajo.dto.ForgotPasswordRequest;
+import com.proyecto.trabajo.dto.ResetPasswordRequest;
+import com.proyecto.trabajo.Services.UsuariosServices;
 import com.proyecto.trabajo.dto.JwtResponse;
 import com.proyecto.trabajo.dto.UserInfoDto;
 import com.proyecto.trabajo.dto.LoginRequest;
@@ -37,6 +40,9 @@ public class AuthController {
 
     @Autowired
     private UsuariosRepository usuariosRepository;
+
+    @Autowired
+    private UsuariosServices usuariosServices;
 
     @PostMapping("/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody LoginRequest loginRequest) throws Exception {
@@ -97,5 +103,53 @@ public class AuthController {
                 .collect(Collectors.toList())
         );
         return ResponseEntity.ok(dto);
+    }
+
+    /**
+     * Endpoint para solicitar recuperación de contraseña
+     * POST /auth/forgot-password
+     * Body: { "email": "usuario@ejemplo.com" }
+     */
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        try {
+            usuariosServices.requestPasswordReset(request.getEmail());
+            return ResponseEntity.ok(java.util.Collections.singletonMap(
+                "message", 
+                "Si el correo existe, recibirás un enlace para recuperar tu contraseña"
+            ));
+        } catch (Exception e) {
+            // Por seguridad, no revelamos si el correo existe o no
+            return ResponseEntity.ok(java.util.Collections.singletonMap(
+                "message", 
+                "Si el correo existe, recibirás un enlace para recuperar tu contraseña"
+            ));
+        }
+    }
+
+    /**
+     * Endpoint para restablecer la contraseña
+     * POST /auth/reset-password
+     * Body: { "token": "abc123", "newPassword": "nuevaContraseña" }
+     */
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
+        try {
+            usuariosServices.resetPassword(request.getToken(), request.getNewPassword());
+            return ResponseEntity.ok(java.util.Collections.singletonMap(
+                "message", 
+                "Contraseña actualizada exitosamente"
+            ));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(java.util.Collections.singletonMap(
+                "error", 
+                e.getMessage()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(java.util.Collections.singletonMap(
+                "error", 
+                "Error al restablecer la contraseña"
+            ));
+        }
     }
 }
