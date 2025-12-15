@@ -134,6 +134,27 @@ public class ElementosMapperImple implements ElementosMapper {
         if (updateDto.getComponentes() != null) {
             entity.setComponentes(updateDto.getComponentes());
         }
+        try {
+            if (updateDto.getNum_seri() != null) {
+                String nuevaSerie = updateDto.getNum_seri().trim();
+                entity.setNum_serie(nuevaSerie);
+            }
+        } catch (NoSuchMethodError e) {
+        }
+        if (updateDto.getMarc() != null) {
+            String nuevaMarca = updateDto.getMarc().trim();
+            entity.setMarca(nuevaMarca);
+        }
+        if (updateDto.getId_subcat() != null) {
+            try {
+                Long idSub = updateDto.getId_subcat();
+                Sub_categoria subCategoria = subCategoriaRepository.findById(idSub)
+                    .orElseThrow(() -> new EntityNotFoundException("Subcategoría no encontrada para id: " + idSub));
+                entity.setSub_categoria(subCategoria);
+            } catch (EntityNotFoundException enf) {
+                throw enf;
+            }
+        }
     }
 
     public List<ElementoDto> toElementoDtoList(List<Elementos> elementos) {
