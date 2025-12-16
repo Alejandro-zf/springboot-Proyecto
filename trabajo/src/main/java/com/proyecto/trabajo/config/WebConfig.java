@@ -14,10 +14,19 @@ public class WebConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry){
+                // CORS para endpoints API
                 registry.addMapping("/api/**")
                     .allowedOrigins("http://localhost:5173")
                     .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                    .allowedHeaders("*");
+                    .allowedHeaders("*")
+                    .allowCredentials(true);
+                
+                // CORS para archivos estáticos (imágenes, etc.)
+                registry.addMapping("/uploads/**")
+                    .allowedOrigins("http://localhost:5173")
+                    .allowedMethods("GET", "OPTIONS")
+                    .allowedHeaders("*")
+                    .allowCredentials(true);
             }
 
             @Override
