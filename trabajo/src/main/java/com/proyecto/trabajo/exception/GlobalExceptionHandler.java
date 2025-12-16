@@ -37,5 +37,21 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, Object>> handleException(Exception ex) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        
+        if (ex.getMessage() != null && ex.getMessage().contains("desactivado")) {
+            status = HttpStatus.UNAUTHORIZED;
+        } else if (ex.getMessage() != null && (ex.getMessage().contains("Credenciales") || ex.getMessage().contains("incorrectas"))) {
+            status = HttpStatus.UNAUTHORIZED;
+        }
+        
+        return ResponseEntity.status(status).body(
+            Map.of(
+                "error", ex.getMessage() != null ? ex.getMessage() : "Error en la autenticación",
+                "codigo", status.value(),
+                "timestamp", LocalDateTime.now()));
+    }
 
 }

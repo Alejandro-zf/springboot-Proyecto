@@ -54,11 +54,16 @@ public class AuthController {
             throw new Exception("Credenciales incorrectas", e);
         }
 
+        // Buscar información completa del usuario antes de generar token
+        Usuarios usuario = usuariosRepository.findByCorreo(loginRequest.getUsername()).orElse(null);
+        
+        // Verificar si el usuario está desactivado (estado 2)
+        if (usuario != null && usuario.getEstado() == 2) {
+            throw new Exception("Usuario desactivado. No tiene permiso para acceder a la plataforma.");
+        }
+
         final UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getUsername());
         final String token = jwtTokenUtil.generateToken(userDetails);
-
-        // Buscar información completa del usuario
-        Usuarios usuario = usuariosRepository.findByCorreo(loginRequest.getUsername()).orElse(null);
         
         // Extraer el primer rol del usuario
         String rol = null;
@@ -76,7 +81,8 @@ public class AuthController {
             bearerToken,                    // token completo con "Bearer "
             usuario != null ? usuario.getId() : null,  // id del usuario
             loginRequest.getUsername(),     // username (correo)
-            rol                            // rol del usuario
+            rol,                            // rol del usuario
+            usuario != null ? usuario.getEstado() : 1  // estado del usuario
         ));
     }
 
