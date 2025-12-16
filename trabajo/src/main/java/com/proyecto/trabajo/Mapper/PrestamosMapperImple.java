@@ -157,10 +157,11 @@ public class PrestamosMapperImple implements PrestamosMapper {
         if (prestamos.getNombre_tecnico() != null) {
             prestamosDto.setNombre_tecnico(prestamos.getNombre_tecnico());
         }
-    if (prestamos.getPrestamoss() != null && !prestamos.getPrestamoss().isEmpty()) {
+        if (prestamos.getPrestamoss() != null && !prestamos.getPrestamoss().isEmpty()) {
             StringBuilder idsJoin = new StringBuilder();
             StringBuilder namesJoin = new StringBuilder();
             String numeroSerie = null;
+            String nomSubcat = null;
             boolean first = true;
             for (com.proyecto.trabajo.models.Prestamos_Elemento pe : prestamos.getPrestamoss()) {
                 if (pe != null && pe.getElementos() != null) {
@@ -175,9 +176,14 @@ public class PrestamosMapperImple implements PrestamosMapper {
                     if (el.getNom_elemento() != null) {
                         namesJoin.append(el.getNom_elemento());
                     }
-                    // Obtener número de serie del primer elemento
-                    if (first && el.getNum_serie() != null) {
-                        numeroSerie = el.getNum_serie();
+                    // Obtener número de serie y subcategoría del primer elemento
+                    if (first) {
+                        if (el.getNum_serie() != null) {
+                            numeroSerie = el.getNum_serie();
+                        }
+                        if (el.getSub_categoria() != null && el.getSub_categoria().getNom_subcategoria() != null) {
+                            nomSubcat = el.getSub_categoria().getNom_subcategoria();
+                        }
                     }
                     first = false;
                 }
@@ -186,6 +192,10 @@ public class PrestamosMapperImple implements PrestamosMapper {
             prestamosDto.setNom_elem(namesJoin.toString());
             if (numeroSerie != null) {
                 prestamosDto.setNumero_serie(numeroSerie);
+            }
+            // Asignar la subcategoría si se obtuvo
+            if (nomSubcat != null) {
+                prestamosDto.setNom_subcat(nomSubcat);
             }
         }
         return prestamosDto;
