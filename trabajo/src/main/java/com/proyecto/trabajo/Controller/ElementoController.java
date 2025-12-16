@@ -45,7 +45,9 @@ public class ElementoController {
         try{
             ElementoDto creado = elementosServices.guardar(dto);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("mensaje", "Elemento creado con exito", "data", creado));
-        }catch (IllegalStateException ex) {
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", ex.getMessage()));
+        } catch (IllegalStateException ex) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("errores1", ex.getMessage()));
         } catch (Exception ex) {
             String detalle = ex.getMessage();
@@ -101,6 +103,8 @@ public class ElementoController {
         try {
             var actualizado = elementosServices.actualizarElemento(id, dto);
             return ResponseEntity.ok(Map.of("mensaje", "Elemento actualizado", "data", actualizado));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", ex.getMessage()));
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", ex.getMessage()));
         }

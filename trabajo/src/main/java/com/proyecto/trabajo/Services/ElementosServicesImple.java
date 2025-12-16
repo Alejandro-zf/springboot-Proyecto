@@ -180,9 +180,16 @@ public class ElementosServicesImple implements ElementosServices {
 
     @Override
     public ElementoDto guardar(ElementosCreateDto dto) {
-        Elementos elementos = elementosMapper.toElementosFromCreateDto(dto);
-        Elementos guardado = elementosRepository.save(elementos);
-        return elementosMapper.toElementoDto(guardado);
+        try {
+            Elementos elementos = elementosMapper.toElementosFromCreateDto(dto);
+            Elementos guardado = elementosRepository.save(elementos);
+            return elementosMapper.toElementoDto(guardado);
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            if (e.getMessage().contains("Duplicate entry") && e.getMessage().contains("num_serie")) {
+                throw new IllegalArgumentException("El número de serie '" + dto.getNum_seri() + "' ya existe. Por favor, usa un número de serie único.");
+            }
+            throw e;
+        }
     }
 
     @Override
@@ -225,11 +232,18 @@ public class ElementosServicesImple implements ElementosServices {
 
     @Override
     public ElementoDto actualizarElemento(Long id, ElementoUpdateDtos dto) {
-        Elementos entity = elementosRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
-        elementosMapper.updateElementosFromUpdateDto(dto, entity);
-        Elementos actualizado = elementosRepository.save(entity);
-        return elementosMapper.toElementoDto(actualizado);
+        try {
+            Elementos entity = elementosRepository.findById(id)
+                    .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
+            elementosMapper.updateElementosFromUpdateDto(dto, entity);
+            Elementos actualizado = elementosRepository.save(entity);
+            return elementosMapper.toElementoDto(actualizado);
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            if (e.getMessage().contains("Duplicate entry") && e.getMessage().contains("num_serie")) {
+                throw new IllegalArgumentException("El número de serie '" + dto.getNum_seri() + "' ya existe. Por favor, usa un número de serie único.");
+            }
+            throw e;
+        }
     }
 
     @Override

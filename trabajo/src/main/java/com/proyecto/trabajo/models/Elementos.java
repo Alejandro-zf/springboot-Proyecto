@@ -34,7 +34,7 @@ public class Elementos {
     @Column(nullable = false)
     private Byte estadosoelement = 1; // 1=Activo, 0=Inactivo
 
-    @Column(nullable = true, length = 50)
+    @Column(nullable = true, length = 50, unique = true)
     private String num_serie;
     
     @Column(nullable = true, length = 255)
