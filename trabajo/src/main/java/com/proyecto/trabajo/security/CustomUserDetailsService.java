@@ -38,7 +38,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             });
         }
 
-        // Si no tiene roles, asignar un rol por defecto
+        
         if (authorities.isEmpty()) {
             authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
         }
