@@ -3,6 +3,7 @@ package com.proyecto.trabajo.Mapper;
 import com.proyecto.trabajo.dto.TicketsDtos;
 import com.proyecto.trabajo.models.Tickets;
 import com.proyecto.trabajo.dto.TicketsCreateDto;
+import java.util.stream.Collectors;
 
 public interface TicketsMapper {
     Tickets toTickets(TicketsDtos ticketsDtos);
@@ -25,6 +26,13 @@ public interface TicketsMapper {
                 default:
                     dto.setTip_est_ticket("Desconocido");
             }
+        }
+    }
+    default void mapProblemas(Tickets ticket, TicketsDtos dto) {
+        if (ticket.getProblemas() != null && !ticket.getProblemas().isEmpty()) {
+            dto.setProblemas(ticket.getProblemas().stream()
+                .map(problema -> problema.getId())
+                .collect(Collectors.toList()));
         }
     }
 }

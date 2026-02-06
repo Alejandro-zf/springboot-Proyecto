@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import com.proyecto.trabajo.dto.ProblemasCreateDtos;
 import com.proyecto.trabajo.dto.ProblemasDtos;
 import com.proyecto.trabajo.models.Problemas;
+import com.proyecto.trabajo.models.Tickets;
 
 @Component
 public class ProblemasMapperImple implements ProblemasMapper {
@@ -20,6 +21,10 @@ public class ProblemasMapperImple implements ProblemasMapper {
         entity.setId(dto.getId());
         entity.setDesc_problema(dto.getDescr_problem());
         
+        Tickets ticket = new Tickets();
+        ticket.setId(dto.getId_tick());
+        entity.setTicket(ticket);
+        
         return entity;
     }
 
@@ -31,8 +36,8 @@ public class ProblemasMapperImple implements ProblemasMapper {
         dto.setId(entity.getId());
         dto.setDescr_problem(entity.getDesc_problema());
         
-        if (entity.getTickets() != null && !entity.getTickets().isEmpty()) {
-            dto.setId_tick(entity.getTickets().get(0).getId());
+        if (entity.getTicket() != null) {
+            dto.setId_tick(entity.getTicket().getId());
         }
         
         return dto;
@@ -45,20 +50,22 @@ public class ProblemasMapperImple implements ProblemasMapper {
         
         entity.setDesc_problema(createDto.getDescr_problem());
         
+        Tickets ticket = new Tickets();
+        ticket.setId(createDto.getId_tick());
+        entity.setTicket(ticket);
+        
         return entity;
     }
 
     @Override
     public List<ProblemasDtos> toProblemasDtoList(List<Problemas> problemas) {
-        if (problemas == null) {
-            return List.of();
-        }
+        if (problemas == null || problemas.isEmpty()) return new ArrayList<>();
+        List<ProblemasDtos> dtos = new ArrayList<>();
         
-        List<ProblemasDtos> problemasDtos = new ArrayList<>(problemas.size());
         for (Problemas problema : problemas) {
-            problemasDtos.add(toProblemasDto(problema));
+            dtos.add(toProblemasDto(problema));
         }
         
-        return problemasDtos;
+        return dtos;
     }
 }

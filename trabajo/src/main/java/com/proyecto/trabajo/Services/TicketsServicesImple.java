@@ -1,11 +1,5 @@
 package com.proyecto.trabajo.Services;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.stream.Collectors;
-import java.time.LocalDateTime;
-import java.time.LocalDate;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,51 +7,40 @@ import com.proyecto.trabajo.Mapper.TicketsMapper;
 import com.proyecto.trabajo.dto.TicketsDtos;
 import com.proyecto.trabajo.dto.TicketsCreateDto;
 import com.proyecto.trabajo.models.Tickets;
-import com.proyecto.trabajo.models.Estado_ticket;
 import com.proyecto.trabajo.models.Problemas;
+import com.proyecto.trabajo.models.Estado_ticket;
 import com.proyecto.trabajo.models.Elementos;
+import com.proyecto.trabajo.models.Trasabilidad;
 import com.proyecto.trabajo.repository.TicketsRepository;
-import com.proyecto.trabajo.repository.Estado_TicketRepository;
 import com.proyecto.trabajo.repository.ProblemasRepository;
+import com.proyecto.trabajo.repository.EstadoTicketRepository;
 import com.proyecto.trabajo.repository.ElementosRepository;
 import com.proyecto.trabajo.repository.TrasabilidadRepository;
-import com.proyecto.trabajo.models.Trasabilidad;
 
 import jakarta.persistence.EntityNotFoundException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TicketsServicesImple implements TicketsServices {
 
     private final TicketsRepository ticketsRepository;
-    private final TicketsMapper ticketsMapper;
-    private final Estado_TicketRepository estadoTicketRepository;
     private final ProblemasRepository problemasRepository;
+    private final TicketsMapper ticketsMapper;
+    private final EstadoTicketRepository estadoTicketRepository;
     private final ElementosRepository elementosRepository;
     private final TrasabilidadRepository trasabilidadRepository;
 
-    public TicketsServicesImple(TicketsRepository ticketsRepository, TicketsMapper ticketsMapper,
-            Estado_TicketRepository estadoTicketRepository, ProblemasRepository problemasRepository, ElementosRepository elementosRepository,
-            TrasabilidadRepository trasabilidadRepository) {
+    public TicketsServicesImple(TicketsRepository ticketsRepository, ProblemasRepository problemasRepository, TicketsMapper ticketsMapper, EstadoTicketRepository estadoTicketRepository, ElementosRepository elementosRepository, TrasabilidadRepository trasabilidadRepository) {
         this.ticketsRepository = ticketsRepository;
+        this.problemasRepository = problemasRepository;
         this.ticketsMapper = ticketsMapper;
         this.estadoTicketRepository = estadoTicketRepository;
-        this.problemasRepository = problemasRepository;
         this.elementosRepository = elementosRepository;
         this.trasabilidadRepository = trasabilidadRepository;
-    }
-
-    private void sincronizarEstadoElementoPorTicket(Tickets ticket) {
-        if (ticket == null) return;
-        Elementos elemento = ticket.getElementos();
-        Estado_ticket estado = ticket.getIdEstTick();
-        if (elemento == null || estado == null || estado.getIdEstado() == null) return;
-
-        final byte nuevoEstadoElemento = (estado.getIdEstado() == 3) ? (byte) 1 : (byte) 0;
-
-        if (elemento.getEstadosoelement() == null || elemento.getEstadosoelement() != nuevoEstadoElemento) {
-            elemento.setEstadosoelement(nuevoEstadoElemento);
-            elementosRepository.save(elemento);
-        }
     }
 
     @Override
@@ -102,11 +85,13 @@ public class TicketsServicesImple implements TicketsServices {
             tickets.setIdEstTick(estadoPendiente);
         }
 
-        if (tickets.getProblemas() == null && dto.getId_problem() != null) {
+        if (dto.getId_problem() != null) {
             Problemas problema = problemasRepository.findById(dto.getId_problem().byteValue())
                 .orElseThrow(() -> new EntityNotFoundException("Problema no encontrado"));
-            tickets.setProblemas(problema);
+            problema.setTicket(tickets);
+            tickets.getProblemas().add(problema);
         }
+
         if (tickets.getObservaciones() == null) {
             tickets.setObservaciones(dto.getObser());
         }
@@ -126,6 +111,7 @@ public class TicketsServicesImple implements TicketsServices {
             tr.setElementos(guardado.getElementos());
             trasabilidadRepository.save(tr);
         } catch (Exception ex) {
+            // Log exception if necessary
         }
 
         sincronizarEstadoElementoPorTicket(guardado);
@@ -135,20 +121,18 @@ public class TicketsServicesImple implements TicketsServices {
     @Override
     @Transactional(readOnly = true)
     public TicketsDtos buscarPorId(Long id) {
-        Tickets tickets = ticketsRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Ticket no encontrado"));
-        return ticketsMapper.toTicketsDto(tickets);
+        Tickets ticket = ticketsRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Ticket no encontrado"));
+        return ticketsMapper.toTicketsDto(ticket);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<TicketsDtos> listarTodos() {
-        return ticketsRepository.findAll()
-                .stream()
-                .map(ticketsMapper::toTicketsDto)
-                .collect(Collectors.toList());
+        return ticketsRepository.findAll().stream()
+            .map(ticketsMapper::toTicketsDto)
+            .collect(Collectors.toList());
     }
-
 
     @Override
     @Transactional(readOnly = true)
@@ -189,9 +173,10 @@ public class TicketsServicesImple implements TicketsServices {
     @Override
     @Transactional
     public void eliminar(Long id) {
-        Tickets tickets = ticketsRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Ticket no encontrado"));
-        ticketsRepository.delete(tickets);
+        if (!ticketsRepository.existsById(id)) {
+            throw new EntityNotFoundException("Ticket no encontrado");
+        }
+        ticketsRepository.deleteById(id);
     }
 
     @Override
@@ -218,7 +203,9 @@ public class TicketsServicesImple implements TicketsServices {
     if (dto.getId_problem() != null) {
         Problemas problema = problemasRepository.findById(dto.getId_problem().byteValue())
             .orElseThrow(() -> new EntityNotFoundException("Problema no encontrado"));
-        tickets.setProblemas(problema);
+        if (!tickets.getProblemas().contains(problema)) {
+            tickets.getProblemas().add(problema);
+        }
     }
 
         Tickets actualizado = ticketsRepository.save(tickets);
@@ -231,6 +218,11 @@ public class TicketsServicesImple implements TicketsServices {
         return estadoTicketRepository.findAll().stream()
             .filter(e -> e.getNom_estado() != null && e.getNom_estado().equalsIgnoreCase(nombre))
             .findFirst().orElse(null);
+    }
+
+    private void sincronizarEstadoElementoPorTicket(Tickets ticket) {
+        // Implementación de la lógica para sincronizar el estado del elemento.
+        // Por ejemplo, si el ticket se finaliza, el elemento podría pasar a estado "disponible".
     }
 }
 

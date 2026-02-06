@@ -1,18 +1,7 @@
 package com.proyecto.trabajo.models;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,9 +11,14 @@ public class Problemas {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Byte id;
-    @Column(nullable = false, length=30)
-    private String desc_problema; 
 
-    @OneToMany(mappedBy = "problemas", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List <Tickets> tickets = new ArrayList<>();
+    @Column(nullable = false, length = 30)
+    private String desc_problema;
+
+    @Column(nullable = false, length = 255)
+    private String Tip_problema;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ticket_id", foreignKey = @ForeignKey(name = "FK_Ticket_Problemas"))
+    private Tickets ticket;
 }

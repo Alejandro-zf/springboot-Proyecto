@@ -5,28 +5,20 @@ import org.springframework.stereotype.Component;
 import com.proyecto.trabajo.dto.TicketsDtos;
 import com.proyecto.trabajo.dto.TicketsCreateDto;
 import com.proyecto.trabajo.models.Tickets;
-import com.proyecto.trabajo.models.Usuarios;
-import com.proyecto.trabajo.models.Estado_ticket;
-import com.proyecto.trabajo.models.Elementos;
-import com.proyecto.trabajo.repository.UsuariosRepository;
-import com.proyecto.trabajo.repository.Estado_TicketRepository;
-import com.proyecto.trabajo.repository.ElementosRepository;
+import com.proyecto.trabajo.models.Problemas;
+import com.proyecto.trabajo.repository.ProblemasRepository;
 
-import jakarta.persistence.EntityNotFoundException;
+import java.util.stream.Collectors;
 
 @Component
 public class TicketsMapperImple implements TicketsMapper {
-    
-    private final UsuariosRepository usuariosRepository;
-    private final Estado_TicketRepository estadoTicketRepository;
-    private final ElementosRepository elementosRepository;
 
-    public TicketsMapperImple(UsuariosRepository usuariosRepository, Estado_TicketRepository estadoTicketRepository, ElementosRepository elementosRepository) {
-        this.usuariosRepository = usuariosRepository;
-        this.estadoTicketRepository = estadoTicketRepository;
-        this.elementosRepository = elementosRepository;
+    private final ProblemasRepository problemasRepository;
+
+    public TicketsMapperImple(ProblemasRepository problemasRepository) {
+        this.problemasRepository = problemasRepository;
     }
-    
+
     @Override
     public Tickets toTickets(TicketsDtos ticketsDtos) {
         if (ticketsDtos == null)
@@ -37,84 +29,38 @@ public class TicketsMapperImple implements TicketsMapper {
         tickets.setFecha_ini(ticketsDtos.getFecha_in());
         tickets.setFecha_finn(ticketsDtos.getFecha_fin());
         tickets.setAmbiente(ticketsDtos.getAmbient());
-        tickets.setImageness(ticketsDtos.getImageness()); 
-        if (ticketsDtos.getEstado() != null) {
-            tickets.setEstado(ticketsDtos.getEstado());
-        }
-        if (ticketsDtos.getId_usuario() != null) {
-            Usuarios usuario = usuariosRepository.findById(ticketsDtos.getId_usuario())
-                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
-            tickets.setUsuario(usuario);
-        }
-        if (ticketsDtos.getId_est_tick() != null) {
-            Estado_ticket estado = estadoTicketRepository.findById(ticketsDtos.getId_est_tick().byteValue())
-                .orElseThrow(() -> new EntityNotFoundException("Estado de ticket no encontrado"));
-            tickets.setIdEstTick(estado);
-        }
-        if (ticketsDtos.getId_eleme() != null) {
-            Elementos elemento = elementosRepository.findById(ticketsDtos.getId_eleme())
-                .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
-            tickets.setElementos(elemento);
+        tickets.setImageness(ticketsDtos.getImageness());
+
+        if (ticketsDtos.getProblemas() != null) {
+            tickets.setProblemas(ticketsDtos.getProblemas().stream()
+                .map(id -> problemasRepository.findById(id).orElse(null))
+                .collect(Collectors.toList()));
         }
 
         return tickets;
     }
-    
+
     @Override
     public TicketsDtos toTicketsDto(Tickets tickets) {
         if (tickets == null)
             return null;
 
-        TicketsDtos ticketsDtos = new TicketsDtos();
-        ticketsDtos.setId_tickets(tickets.getId());
-        ticketsDtos.setFecha_in(tickets.getFecha_ini());
-        ticketsDtos.setFecha_fin(tickets.getFecha_finn());
-        ticketsDtos.setAmbient(tickets.getAmbiente());
-        ticketsDtos.setObser(tickets.getObservaciones() != null ? tickets.getObservaciones() : "");
-        ticketsDtos.setEstado(tickets.getEstado());
-        ticketsDtos.setImageness(tickets.getImageness()); // Mapear imagenes
+        TicketsDtos dto = new TicketsDtos();
+        dto.setId_tickets(tickets.getId());
+        dto.setFecha_in(tickets.getFecha_ini());
+        dto.setFecha_fin(tickets.getFecha_finn());
+        dto.setAmbient(tickets.getAmbiente());
+        dto.setImageness(tickets.getImageness());
+        dto.setObser(tickets.getObservaciones());
+        mapEstadoTicket(tickets, dto);
 
-        if (tickets.getUsuario() != null) {
-            ticketsDtos.setId_usuario(tickets.getUsuario().getId());
-            ticketsDtos.setNom_usu(tickets.getUsuario().getNom_usu());
-        } else {
-            ticketsDtos.setId_usuario(0L);
-            ticketsDtos.setNom_usu("");
-        }
-        if (tickets.getIdEstTick() != null) {
-            ticketsDtos.setId_est_tick(tickets.getIdEstTick().getIdEstado().longValue());
-            switch (tickets.getIdEstTick().getIdEstado()) {
-                case 1:
-                    ticketsDtos.setTip_est_ticket("Aprobado");
-                    break;
-                case 2:
-                    ticketsDtos.setTip_est_ticket("Pendiente");
-                    break;
-                case 3:
-                    ticketsDtos.setTip_est_ticket("Terminado");
-                    break;
-                default:
-                    ticketsDtos.setTip_est_ticket("Desconocido");
-            }
-        } else {
-            ticketsDtos.setId_est_tick(0L);
-            ticketsDtos.setTip_est_ticket("");
-        }
         if (tickets.getProblemas() != null) {
-            ticketsDtos.setProbloem_id(tickets.getProblemas().getId().longValue());
-            ticketsDtos.setNom_problm(tickets.getProblemas().getDesc_problema());
-        } else {
-            ticketsDtos.setProbloem_id(0L);
-            ticketsDtos.setNom_problm("");
+            dto.setProblemas(tickets.getProblemas().stream()
+                .map(problema -> problema.getId())
+                .collect(Collectors.toList()));
         }
-        if (tickets.getElementos() != null) {
-            ticketsDtos.setId_eleme(tickets.getElementos().getId());
-            ticketsDtos.setNom_elem(tickets.getElementos().getNom_elemento());
-        } else {
-            ticketsDtos.setId_eleme(0L);
-            ticketsDtos.setNom_elem("");
-        }
-        return ticketsDtos;
+
+        return dto;
     }
 
     @Override
@@ -123,28 +69,6 @@ public class TicketsMapperImple implements TicketsMapper {
             return null;
         }
         Tickets tickets = new Tickets();
-        tickets.setFecha_ini(createDto.getFecha_in());
-        tickets.setFecha_finn(createDto.getFecha_fin());
-        tickets.setAmbiente(createDto.getAmbient());
-        tickets.setObservaciones(createDto.getObser());
-        tickets.setImageness(createDto.getImageness()); // Mapear imagenes
-        
-            if (createDto.getId_est_tick() != null) {
-        tickets.setEstado(createDto.getId_est_tick().byteValue());
-        Estado_ticket estado = estadoTicketRepository.findById(createDto.getId_est_tick().byteValue())
-            .orElseThrow(() -> new EntityNotFoundException("Estado de ticket no encontrado"));
-                tickets.setIdEstTick(estado);
-        }
-        if (createDto.getId_usu() != null) {
-            Usuarios usuario = usuariosRepository.findById(createDto.getId_usu())
-                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
-            tickets.setUsuario(usuario);
-        }
-        if (createDto.getId_elem() != null) {
-            Elementos elemento = elementosRepository.findById(createDto.getId_elem())
-                .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
-            tickets.setElementos(elemento);
-        }
         return tickets;
     }
 }

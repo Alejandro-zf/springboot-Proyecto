@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.proyecto.trabajo.dto.TrasabilidadCreateDtos;
 import com.proyecto.trabajo.dto.TrasabilidadDtos;
+import com.proyecto.trabajo.models.Problemas;
 import com.proyecto.trabajo.models.Tickets;
 import com.proyecto.trabajo.models.Trasabilidad;
 import com.proyecto.trabajo.models.Usuarios;
@@ -15,6 +16,7 @@ import com.proyecto.trabajo.repository.UsuariosRepository;
 import com.proyecto.trabajo.repository.ElementosRepository;
 
 import jakarta.persistence.EntityNotFoundException;
+import java.util.stream.Collectors;
 
 @Component
 public class TrasabilidadMapperImple implements TrasabilidadMapper {
@@ -83,8 +85,11 @@ public class TrasabilidadMapperImple implements TrasabilidadMapper {
                 dto.setId_elemen(entity.getTickets().getElementos().getId());
                 dto.setNom_elemen(entity.getTickets().getElementos().getNom_elemento());
             }
-            if (entity.getTickets().getProblemas() != null) {
-                dto.setNom_problm(entity.getTickets().getProblemas().getDesc_problema());
+            if (entity.getTickets().getProblemas() != null && !entity.getTickets().getProblemas().isEmpty()) {
+                String problemasStr = entity.getTickets().getProblemas().stream()
+                    .map(Problemas::getDesc_problema)
+                    .collect(Collectors.joining(", "));
+                dto.setNom_problm(problemasStr);
             }
         }
         

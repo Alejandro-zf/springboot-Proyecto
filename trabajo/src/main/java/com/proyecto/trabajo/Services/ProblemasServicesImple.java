@@ -8,6 +8,7 @@ import com.proyecto.trabajo.Mapper.ProblemasMapper;
 import com.proyecto.trabajo.dto.ProblemasCreateDtos;
 import com.proyecto.trabajo.dto.ProblemasDtos;
 import com.proyecto.trabajo.models.Problemas;
+import com.proyecto.trabajo.models.Tickets;
 import com.proyecto.trabajo.repository.ProblemasRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -26,30 +27,24 @@ public class ProblemasServicesImple implements ProblemasServices {
         this.problemasMapper = problemasMapper;
     }
 
-    private void validarDescripcionProblema(String descripcion) {
-        if (descripcion == null || descripcion.trim().isEmpty()) {
-            throw new IllegalArgumentException("La descripción del problema es obligatoria");
-        }
-        
-        if (descripcion.length() > 255) {
-            throw new IllegalArgumentException("La descripción del problema no puede exceder 255 caracteres");
-        }
-    }
-
     @Override
     public ProblemasDtos guardar(ProblemasCreateDtos dto) {
-        validarDescripcionProblema(dto.getDescr_problem());
-        
-        Problemas entity = problemasMapper.toProblemasFromCreateDto(dto);
-        Problemas guardado = problemasRepository.save(entity);
-        return problemasMapper.toProblemasDto(guardado);
+        if (dto == null) {
+            throw new IllegalArgumentException("El DTO no puede ser nulo");
+        }
+
+        Problemas problema = problemasMapper.toProblemasFromCreateDto(dto);
+        problema = problemasRepository.save(problema);
+
+        return problemasMapper.toProblemasDto(problema);
     }
 
     @Override
     public ProblemasDtos buscarPorId(Byte id) {
-        return problemasRepository.findById(id)
-                .map(problemasMapper::toProblemasDto)
-                .orElseThrow(() -> new EntityNotFoundException("Problema no encontrado con id: " + id));
+        Problemas problema = problemasRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Problema no encontrado"));
+
+        return problemasMapper.toProblemasDto(problema);
     }
 
     @Override
@@ -61,21 +56,28 @@ public class ProblemasServicesImple implements ProblemasServices {
     @Override
     public void eliminar(Byte id) {
         if (!problemasRepository.existsById(id)) {
-            throw new EntityNotFoundException("Problema no encontrado con id: " + id);
+            throw new EntityNotFoundException("Problema no encontrado");
         }
         problemasRepository.deleteById(id);
     }
 
     @Override
     public ProblemasDtos actualizar(ProblemasDtos dto) {
-        validarDescripcionProblema(dto.getDescr_problem());
-        
-        Problemas entity = problemasRepository.findById(dto.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Problema no encontrado con id: " + dto.getId()));
+        if (dto == null || dto.getId() == null) {
+            throw new IllegalArgumentException("El DTO o el ID no pueden ser nulos");
+        }
 
-    entity.setDesc_problema(dto.getDescr_problem());
+        Problemas problema = problemasRepository.findById(dto.getId())
+            .orElseThrow(() -> new EntityNotFoundException("Problema no encontrado"));
 
-        Problemas actualizado = problemasRepository.save(entity);
-        return problemasMapper.toProblemasDto(actualizado);
+        problema.setDesc_problema(dto.getDescr_problem());
+
+        Tickets ticket = new Tickets();
+        ticket.setId(dto.getId_tick());
+        problema.setTicket(ticket);
+
+        problema = problemasRepository.save(problema);
+
+        return problemasMapper.toProblemasDto(problema);
     }
 }

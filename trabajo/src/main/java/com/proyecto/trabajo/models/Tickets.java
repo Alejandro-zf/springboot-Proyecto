@@ -50,12 +50,11 @@ public class Tickets {
     @JoinColumn(name = "id_est_tick", nullable = false, foreignKey = @ForeignKey(name = "FK_Id_estado"))
     private Estado_ticket idEstTick;
 
-    @ManyToOne 
-    @JoinColumn(name = "problemas",nullable = false, foreignKey = @ForeignKey(name = "Fk_Id_Problemas"))
-    private Problemas problemas;
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Problemas> problemas = new ArrayList<>();
 
-    @OneToMany(mappedBy = "tickets", cascade = CascadeType.ALL, orphanRemoval  = true)
-    private List <Trasabilidad> trasabilidad = new ArrayList<>();
+    @OneToMany(mappedBy = "tickets", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Trasabilidad> trasabilidad = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "elementos", nullable = false, foreignKey = @ForeignKey(name = "FK_Id_elementos"))

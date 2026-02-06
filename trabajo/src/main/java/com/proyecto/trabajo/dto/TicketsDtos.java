@@ -1,6 +1,7 @@
 package com.proyecto.trabajo.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,8 +19,7 @@ public class TicketsDtos {
     private Byte estado;
     private String imageness; 
     
-    private Long probloem_id;
-    private String nom_problm;
+    private List<Byte> problemas;
 
     private Long id_usuario;
     private String nom_usu;
