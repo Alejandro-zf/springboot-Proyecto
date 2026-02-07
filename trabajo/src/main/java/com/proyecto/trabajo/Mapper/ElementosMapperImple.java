@@ -26,8 +26,8 @@ public class ElementosMapperImple implements ElementosMapper {
 
     private static byte validarEstado(Byte estado) {
         if (estado == null) return 1; 
-        if (estado < 0 || estado > 1) {
-            throw new IllegalArgumentException("Estado de elemento inválido. Use 0 (no activo) o 1 (activo)");
+        if (estado < 0 || estado > 2) {
+            throw new IllegalArgumentException("Estado de elemento inválido. Use 0 (inactivo), 1 (activo) o 2 (mantenimiento)");
         }
         return estado;
     }
@@ -63,17 +63,8 @@ public class ElementosMapperImple implements ElementosMapper {
         
         
         Byte estadoSincronizado = elementos.getEstadosoelement() != null ? elementos.getEstadosoelement() : 1;
-        if (elementos.getTickets() != null && !elementos.getTickets().isEmpty()) {
-            for (var ticket : elementos.getTickets()) {
-                if (ticket != null && ticket.getIdEstTick() != null && ticket.getIdEstTick().getIdEstado() != null) {
-                    byte estadoTicket = ticket.getIdEstTick().getIdEstado();
-                    if (estadoTicket == 1 || estadoTicket == 2) {
-                        estadoSincronizado = 0;
-                        break;
-                    }
-                }
-            }
-        }
+        // La sincronización de estados ahora se maneja en TicketsServicesImple.sincronizarEstadoElementoPorTicket()
+        // Respetamos el estado actual del elemento tal como está en la base de datos
         ElementoDto elementoDto = new ElementoDto();
         elementoDto.setId_elemen(elementos.getId());
         elementoDto.setNom_eleme(elementos.getNom_elemento());

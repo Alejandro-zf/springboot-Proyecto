@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.proyecto.trabajo.dto.ProblemasCreateDtos;
 import com.proyecto.trabajo.dto.ProblemasDtos;
+import com.proyecto.trabajo.dto.ProblemasUpdateDtos;
 import com.proyecto.trabajo.models.Problemas;
 import com.proyecto.trabajo.models.Tickets;
 
@@ -20,10 +21,13 @@ public class ProblemasMapperImple implements ProblemasMapper {
         
         entity.setId(dto.getId());
         entity.setDesc_problema(dto.getDescr_problem());
+        entity.setTip_problema(dto.getTipo_problema());
         
-        Tickets ticket = new Tickets();
-        ticket.setId(dto.getId_tick());
-        entity.setTicket(ticket);
+        if (dto.getId_tick() != null) {
+            Tickets ticket = new Tickets();
+            ticket.setId(dto.getId_tick());
+            entity.setTicket(ticket);
+        }
         
         return entity;
     }
@@ -35,6 +39,7 @@ public class ProblemasMapperImple implements ProblemasMapper {
         
         dto.setId(entity.getId());
         dto.setDescr_problem(entity.getDesc_problema());
+        dto.setTipo_problema(entity.getTip_problema());
         
         if (entity.getTicket() != null) {
             dto.setId_tick(entity.getTicket().getId());
@@ -49,10 +54,13 @@ public class ProblemasMapperImple implements ProblemasMapper {
         Problemas entity = new Problemas();
         
         entity.setDesc_problema(createDto.getDescr_problem());
+        entity.setTip_problema(createDto.getTipo_problema());
         
-        Tickets ticket = new Tickets();
-        ticket.setId(createDto.getId_tick());
-        entity.setTicket(ticket);
+        if (createDto.getId_tick() != null) {
+            Tickets ticket = new Tickets();
+            ticket.setId(createDto.getId_tick());
+            entity.setTicket(ticket);
+        }
         
         return entity;
     }
@@ -67,5 +75,24 @@ public class ProblemasMapperImple implements ProblemasMapper {
         }
         
         return dtos;
+    }
+
+    @Override
+    public void updateProblemasFromUpdateDto(ProblemasUpdateDtos dto, Problemas entity) {
+        if (dto == null || entity == null) return;
+        
+        if (dto.getDescr_problem() != null && !dto.getDescr_problem().isBlank()) {
+            entity.setDesc_problema(dto.getDescr_problem());
+        }
+        
+        if (dto.getTipo_problema() != null && !dto.getTipo_problema().isBlank()) {
+            entity.setTip_problema(dto.getTipo_problema());
+        }
+        
+        if (dto.getId_tick() != null) {
+            Tickets ticket = new Tickets();
+            ticket.setId(dto.getId_tick());
+            entity.setTicket(ticket);
+        }
     }
 }

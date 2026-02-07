@@ -28,7 +28,7 @@ public class TicketsMapperImple implements TicketsMapper {
         tickets.setId(ticketsDtos.getId_tickets());
         tickets.setFecha_ini(ticketsDtos.getFecha_in());
         tickets.setFecha_finn(ticketsDtos.getFecha_fin());
-        tickets.setAmbiente(ticketsDtos.getAmbient());
+        tickets.setAmbiente(ticketsDtos.getAmbiente());
         tickets.setImageness(ticketsDtos.getImageness());
 
         if (ticketsDtos.getProblemas() != null) {
@@ -49,10 +49,28 @@ public class TicketsMapperImple implements TicketsMapper {
         dto.setId_tickets(tickets.getId());
         dto.setFecha_in(tickets.getFecha_ini());
         dto.setFecha_fin(tickets.getFecha_finn());
-        dto.setAmbient(tickets.getAmbiente());
+        dto.setAmbiente(tickets.getAmbiente());
         dto.setImageness(tickets.getImageness());
         dto.setObser(tickets.getObservaciones());
-        mapEstadoTicket(tickets, dto);
+        dto.setEstado(tickets.getEstado());
+        
+        // Mapear usuario
+        if (tickets.getUsuario() != null) {
+            dto.setId_usuario(tickets.getUsuario().getId());
+            dto.setNom_usu(tickets.getUsuario().getNom_usu());
+        }
+        
+        // Mapear elemento
+        if (tickets.getElementos() != null) {
+            dto.setId_eleme(tickets.getElementos().getId());
+            dto.setNom_elem(tickets.getElementos().getNom_elemento());
+        }
+        
+        // Mapear estado del ticket
+        if (tickets.getIdEstTick() != null) {
+            dto.setId_est_tick(tickets.getIdEstTick().getIdEstado().longValue());
+            dto.setTip_est_ticket(tickets.getIdEstTick().getNom_estado());
+        }
 
         if (tickets.getProblemas() != null) {
             dto.setProblemas(tickets.getProblemas().stream()
@@ -69,6 +87,11 @@ public class TicketsMapperImple implements TicketsMapper {
             return null;
         }
         Tickets tickets = new Tickets();
+        tickets.setFecha_ini(createDto.getFecha_in());
+        tickets.setFecha_finn(createDto.getFecha_fin());
+        tickets.setAmbiente(createDto.getAmbiente());
+        tickets.setObservaciones(createDto.getObser());
+        tickets.setImageness(createDto.getImageness());
         return tickets;
     }
 }

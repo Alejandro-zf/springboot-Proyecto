@@ -16,6 +16,7 @@ import com.proyecto.trabajo.repository.ProblemasRepository;
 import com.proyecto.trabajo.repository.EstadoTicketRepository;
 import com.proyecto.trabajo.repository.ElementosRepository;
 import com.proyecto.trabajo.repository.TrasabilidadRepository;
+import com.proyecto.trabajo.repository.UsuariosRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
@@ -33,14 +34,16 @@ public class TicketsServicesImple implements TicketsServices {
     private final EstadoTicketRepository estadoTicketRepository;
     private final ElementosRepository elementosRepository;
     private final TrasabilidadRepository trasabilidadRepository;
+    private final UsuariosRepository usuariosRepository;
 
-    public TicketsServicesImple(TicketsRepository ticketsRepository, ProblemasRepository problemasRepository, TicketsMapper ticketsMapper, EstadoTicketRepository estadoTicketRepository, ElementosRepository elementosRepository, TrasabilidadRepository trasabilidadRepository) {
+    public TicketsServicesImple(TicketsRepository ticketsRepository, ProblemasRepository problemasRepository, TicketsMapper ticketsMapper, EstadoTicketRepository estadoTicketRepository, ElementosRepository elementosRepository, TrasabilidadRepository trasabilidadRepository, UsuariosRepository usuariosRepository) {
         this.ticketsRepository = ticketsRepository;
         this.problemasRepository = problemasRepository;
         this.ticketsMapper = ticketsMapper;
         this.estadoTicketRepository = estadoTicketRepository;
         this.elementosRepository = elementosRepository;
         this.trasabilidadRepository = trasabilidadRepository;
+        this.usuariosRepository = usuariosRepository;
     }
 
     @Override
@@ -53,7 +56,7 @@ public class TicketsServicesImple implements TicketsServices {
         if (dto.getId_problem() == null) {
             throw new IllegalStateException("id_problem es obligatorio");
         }
-        if (dto.getAmbient() == null || dto.getAmbient().isBlank()) {
+        if (dto.getAmbiente() == null || dto.getAmbiente().isBlank()) {
             throw new IllegalStateException("ambient es obligatorio");
         }
         if (dto.getFecha_in() == null) {
@@ -68,6 +71,13 @@ public class TicketsServicesImple implements TicketsServices {
         }
 
         Tickets tickets = ticketsMapper.toTicketsFromCreateDto(dto);
+        
+        // Asignar usuario
+        if (dto.getId_usu() != null) {
+            tickets.setUsuario(usuariosRepository.findById(dto.getId_usu())
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado")));
+        }
+        
         // Asegura que siempre se asigne un estado
         if (tickets.getIdEstTick() == null) {
             Estado_ticket estadoPendiente = estadoTicketRepository.findById((byte)2)
@@ -114,6 +124,7 @@ public class TicketsServicesImple implements TicketsServices {
             // Log exception if necessary
         }
 
+        System.out.println("🎫 TICKET CREADO - llamando sincronización...");
         sincronizarEstadoElementoPorTicket(guardado);
         return ticketsMapper.toTicketsDto(guardado);
     }
@@ -209,6 +220,7 @@ public class TicketsServicesImple implements TicketsServices {
     }
 
         Tickets actualizado = ticketsRepository.save(tickets);
+        System.out.println("🔄 TICKET ACTUALIZADO - llamando sincronización...");
         sincronizarEstadoElementoPorTicket(actualizado);
         return ticketsMapper.toTicketsDto(actualizado);
     }
@@ -221,8 +233,47 @@ public class TicketsServicesImple implements TicketsServices {
     }
 
     private void sincronizarEstadoElementoPorTicket(Tickets ticket) {
-        // Implementación de la lógica para sincronizar el estado del elemento.
-        // Por ejemplo, si el ticket se finaliza, el elemento podría pasar a estado "disponible".
+        if (ticket == null || ticket.getElementos() == null || ticket.getIdEstTick() == null) {
+            System.out.println("⚠️ Sincronización saltada: ticket, elemento o estado nulos");
+            return;
+        }
+        
+        Elementos elemento = ticket.getElementos();
+        Byte estadoTicket = ticket.getIdEstTick().getIdEstado();
+        
+        System.out.println(String.format("🔄 Sincronizando elemento: %s | Estado ticket actual: %d", 
+            elemento.getNom_elemento(), estadoTicket));
+        
+        // Determinar el nuevo estado del elemento según el estado del ticket
+        Byte nuevoEstadoElemento;
+        switch (estadoTicket) {
+            case 1: // Ticket Activo/En Proceso (TOMADO) -> Elemento en Mantenimiento
+                nuevoEstadoElemento = 2; // Mantenimiento
+                System.out.println("📝 Ticket TOMADO: Elemento debe pasar a MANTENIMIENTO (2)");
+                break;
+            case 3: // Ticket Terminado -> Elemento Activo
+                nuevoEstadoElemento = 1; // Activo
+                System.out.println("✅ Ticket TERMINADO: Elemento debe pasar a ACTIVO (1)");
+                break;
+            default: // Para otros estados (Pendiente, etc.) mantener estado actual
+                System.out.println(String.format("ℹ️ Estado ticket %d no requiere cambio de elemento", estadoTicket));
+                return;
+        }
+        
+        // Solo actualizar si el estado cambió
+        if (!nuevoEstadoElemento.equals(elemento.getEstadosoelement())) {
+            Byte estadoAnterior = elemento.getEstadosoelement();
+            elemento.setEstadosoelement(nuevoEstadoElemento);
+            elementosRepository.save(elemento);
+            
+            String estadoTexto = nuevoEstadoElemento == 1 ? "Activo" : 
+                               nuevoEstadoElemento == 2 ? "Mantenimiento" : "Inactivo";
+            System.out.println(String.format("🔄 Elemento %s cambiado de estado %d → %d (%s)", 
+                elemento.getNom_elemento(), estadoAnterior, nuevoEstadoElemento, estadoTexto));
+        } else {
+            System.out.println(String.format("ℹ️ Elemento %s ya está en estado %d - sin cambios", 
+                elemento.getNom_elemento(), nuevoEstadoElemento));
+        }
     }
 }
 

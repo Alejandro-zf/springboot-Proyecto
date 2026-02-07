@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 public class ProblemasDtos {
     private Byte id;
     private String descr_problem;
-
+    private String tipo_problema;
     private Long id_tick;
 }

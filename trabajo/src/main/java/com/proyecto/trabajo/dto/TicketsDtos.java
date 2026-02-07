@@ -14,7 +14,7 @@ public class TicketsDtos {
     private Long id_tickets;
     private LocalDateTime fecha_in;
     private LocalDateTime fecha_fin;
-    private String ambient;
+    private String ambiente;
     private String Obser;
     private Byte estado;
     private String imageness; 
