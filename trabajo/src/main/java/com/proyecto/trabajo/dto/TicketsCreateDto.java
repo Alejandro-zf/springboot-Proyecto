@@ -1,6 +1,7 @@
 package com.proyecto.trabajo.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,7 +20,7 @@ public class TicketsCreateDto {
     // Campo opcional: URLs de imágenes en formato JSON (puede ser null)
     private String imageness;
 
-    private Long id_problem;
+    private List<Long> id_problems; // Lista de problemas para un ticket
 
     private Long id_usu;
 

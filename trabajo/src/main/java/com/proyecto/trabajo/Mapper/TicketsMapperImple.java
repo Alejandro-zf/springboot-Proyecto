@@ -73,9 +73,16 @@ public class TicketsMapperImple implements TicketsMapper {
         }
 
         if (tickets.getProblemas() != null) {
+            System.out.println("🔍 Mapeando " + tickets.getProblemas().size() + " problemas del ticket " + tickets.getId());
             dto.setProblemas(tickets.getProblemas().stream()
-                .map(problema -> problema.getId())
+                .map(problema -> {
+                    System.out.println("   - Problema ID: " + problema.getId() + " - " + problema.getDesc_problema());
+                    return problema.getId();
+                })
                 .collect(Collectors.toList()));
+            System.out.println("✅ DTO final tiene " + dto.getProblemas().size() + " problemas");
+        } else {
+            System.out.println("⚠️ El ticket " + tickets.getId() + " no tiene problemas asociados");
         }
 
         return dto;

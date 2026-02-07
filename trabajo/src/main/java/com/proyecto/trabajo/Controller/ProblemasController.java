@@ -92,7 +92,10 @@ public class ProblemasController {
     public ResponseEntity<?> eliminar(@PathVariable Byte id) {
         try {
             problemasServices.eliminar(id);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok(Map.of(
+                "mensaje", "✅ Problema eliminado correctamente.",
+                "id_problema", id
+            ));
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(Map.of("error", ex.getMessage()));

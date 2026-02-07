@@ -12,7 +12,7 @@ public class Problemas {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Byte id;
 
-    @Column(nullable = false, length = 30)
+    @Column(nullable = false, length = 255)
     private String desc_problema;
 
     @Column(nullable = false, length = 255)

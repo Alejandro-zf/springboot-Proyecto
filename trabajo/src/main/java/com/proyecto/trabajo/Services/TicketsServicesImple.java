@@ -53,8 +53,8 @@ public class TicketsServicesImple implements TicketsServices {
             throw new IllegalStateException("id_usu es obligatorio");
         }
         
-        if (dto.getId_problem() == null) {
-            throw new IllegalStateException("id_problem es obligatorio");
+        if (dto.getId_problems() == null || dto.getId_problems().isEmpty()) {
+            throw new IllegalStateException("Al menos un problema es obligatorio");
         }
         if (dto.getAmbiente() == null || dto.getAmbiente().isBlank()) {
             throw new IllegalStateException("ambient es obligatorio");
@@ -95,11 +95,16 @@ public class TicketsServicesImple implements TicketsServices {
             tickets.setIdEstTick(estadoPendiente);
         }
 
-        if (dto.getId_problem() != null) {
-            Problemas problema = problemasRepository.findById(dto.getId_problem().byteValue())
-                .orElseThrow(() -> new EntityNotFoundException("Problema no encontrado"));
-            problema.setTicket(tickets);
-            tickets.getProblemas().add(problema);
+        if (dto.getId_problems() != null && !dto.getId_problems().isEmpty()) {
+            System.out.println("🔧 Procesando " + dto.getId_problems().size() + " problemas...");
+            for (Long idProblema : dto.getId_problems()) {
+                Problemas problema = problemasRepository.findById(idProblema.byteValue())
+                    .orElseThrow(() -> new EntityNotFoundException("Problema no encontrado con ID: " + idProblema));
+                problema.setTicket(tickets);
+                tickets.getProblemas().add(problema);
+                System.out.println("✅ Agregado problema ID: " + idProblema + " - " + problema.getDesc_problema());
+            }
+            System.out.println("📋 Total problemas en ticket: " + tickets.getProblemas().size());
         }
 
         if (tickets.getObservaciones() == null) {
@@ -112,6 +117,17 @@ public class TicketsServicesImple implements TicketsServices {
         }
 
         Tickets guardado = ticketsRepository.save(tickets);
+        
+        // Asegurar que los problemas se guarden correctamente con la relación
+        if (!guardado.getProblemas().isEmpty()) {
+            System.out.println("💾 Guardando " + guardado.getProblemas().size() + " problemas explícitamente...");
+            for (Problemas problema : guardado.getProblemas()) {
+                problema.setTicket(guardado); // Asegurar la relación bidireccional
+                problemasRepository.save(problema);
+                System.out.println("💾 Guardado problema: " + problema.getId() + " -> ticket: " + guardado.getId());
+            }
+        }
+        
         try {
             Trasabilidad tr = new Trasabilidad();
             tr.setFecha(LocalDate.now());
