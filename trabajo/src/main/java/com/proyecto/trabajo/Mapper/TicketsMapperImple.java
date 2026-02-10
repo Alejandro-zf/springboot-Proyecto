@@ -5,19 +5,13 @@ import org.springframework.stereotype.Component;
 import com.proyecto.trabajo.dto.TicketsDtos;
 import com.proyecto.trabajo.dto.TicketsCreateDto;
 import com.proyecto.trabajo.models.Tickets;
-import com.proyecto.trabajo.models.Problemas;
-import com.proyecto.trabajo.repository.ProblemasRepository;
 
 import java.util.stream.Collectors;
 
 @Component
 public class TicketsMapperImple implements TicketsMapper {
 
-    private final ProblemasRepository problemasRepository;
 
-    public TicketsMapperImple(ProblemasRepository problemasRepository) {
-        this.problemasRepository = problemasRepository;
-    }
 
     @Override
     public Tickets toTickets(TicketsDtos ticketsDtos) {
@@ -31,11 +25,7 @@ public class TicketsMapperImple implements TicketsMapper {
         tickets.setAmbiente(ticketsDtos.getAmbiente());
         tickets.setImageness(ticketsDtos.getImageness());
 
-        if (ticketsDtos.getProblemas() != null) {
-            tickets.setProblemas(ticketsDtos.getProblemas().stream()
-                .map(id -> problemasRepository.findById(id).orElse(null))
-                .collect(Collectors.toList()));
-        }
+
 
         return tickets;
     }
@@ -72,17 +62,12 @@ public class TicketsMapperImple implements TicketsMapper {
             dto.setTip_est_ticket(tickets.getIdEstTick().getNom_estado());
         }
 
-        if (tickets.getProblemas() != null) {
-            System.out.println("🔍 Mapeando " + tickets.getProblemas().size() + " problemas del ticket " + tickets.getId());
-            dto.setProblemas(tickets.getProblemas().stream()
-                .map(problema -> {
-                    System.out.println("   - Problema ID: " + problema.getId() + " - " + problema.getDesc_problema());
-                    return problema.getId();
-                })
+        if (tickets.getTicketProblemas() != null && !tickets.getTicketProblemas().isEmpty()) {
+            dto.setProblemas(tickets.getTicketProblemas().stream()
+                .map(TicketProblemaMapper::toDto)
                 .collect(Collectors.toList()));
-            System.out.println("✅ DTO final tiene " + dto.getProblemas().size() + " problemas");
         } else {
-            System.out.println("⚠️ El ticket " + tickets.getId() + " no tiene problemas asociados");
+            dto.setProblemas(null);
         }
 
         return dto;

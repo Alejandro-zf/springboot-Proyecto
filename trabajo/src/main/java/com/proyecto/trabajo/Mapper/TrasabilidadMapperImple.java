@@ -85,9 +85,9 @@ public class TrasabilidadMapperImple implements TrasabilidadMapper {
                 dto.setId_elemen(entity.getTickets().getElementos().getId());
                 dto.setNom_elemen(entity.getTickets().getElementos().getNom_elemento());
             }
-            if (entity.getTickets().getProblemas() != null && !entity.getTickets().getProblemas().isEmpty()) {
-                String problemasStr = entity.getTickets().getProblemas().stream()
-                    .map(Problemas::getDesc_problema)
+            if (entity.getTickets().getTicketProblemas() != null && !entity.getTickets().getTicketProblemas().isEmpty()) {
+                String problemasStr = entity.getTickets().getTicketProblemas().stream()
+                    .map(tp -> tp.getProblema() != null ? tp.getProblema().getDesc_problema() : "")
                     .collect(Collectors.joining(", "));
                 dto.setNom_problm(problemasStr);
             }

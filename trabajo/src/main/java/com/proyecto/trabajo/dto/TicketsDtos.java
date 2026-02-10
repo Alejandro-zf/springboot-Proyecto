@@ -19,7 +19,7 @@ public class TicketsDtos {
     private Byte estado;
     private String imageness; 
     
-    private List<Byte> problemas;
+    private List<TicketProblemaDto> problemas;
 
     private Long id_usuario;
     private String nom_usu;

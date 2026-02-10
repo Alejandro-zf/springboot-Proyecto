@@ -28,11 +28,4 @@ public interface TicketsMapper {
             }
         }
     }
-    default void mapProblemas(Tickets ticket, TicketsDtos dto) {
-        if (ticket.getProblemas() != null && !ticket.getProblemas().isEmpty()) {
-            dto.setProblemas(ticket.getProblemas().stream()
-                .map(problema -> problema.getId())
-                .collect(Collectors.toList()));
-        }
-    }
 }
