@@ -16,9 +16,9 @@ public class TicketProblemaController {
     @Autowired
     private TicketProblemaService ticketProblemaService;
 
-    @PostMapping
-    public ResponseEntity<TicketProblemaDto> create(@RequestBody TicketProblemaDto dto) {
-        return ResponseEntity.ok(ticketProblemaService.save(dto));
+    @PostMapping("/ticket/{ticketId}")
+    public ResponseEntity<TicketProblemaDto> create(@PathVariable Long ticketId, @RequestBody TicketProblemaDto dto) {
+        return ResponseEntity.ok(ticketProblemaService.save(ticketId, dto));
     }
 
     @GetMapping("/ticket/{ticketId}")

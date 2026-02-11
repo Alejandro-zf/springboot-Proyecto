@@ -99,6 +99,7 @@ public class TicketsServicesImple implements TicketsServices {
         if (dto.getProblemas() != null && !dto.getProblemas().isEmpty()) {
             System.out.println("🔧 Procesando " + dto.getProblemas().size() + " problemas...");
             for (var problemaDetalle : dto.getProblemas()) {
+                System.out.println("➡️ Recibido problema: id=" + problemaDetalle.getId() + ", descripcion='" + problemaDetalle.getDescripcion() + "', imagenes=" + problemaDetalle.getImagenes());
                 Problemas problema = problemasRepository.findById(problemaDetalle.getId().byteValue())
                     .orElseThrow(() -> new EntityNotFoundException("Problema no encontrado con ID: " + problemaDetalle.getId()));
                 TicketProblema ticketProblema = new TicketProblema();
@@ -107,9 +108,11 @@ public class TicketsServicesImple implements TicketsServices {
                 ticketProblema.setDescripcion(problemaDetalle.getDescripcion());
                 if (problemaDetalle.getImagenes() != null && !problemaDetalle.getImagenes().isEmpty()) {
                     ticketProblema.setImagenes(String.join(",", problemaDetalle.getImagenes()));
+                } else {
+                    ticketProblema.setImagenes(null);
                 }
                 tickets.getTicketProblemas().add(ticketProblema);
-                System.out.println("✅ Agregado problema ID: " + problemaDetalle.getId() + " - " + problema.getDesc_problema());
+                System.out.println("✅ Agregado problema ID: " + problemaDetalle.getId() + " - " + problema.getDesc_problema() + ", descripcion='" + ticketProblema.getDescripcion() + "', imagenes=" + ticketProblema.getImagenes());
             }
             System.out.println("📋 Total problemas en ticket: " + tickets.getTicketProblemas().size());
         }

@@ -24,8 +24,8 @@ public class TicketProblemaService {
     @Autowired
     private ProblemasRepository problemasRepository;
 
-    public TicketProblemaDto save(TicketProblemaDto dto) {
-        Tickets ticket = ticketsRepository.findById(dto.getTicketId())
+    public TicketProblemaDto save(Long ticketId, TicketProblemaDto dto) {
+        Tickets ticket = ticketsRepository.findById(ticketId)
                 .orElseThrow(() -> new RuntimeException("Ticket no encontrado"));
         Problemas problema = problemasRepository.findById(dto.getProblemaId())
                 .orElseThrow(() -> new RuntimeException("Problema no encontrado"));
@@ -55,4 +55,4 @@ public class TicketProblemaService {
     public void delete(Long id) {
         ticketProblemaRepository.deleteById(id);
     }
-}
+ }
