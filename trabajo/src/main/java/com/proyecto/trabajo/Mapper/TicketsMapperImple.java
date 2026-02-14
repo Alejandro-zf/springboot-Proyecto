@@ -23,10 +23,6 @@ public class TicketsMapperImple implements TicketsMapper {
         tickets.setFecha_ini(ticketsDtos.getFecha_in());
         tickets.setFecha_finn(ticketsDtos.getFecha_fin());
         tickets.setAmbiente(ticketsDtos.getAmbiente());
-        tickets.setImageness(ticketsDtos.getImageness());
-
-
-
         return tickets;
     }
 
@@ -40,8 +36,6 @@ public class TicketsMapperImple implements TicketsMapper {
         dto.setFecha_in(tickets.getFecha_ini());
         dto.setFecha_fin(tickets.getFecha_finn());
         dto.setAmbiente(tickets.getAmbiente());
-        dto.setImageness(tickets.getImageness());
-        dto.setObser(tickets.getObservaciones());
         dto.setEstado(tickets.getEstado());
         
         // Mapear usuario
@@ -82,8 +76,6 @@ public class TicketsMapperImple implements TicketsMapper {
         tickets.setFecha_ini(createDto.getFecha_in());
         tickets.setFecha_finn(createDto.getFecha_fin());
         tickets.setAmbiente(createDto.getAmbiente());
-        tickets.setObservaciones(createDto.getObser());
-        tickets.setImageness(createDto.getImageness());
         return tickets;
     }
 }

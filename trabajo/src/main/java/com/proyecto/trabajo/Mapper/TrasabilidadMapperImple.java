@@ -63,9 +63,8 @@ public class TrasabilidadMapperImple implements TrasabilidadMapper {
         dto.setId_trsa(entity.getId());
         dto.setFech(entity.getFecha());
         
-        // obser: extrae la observación del ticket
+        // obser: solo la observación de la trasabilidad
         if (entity.getTickets() != null) {
-            dto.setObser(entity.getTickets().getObservaciones() != null ? entity.getTickets().getObservaciones() : "");
             dto.setId_ticet(entity.getTickets().getId());
         }
         dto.setObser(entity.getObservacion());

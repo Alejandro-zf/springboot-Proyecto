@@ -63,13 +63,6 @@ public class TicketsServicesImple implements TicketsServices {
         if (dto.getFecha_in() == null) {
             dto.setFecha_in(LocalDateTime.now());
         }
-        if (dto.getObser() == null) {
-            dto.setObser("");
-        }
-        // El campo imageness es opcional, si es null se mantiene así
-        if (dto.getImageness() == null) {
-            dto.setImageness(null);
-        }
 
         Tickets tickets = ticketsMapper.toTicketsFromCreateDto(dto);
         
@@ -117,9 +110,6 @@ public class TicketsServicesImple implements TicketsServices {
             System.out.println("📋 Total problemas en ticket: " + tickets.getTicketProblemas().size());
         }
 
-        if (tickets.getObservaciones() == null) {
-            tickets.setObservaciones(dto.getObser());
-        }
         if (tickets.getElementos() == null && dto.getId_elem() != null) {
             Elementos elemento = elementosRepository.findById(dto.getId_elem())
                 .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
@@ -219,9 +209,6 @@ public class TicketsServicesImple implements TicketsServices {
         }
         if (dto.getFecha_fin() != null) {
             tickets.setFecha_finn(dto.getFecha_fin());
-        }
-        if (dto.getImageness() != null) {
-            tickets.setImageness(dto.getImageness());
         }
     if (dto.getId_est_tick() != null) {
         Estado_ticket estado = estadoTicketRepository.findById(dto.getId_est_tick().byteValue())

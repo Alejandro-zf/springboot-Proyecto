@@ -15,10 +15,8 @@ public class TicketsDtos {
     private LocalDateTime fecha_in;
     private LocalDateTime fecha_fin;
     private String ambiente;
-    private String Obser;
     private Byte estado;
-    private String imageness; 
-    
+
     private List<TicketProblemaDto> problemas;
 
     private Long id_usuario;
