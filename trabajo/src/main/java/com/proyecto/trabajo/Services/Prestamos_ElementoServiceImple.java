@@ -11,6 +11,7 @@ import com.proyecto.trabajo.Mapper.Prestamos_ElementoMapper;
 import com.proyecto.trabajo.models.Prestamos_Elemento;
 import com.proyecto.trabajo.models.Prestamos_Elementoid;
 import com.proyecto.trabajo.repository.PrestamosElementoRepository;
+import com.proyecto.trabajo.repository.ElementosRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -19,10 +20,12 @@ public class Prestamos_ElementoServiceImple implements Prestamos_ElementoService
 
     private final PrestamosElementoRepository repository;
     private final Prestamos_ElementoMapper mapper;
+    private final ElementosRepository elementosRepository;
 
-    public Prestamos_ElementoServiceImple(PrestamosElementoRepository repository, Prestamos_ElementoMapper mapper) {
+    public Prestamos_ElementoServiceImple(PrestamosElementoRepository repository, Prestamos_ElementoMapper mapper, ElementosRepository elementosRepository) {
         this.repository = repository;
         this.mapper = mapper;
+        this.elementosRepository = elementosRepository;
     }
 
     @Override
@@ -32,6 +35,16 @@ public class Prestamos_ElementoServiceImple implements Prestamos_ElementoService
         if (repository.existsById(id)) {
             throw new IllegalStateException("Ya existe una asignación para ese préstamo y elemento");
         }
+        // Marcar el elemento como inactivo (0) cuando se asigna a un préstamo
+        try {
+            if (pe.getElementos() != null) {
+                pe.getElementos().setEstadosoelement((byte) 0);
+                elementosRepository.save(pe.getElementos());
+            }
+        } catch (Exception e) {
+            System.out.println("WARN: no se pudo actualizar el estado del elemento al asignar: " + e.getMessage());
+        }
+
         Prestamos_Elemento guardado = repository.save(pe);
         return mapper.toDTO(guardado);
     }
