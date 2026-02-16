@@ -146,6 +146,12 @@ public class SolicitudesServicesImple implements SolicitudesServices {
                 if (idElem == null) continue;
                 Elementos elemento = elementosRepository.findById(idElem)
                     .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
+                Byte estadoElem = elemento.getEstadosoelement();
+                if (estadoElem == null) estadoElem = 1;
+                if (estadoElem != 1) {
+                    String estadoTexto = (estadoElem == 2) ? "Mantenimiento" : (estadoElem == 0) ? "Inactivo" : "Desconocido";
+                    throw new IllegalStateException("Elemento no disponible (ID: " + elemento.getId() + "): estado=" + estadoTexto);
+                }
                 Elemento_Solicitudes es = new Elemento_Solicitudes();
                 es.setSolicitudes(solicitudes);
                 es.setElementos(elemento);
