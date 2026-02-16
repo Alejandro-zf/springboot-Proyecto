@@ -90,6 +90,22 @@ public class SolicitudesServicesImple implements SolicitudesServices {
         }
     }
 
+    // Rechaza y persiste una solicitud si tiene elementos pero ninguno está activo (estado 1)
+    private void autoRechazarSiNoHayActivos(Solicitudes s) {
+        if (s == null || s.getElemento() == null || s.getElemento().isEmpty()) return;
+        long activos = s.getElemento().stream()
+            .filter(es -> es != null && es.getElementos() != null && es.getElementos().getEstadosoelement() != null)
+            .filter(es -> es.getElementos().getEstadosoelement() == (byte) 1)
+            .count();
+        if (activos == 0) {
+            com.proyecto.trabajo.models.Estado_solicitudes estadoRechazada = new com.proyecto.trabajo.models.Estado_solicitudes();
+            estadoRechazada.setId(3);
+            s.setEstado_solicitudes(estadoRechazada);
+            solicitudesRepository.save(s);
+            solicitudesRepository.flush();
+        }
+    }
+
     private void sincronizarEstadoElementos(Solicitudes solicitud) {
         if (solicitud == null || solicitud.getElemento() == null) return;
         if (solicitud.getEstado_solicitudes() == null) return;
@@ -97,7 +113,10 @@ public class SolicitudesServicesImple implements SolicitudesServices {
         final byte estadoFinal = (solicitud.getEstado_solicitudes().getId() == 2) ? (byte) 2 : (byte) 1;
         solicitud.getElemento().forEach(es -> {
             Elementos elem = es.getElementos();
-            if (elem != null && (elem.getEstadosoelement() == null || elem.getEstadosoelement() != estadoFinal)) {
+            if (elem == null) return;
+            // Nunca sobrescribir estado 0 (inactivo/asignado). Conservamos inactivos.
+            if (elem.getEstadosoelement() != null && elem.getEstadosoelement() == (byte) 0) return;
+            if (elem.getEstadosoelement() == null || elem.getEstadosoelement() != estadoFinal) {
                 elem.setEstadosoelement(estadoFinal);
                 elementosRepository.save(elem);
             }
@@ -171,6 +190,13 @@ public class SolicitudesServicesImple implements SolicitudesServices {
         expirarSolicitudesVencidas();
         sincronizarEstadoElementos(solicitudFullPostSave);
 
+        // Si la solicitud quedó en estado PENDIENTE y tiene elementos sin activos, rechazarla automáticamente
+        if (solicitudFullPostSave.getEstado_solicitudes() != null && solicitudFullPostSave.getEstado_solicitudes().getId() == 1) {
+            autoRechazarSiNoHayActivos(solicitudFullPostSave);
+            solicitudFullPostSave = solicitudesRepository.findById(guardado.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada tras posible auto-rechazo"));
+        }
+
         if (guardado.getEstado_solicitudes() != null && guardado.getEstado_solicitudes().getId() == 2) {
             boolean sinPrestamo = guardado.getPrestamos() == null || guardado.getPrestamos().isEmpty();
             if (sinPrestamo) {
@@ -190,6 +216,13 @@ public class SolicitudesServicesImple implements SolicitudesServices {
                             pe.setObser_prest("AUTO");
                             pe.setCantidad(1);
                             prestamosElementoRepository.save(pe);
+                            // Marcar elemento como inactivo al asignarlo a un préstamo
+                            try {
+                                es.getElementos().setEstadosoelement((byte) 0);
+                                elementosRepository.save(es.getElementos());
+                            } catch (Exception ex) {
+                                logger.error("Error marcando elemento {} como inactivo: {}", es.getElementos().getId(), ex.getMessage());
+                            }
                         }
                     }
                 }
@@ -223,6 +256,12 @@ public class SolicitudesServicesImple implements SolicitudesServices {
     @Transactional(readOnly = true)
     public List<SolicitudesDto> listarPendientes() {
         expirarSolicitudesVencidas();
+        // Primero cargar pendientes y auto-rechazar aquellas sin elementos activos
+        List<Solicitudes> pendientes = solicitudesRepository.findByEstado();
+        for (Solicitudes s : pendientes) {
+            autoRechazarSiNoHayActivos(s);
+        }
+        // Volver a consultar las pendientes actualizadas y mapear a DTOs
         return solicitudesRepository.findByEstado()
             .stream()
             .map(solicitudesMapper::toSolicitudesDto)
@@ -278,8 +317,26 @@ public class SolicitudesServicesImple implements SolicitudesServices {
         System.out.println("  - tiene usuario: " + (actualizado.getUsuario() != null));
         System.out.println("  - tiene espacio: " + (actualizado.getEspacio() != null));
 
-        // ✅ Si es aprobado, guardar id_tecnico y nombre_tecnico
+        // ✅ Si es aprobado, verificar disponibilidad de elementos y guardar id_tecnico y nombre_tecnico
         if (aprobado) {
+            // Si la solicitud tiene elementos pero ninguno está en estado activo (1), rechazar automáticamente
+            if (tieneElementos) {
+                long activos = actualizado.getElemento().stream()
+                    .filter(es -> es != null && es.getElementos() != null && es.getElementos().getEstadosoelement() != null)
+                    .filter(es -> es.getElementos().getEstadosoelement() == (byte) 1)
+                    .count();
+                if (activos == 0) {
+                    logger.info("[Solicitudes] No hay elementos activos para la solicitud {}. Marcando como RECHAZADA.", actualizado.getId());
+                    com.proyecto.trabajo.models.Estado_solicitudes estadoRechazada = new com.proyecto.trabajo.models.Estado_solicitudes();
+                    estadoRechazada.setId(3); // Rechazado
+                    actualizado.setEstado_solicitudes(estadoRechazada);
+                    actualizado = solicitudesRepository.save(actualizado);
+                    solicitudesRepository.flush();
+                    return solicitudesMapper.toSolicitudesDto(actualizado);
+                }
+            }
+
+            // Guardar id_tecnico y nombre_tecnico si están presentes
             if (dto.getId_tecnico() != null) {
                 actualizado.setId_tecnico(dto.getId_tecnico());
             }
@@ -327,6 +384,15 @@ public class SolicitudesServicesImple implements SolicitudesServices {
                 pe.setCantidad(1); // O usar la cantidad de la solicitud si existe
                 pe.setObser_prest("Préstamo automático generado al aprobar solicitud"); // ✅ Campo obligatorio
                 prestamoGuardado.getPrestamoss().add(pe);
+                // Marcar el elemento como inactivo inmediatamente
+                try {
+                    if (es.getElementos() != null) {
+                        es.getElementos().setEstadosoelement((byte) 0);
+                        elementosRepository.save(es.getElementos());
+                    }
+                } catch (Exception ex) {
+                    logger.error("Error marcando elemento {} como inactivo al crear préstamo: {}", es != null && es.getElementos() != null ? es.getElementos().getId() : "null", ex.getMessage());
+                }
             }
             prestamosRepository.save(prestamoGuardado);
             
