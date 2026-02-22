@@ -27,6 +27,8 @@ public class SolicitudesUpdateDtos {
     private Long id_esp;
     private Long id_usu;
     private List<Long> ids_elem;
+    @JsonAlias({"crear_prestamo","create_prestamo","auto_prestamo"})
+    private Boolean crear_prestamo;
     private Long id_tecnico;
     private String nombre_tecnico;
 }

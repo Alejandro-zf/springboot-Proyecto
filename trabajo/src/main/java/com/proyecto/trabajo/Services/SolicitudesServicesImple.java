@@ -65,17 +65,16 @@ public class SolicitudesServicesImple implements SolicitudesServices {
         this.subCategoriaRepository = subCategoriaRepository;
         this.entityManager = entityManager;
     }
-
+        
     @Transactional
     public void expirarSolicitudesVencidas() {
         List<Solicitudes> vencidas = solicitudesRepository.findVencidasNoExpiradas(LocalDateTime.now());
         if (vencidas == null || vencidas.isEmpty()) return;
         for (Solicitudes s : vencidas) {
-            // Cambia el estado a Expirada (id=3) usando la relación
-            if (s.getEstado_solicitudes() == null || s.getEstado_solicitudes().getId() != 3) {
-                com.proyecto.trabajo.models.Estado_solicitudes estadoExpirada = new com.proyecto.trabajo.models.Estado_solicitudes();
-                estadoExpirada.setId(3); // Debe existir en la BD
-                s.setEstado_solicitudes(estadoExpirada);
+            if (s.getEstado_solicitudes() == null || s.getEstado_solicitudes().getId() != 5) {
+                com.proyecto.trabajo.models.Estado_solicitudes estadoFinalizada = new com.proyecto.trabajo.models.Estado_solicitudes();
+                estadoFinalizada.setId(5); 
+                s.setEstado_solicitudes(estadoFinalizada);
                 solicitudesRepository.save(s);
             }
             if (s.getElemento() != null) {
@@ -90,12 +89,14 @@ public class SolicitudesServicesImple implements SolicitudesServices {
         }
     }
 
-    // Rechaza y persiste una solicitud si tiene elementos pero ninguno está activo (estado 1)
     private void autoRechazarSiNoHayActivos(Solicitudes s) {
         if (s == null || s.getElemento() == null || s.getElemento().isEmpty()) return;
         long activos = s.getElemento().stream()
             .filter(es -> es != null && es.getElementos() != null && es.getElementos().getEstadosoelement() != null)
-            .filter(es -> es.getElementos().getEstadosoelement() == (byte) 1)
+            .filter(es -> {
+                byte st = es.getElementos().getEstadosoelement();
+                return st == (byte)1 || st == (byte)2;
+            })
             .count();
         if (activos == 0) {
             com.proyecto.trabajo.models.Estado_solicitudes estadoRechazada = new com.proyecto.trabajo.models.Estado_solicitudes();
@@ -135,29 +136,20 @@ public class SolicitudesServicesImple implements SolicitudesServices {
             logger.info("[Solicitudes] Usuario encontrado: id={}, correo={}", usuario.getId(), usuario.getCorreo());
         }
         
-        // 🚀 LÍNEA DE DIAGNÓSTICO: ¿Qué ID recibimos del DTO?
-        logger.info("[DIAGNÓSTICO] ID Subcategoría recibido en DTO: {}", dto.getId_subcategoria());
-
+        
         Solicitudes solicitudes = solicitudesMapper.toSolicitudesFromCreateDto(dto);
         
-        // 🚀 CORRECCIÓN DEFINITIVA: Buscar y asignar la Entidad Sub_categoria
         if (dto.getId_subcategoria() != null) {
-    // 1. Busca la Entidad Sub_categoria por el ID
     Sub_categoria subCategoria = subCategoriaRepository.findById(dto.getId_subcategoria())
         .orElseThrow(() -> new EntityNotFoundException("Subcategoría no encontrada con ID: " + dto.getId_subcategoria()));
     
-    // 2. Asigna el objeto completo al campo 'sub_categoria' de la Solicitud
-    solicitudes.setSub_categoria(subCategoria);
-    
-    // 💡 LOG SIMPLIFICADO: Solo usamos subCategoria.getId()
-    // Esto evita el error de compilación "getNom_subcateg() is undefined"
-    logger.info("[DIAGNÓSTICO] Subcategoría ID {} asignada correctamente a la Entidad.", subCategoria.getId());
+                solicitudes.setSub_categoria(subCategoria);
     
 } else {
      logger.warn("[DIAGNÓSTICO] El ID de subcategoría recibido es NULL. Revisar el frontend o el DTO.");
 }
 
-        solicitudes.setUsuario(usuario); // Asignación de Usuario
+        solicitudes.setUsuario(usuario);
 
         if (dto.getIds_elem() != null && !dto.getIds_elem().isEmpty()
                 && (solicitudes.getElemento() == null || solicitudes.getElemento().isEmpty())) {
@@ -188,18 +180,10 @@ public class SolicitudesServicesImple implements SolicitudesServices {
         Solicitudes solicitudFullPostSave = solicitudesRepository.findById(guardado.getId())
             .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada tras guardar"));
         expirarSolicitudesVencidas();
-        sincronizarEstadoElementos(solicitudFullPostSave);
-
-        // Si la solicitud quedó en estado PENDIENTE y tiene elementos sin activos, rechazarla automáticamente
-        if (solicitudFullPostSave.getEstado_solicitudes() != null && solicitudFullPostSave.getEstado_solicitudes().getId() == 1) {
-            autoRechazarSiNoHayActivos(solicitudFullPostSave);
-            solicitudFullPostSave = solicitudesRepository.findById(guardado.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada tras posible auto-rechazo"));
-        }
 
         if (guardado.getEstado_solicitudes() != null && guardado.getEstado_solicitudes().getId() == 2) {
             boolean sinPrestamo = guardado.getPrestamos() == null || guardado.getPrestamos().isEmpty();
-            if (sinPrestamo) {
+                if (sinPrestamo) {
                 Solicitudes solicitudFull = solicitudesRepository.findById(guardado.getId())
                     .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada tras guardar"));
                 if (solicitudFull.getUsuario() == null) {
@@ -216,7 +200,6 @@ public class SolicitudesServicesImple implements SolicitudesServices {
                             pe.setObser_prest("AUTO");
                             pe.setCantidad(1);
                             prestamosElementoRepository.save(pe);
-                            // Marcar elemento como inactivo al asignarlo a un préstamo
                             try {
                                 es.getElementos().setEstadosoelement((byte) 0);
                                 elementosRepository.save(es.getElementos());
@@ -256,12 +239,7 @@ public class SolicitudesServicesImple implements SolicitudesServices {
     @Transactional(readOnly = true)
     public List<SolicitudesDto> listarPendientes() {
         expirarSolicitudesVencidas();
-        // Primero cargar pendientes y auto-rechazar aquellas sin elementos activos
         List<Solicitudes> pendientes = solicitudesRepository.findByEstado();
-        for (Solicitudes s : pendientes) {
-            autoRechazarSiNoHayActivos(s);
-        }
-        // Volver a consultar las pendientes actualizadas y mapear a DTOs
         return solicitudesRepository.findByEstado()
             .stream()
             .map(solicitudesMapper::toSolicitudesDto)
@@ -272,58 +250,68 @@ public class SolicitudesServicesImple implements SolicitudesServices {
     @Transactional
     public SolicitudesDto actualizarSolicitud(Long id, SolicitudesUpdateDtos dto) {
         logger.info("🔄 Iniciando actualizarSolicitud para solicitud ID: {}", id);
-        logger.info("📦 DTO recibido: id_est_soli={}", dto != null ? dto.getId_est_soli() : "null");
+        logger.info("DTO recibido: id_est_soli={}, ids_elem={}, crear_prestamo={}",
+            dto != null ? dto.getId_est_soli() : "null",
+            dto != null ? dto.getIds_elem() : "null",
+            dto != null ? dto.getCrear_prestamo() : "null");
         
         Solicitudes solicitudes = solicitudesRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada"));
+        if (solicitudes.getElemento() != null) {
+            for (Elemento_Solicitudes es : solicitudes.getElemento()) {
+                if (es != null && es.getElementos() != null) {
+                    logger.info("🔎 Elemento en solicitud antes update: id={}, nom={}, estadosoelement={}",
+                        es.getElementos().getId(), es.getElementos().getNom_elemento(), es.getElementos().getEstadosoelement());
+                }
+            }
+        }
 
         logger.info("📝 Solicitud encontrada, elementos actuales: {}", 
             solicitudes.getElemento() != null ? solicitudes.getElemento().size() : 0);
 
-        // ✅ CRUCIAL: Limpiar y refrescar la relación de elementos
         if (solicitudes.getElemento() != null && !solicitudes.getElemento().isEmpty()) {
-            logger.info("🗑️ Eliminando {} elementos existentes de la solicitud", solicitudes.getElemento().size());
+            logger.info("Eliminando {} elementos existentes de la solicitud", solicitudes.getElemento().size());
             solicitudes.getElemento().clear();
-            entityManager.flush(); // ✅ Fuerza la eliminación en BD
+            entityManager.flush();
         }
 
         solicitudesMapper.updateSolicitudesFromUpdateDto(dto, solicitudes);
         
-        Solicitudes actualizado = solicitudesRepository.save(solicitudes);
-        solicitudesRepository.flush(); // ✅ Forzar flush para asegurar que la BD se actualiza
+        Solicitudes actualizado = solicitudesRepository.save(solicitudes); // ✅ Forzar flush para asegurar que la BD se actualiza
         logger.info("✅ Solicitud actualizada, nuevos elementos: {}", actualizado.getElemento().size());
         logger.info("✅ Estado después de actualizar: {}", actualizado.getEstado_solicitudes() != null ? actualizado.getEstado_solicitudes().getId() : "null");
         logger.info("✅ Estado nombre: {}", actualizado.getEstado_solicitudes() != null ? actualizado.getEstado_solicitudes().getNom_esta() : "null");
+        // Log estados de elementos justo después de la actualización
+        if (actualizado.getElemento() != null) {
+            for (Elemento_Solicitudes es : actualizado.getElemento()) {
+                if (es != null && es.getElementos() != null) {
+                    logger.info("🔁 Elemento tras update: id={}, nom={}, estadosoelement={}",
+                        es.getElementos().getId(), es.getElementos().getNom_elemento(), es.getElementos().getEstadosoelement());
+                }
+            }
+        }
         
         SolicitudesDto dtoRetorno = solicitudesMapper.toSolicitudesDto(actualizado);
         logger.info("✅ DTO de retorno est_soli: {}", dtoRetorno.getEst_soli());
         logger.info("✅ DTO de retorno id_espa: {}", dtoRetorno.getId_espa());
-        
-        sincronizarEstadoElementos(actualizado);
 
+        
         expirarSolicitudesVencidas();
 
-        // Verificar si se debe crear préstamo (estado 2 = Aprobado)
         boolean aprobado = dto != null && dto.getId_est_soli() != null && dto.getId_est_soli() == 2;
         boolean sinPrestamo = actualizado.getPrestamos() == null || actualizado.getPrestamos().isEmpty();
         boolean tieneElementos = actualizado.getElemento() != null && !actualizado.getElemento().isEmpty();
         
-        System.out.println("DEBUG - actualizarSolicitud:");
-        System.out.println("  - dto.getId_est_soli(): " + (dto != null ? dto.getId_est_soli() : "null"));
-        System.out.println("  - actualizado.getEstado_solicitudes(): " + (actualizado.getEstado_solicitudes() != null ? actualizado.getEstado_solicitudes().getId() : "null"));
-        System.out.println("  - aprobado: " + aprobado);
-        System.out.println("  - sinPrestamo: " + sinPrestamo);
-        System.out.println("  - tieneElementos: " + tieneElementos);
-        System.out.println("  - tiene usuario: " + (actualizado.getUsuario() != null));
-        System.out.println("  - tiene espacio: " + (actualizado.getEspacio() != null));
+        
 
-        // ✅ Si es aprobado, verificar disponibilidad de elementos y guardar id_tecnico y nombre_tecnico
         if (aprobado) {
-            // Si la solicitud tiene elementos pero ninguno está en estado activo (1), rechazar automáticamente
             if (tieneElementos) {
                 long activos = actualizado.getElemento().stream()
                     .filter(es -> es != null && es.getElementos() != null && es.getElementos().getEstadosoelement() != null)
-                    .filter(es -> es.getElementos().getEstadosoelement() == (byte) 1)
+                    .filter(es -> {
+                        byte st = es.getElementos().getEstadosoelement();
+                        return st == (byte)1 || st == (byte)2;
+                    })
                     .count();
                 if (activos == 0) {
                     logger.info("[Solicitudes] No hay elementos activos para la solicitud {}. Marcando como RECHAZADA.", actualizado.getId());
@@ -336,7 +324,6 @@ public class SolicitudesServicesImple implements SolicitudesServices {
                 }
             }
 
-            // Guardar id_tecnico y nombre_tecnico si están presentes
             if (dto.getId_tecnico() != null) {
                 actualizado.setId_tecnico(dto.getId_tecnico());
             }
@@ -344,18 +331,14 @@ public class SolicitudesServicesImple implements SolicitudesServices {
                 actualizado.setNombre_tecnico(dto.getNombre_tecnico());
             }
             actualizado = solicitudesRepository.save(actualizado);
-            solicitudesRepository.flush(); // ✅ Forzar flush nuevamente
+            solicitudesRepository.flush();
         }
 
-        // ✅ Solo crear préstamo si tiene elementos (solicitudes de equipos)
-        // Las solicitudes de espacios sin elementos NO generan préstamo
-        if (aprobado && sinPrestamo && tieneElementos) {
+        boolean crearPrestamoFlag = dto != null && dto.getCrear_prestamo() != null && dto.getCrear_prestamo();
+        if (aprobado && sinPrestamo && tieneElementos && crearPrestamoFlag) {
             if (actualizado.getUsuario() == null) {
                 throw new IllegalArgumentException("No se puede crear el préstamo automáticamente porque la solicitud no tiene usuario asignado. Asigna un usuario antes de aprobar la solicitud.");
             }
-            System.out.println("DEBUG - Creando préstamo automático...");
-            System.out.println("  - Espacio ID: " + (actualizado.getEspacio() != null ? actualizado.getEspacio().getId() : "null"));
-            System.out.println("  - Elementos en solicitud: " + actualizado.getElemento().size());
             
             Prestamos p = new Prestamos();
             p.setFecha_entre(LocalDateTime.now());
@@ -365,7 +348,6 @@ public class SolicitudesServicesImple implements SolicitudesServices {
             p.setEspacio(actualizado.getEspacio());
             p.setSolicitudes(actualizado);
             
-            // ✅ Guardar id_tecnico y nombre_tecnico en el préstamo
             if (dto.getId_tecnico() != null) {
                 p.setId_tecnico(dto.getId_tecnico());
             }
@@ -373,18 +355,15 @@ public class SolicitudesServicesImple implements SolicitudesServices {
                 p.setNombre_tecnico(dto.getNombre_tecnico());
             }
             
-            // Guardar el préstamo primero
             Prestamos prestamoGuardado = prestamosRepository.save(p);
             
-            // Crear Prestamos_Elemento para cada elemento
             for (Elemento_Solicitudes es : actualizado.getElemento()) {
                 Prestamos_Elemento pe = new Prestamos_Elemento();
                 pe.setPrestamos(prestamoGuardado);
                 pe.setElementos(es.getElementos());
-                pe.setCantidad(1); // O usar la cantidad de la solicitud si existe
-                pe.setObser_prest("Préstamo automático generado al aprobar solicitud"); // ✅ Campo obligatorio
+                pe.setCantidad(1);
+                pe.setObser_prest("Préstamo automático generado al aprobar solicitud"); 
                 prestamoGuardado.getPrestamoss().add(pe);
-                // Marcar el elemento como inactivo inmediatamente
                 try {
                     if (es.getElementos() != null) {
                         es.getElementos().setEstadosoelement((byte) 0);
@@ -395,12 +374,15 @@ public class SolicitudesServicesImple implements SolicitudesServices {
                 }
             }
             prestamosRepository.save(prestamoGuardado);
-            
-            System.out.println("DEBUG - Préstamo creado exitosamente con ID: " + prestamoGuardado.getId());
         } else if (aprobado && !tieneElementos) {
-            System.out.println("DEBUG - Solicitud aprobada SIN elementos (solicitud de espacio). No se crea préstamo.");
         }
         
+        try {
+            sincronizarEstadoElementos(actualizado);
+        } catch (Exception ex) {
+            logger.error("Error sincronizando estados de elementos después de actualizar solicitud {}: {}", actualizado.getId(), ex.getMessage());
+        }
+
         return solicitudesMapper.toSolicitudesDto(actualizado);
     }
 
@@ -412,7 +394,6 @@ public class SolicitudesServicesImple implements SolicitudesServices {
         
         logger.info("[ELIMINAR] Iniciando eliminación de solicitud ID: {}", id);
         
-        // 1. Eliminar relaciones con Prestamos_Elemento
         if (solicitud.getPrestamos() != null && !solicitud.getPrestamos().isEmpty()) {
             logger.info("[ELIMINAR] Eliminando {} préstamos relacionados", solicitud.getPrestamos().size());
             for (Prestamos prestamo : solicitud.getPrestamos()) {
@@ -422,11 +403,9 @@ public class SolicitudesServicesImple implements SolicitudesServices {
                     prestamosElementoRepository.deleteAll(prestamo.getPrestamoss());
                 }
             }
-            // 2. Eliminar Prestamos
             prestamosRepository.deleteAll(solicitud.getPrestamos());
         }
         
-        // 3. Restaurar estado de elementos a disponible (estado 1)
         if (solicitud.getElemento() != null && !solicitud.getElemento().isEmpty()) {
             logger.info("[ELIMINAR] Restaurando estado de {} elementos", solicitud.getElemento().size());
             for (Elemento_Solicitudes es : solicitud.getElemento()) {
@@ -437,7 +416,6 @@ public class SolicitudesServicesImple implements SolicitudesServices {
             }
         }
         
-        // 4. Las relaciones Elemento_Solicitudes se eliminan automáticamente por cascade
         logger.info("[ELIMINAR] Eliminando solicitud ID: {}", id);
         solicitudesRepository.delete(solicitud);
         logger.info("[ELIMINAR] Solicitud eliminada exitosamente");
