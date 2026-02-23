@@ -23,6 +23,8 @@ public class TicketsMapperImple implements TicketsMapper {
         tickets.setFecha_ini(ticketsDtos.getFecha_in());
         tickets.setFecha_finn(ticketsDtos.getFecha_fin());
         tickets.setAmbiente(ticketsDtos.getAmbiente());
+        tickets.setImageness(ticketsDtos.getImageness());
+        tickets.setObservaciones(ticketsDtos.getObservaciones());
         return tickets;
     }
 
@@ -63,6 +65,10 @@ public class TicketsMapperImple implements TicketsMapper {
         } else {
             dto.setProblemas(null);
         }
+
+        // Mapear observaciones e imagenes si existen en la entidad
+        dto.setObservaciones(tickets.getObservaciones());
+        dto.setImageness(tickets.getImageness());
 
         return dto;
     }

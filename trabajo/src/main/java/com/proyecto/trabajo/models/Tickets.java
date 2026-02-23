@@ -55,6 +55,12 @@ public class Tickets {
     @JoinColumn(name = "elementos", nullable = false, foreignKey = @ForeignKey(name = "FK_Id_elementos"))
     private Elementos elementos;
 
+    @Column(columnDefinition = "LONGTEXT")
+    private String imageness;
+
+    @Column(length = 255)
+    private String observaciones;
+
     public Estado_ticket getIdEstTick() {
         return idEstTick;
     }

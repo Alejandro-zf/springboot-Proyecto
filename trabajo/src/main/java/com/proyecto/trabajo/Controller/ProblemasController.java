@@ -2,6 +2,8 @@ package com.proyecto.trabajo.Controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.validation.FieldError;
 
 import com.proyecto.trabajo.Services.ProblemasServices;
 import com.proyecto.trabajo.dto.ProblemasCreateDtos;
@@ -47,6 +52,29 @@ public class ProblemasController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("error", "Error al crear el problema", "detalle", ex.getMessage()));
         }
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<String> handleValidationException(MethodArgumentNotValidException ex) {
+        List<FieldError> errors = ex.getBindingResult().getFieldErrors();
+        Set<String> fields = new HashSet<>();
+        for (FieldError f : errors) {
+            fields.add(f.getField());
+        }
+
+        boolean missingDescr = fields.contains("descr_problem");
+        boolean missingTipo = fields.contains("tipo_problema");
+
+        if (missingDescr && !missingTipo) {
+            return ResponseEntity.badRequest().body("Debes ingresar la descripción del problema");
+        } else if (missingTipo && !missingDescr) {
+            return ResponseEntity.badRequest().body("Debes indicar el tipo de problema");
+        } else if (missingTipo && missingDescr) {
+            return ResponseEntity.badRequest().body("Debes ingresar el tipo y la descripción del problema");
+        }
+
+        String msg = errors.isEmpty() ? "Datos inválidos" : errors.get(0).getDefaultMessage();
+        return ResponseEntity.badRequest().body(msg);
     }
 
     // Obtener problema por ID - Acceso: Admin, Tecnico, Instructor
