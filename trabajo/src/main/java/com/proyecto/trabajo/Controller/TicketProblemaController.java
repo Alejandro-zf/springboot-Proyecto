@@ -42,4 +42,9 @@ public class TicketProblemaController {
         ticketProblemaService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<com.proyecto.trabajo.dto.TicketProblemaDto> update(@PathVariable Long id, @RequestBody com.proyecto.trabajo.dto.TicketProblemaUpdateDto dto) {
+        return ResponseEntity.ok(ticketProblemaService.update(id, dto));
+    }
 }

@@ -98,14 +98,19 @@ public class TicketsServicesImple implements TicketsServices {
                 TicketProblema ticketProblema = new TicketProblema();
                 ticketProblema.setTicket(tickets);
                 ticketProblema.setProblema(problema);
-                ticketProblema.setDescripcion(problemaDetalle.getDescripcion());
+                String desc = problemaDetalle.getDescripcion();
+                if (desc != null && !desc.isBlank()) {
+                    ticketProblema.setDescripcion(desc.trim());
+                } else {
+                    ticketProblema.setDescripcion(null);
+                }
                 if (problemaDetalle.getImagenes() != null && !problemaDetalle.getImagenes().isEmpty()) {
                     ticketProblema.setImagenes(String.join(",", problemaDetalle.getImagenes()));
                 } else {
                     ticketProblema.setImagenes(null);
                 }
                 tickets.getTicketProblemas().add(ticketProblema);
-                System.out.println("✅ Agregado problema ID: " + problemaDetalle.getId() + " - " + problema.getDesc_problema() + ", descripcion='" + ticketProblema.getDescripcion() + "', imagenes=" + ticketProblema.getImagenes());
+                System.out.println("✅ Agregado problema ID: " + problemaDetalle.getId() + " - " + problema.getDesc_problema() + ", imagenes=" + ticketProblema.getImagenes());
             }
             System.out.println("📋 Total problemas en ticket: " + tickets.getTicketProblemas().size());
         }

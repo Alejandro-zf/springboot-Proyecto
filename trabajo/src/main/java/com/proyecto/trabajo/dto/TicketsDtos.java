@@ -27,6 +27,5 @@ public class TicketsDtos {
 
     private Long id_est_tick;
     private String tip_est_ticket;
-    private String observaciones;
-    private String imageness;
+    
 }

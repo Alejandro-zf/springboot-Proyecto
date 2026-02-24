@@ -55,4 +55,16 @@ public class TicketProblemaService {
     public void delete(Long id) {
         ticketProblemaRepository.deleteById(id);
     }
+
+    public TicketProblemaDto update(Long id, com.proyecto.trabajo.dto.TicketProblemaUpdateDto dto) {
+        TicketProblema entity = ticketProblemaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("TicketProblema no encontrado"));
+        if (dto.getDescripcion() != null) entity.setDescripcion(dto.getDescripcion());
+        if (dto.getImagenes() != null) {
+            if (dto.getImagenes().isEmpty()) entity.setImagenes(null);
+            else entity.setImagenes(String.join(",", dto.getImagenes()));
+        }
+        TicketProblema updated = ticketProblemaRepository.save(entity);
+        return TicketProblemaMapper.toDto(updated);
+    }
  }

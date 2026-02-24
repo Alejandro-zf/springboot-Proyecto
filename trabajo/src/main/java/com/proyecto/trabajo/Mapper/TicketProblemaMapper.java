@@ -12,6 +12,7 @@ public class TicketProblemaMapper {
         dto.setDescripcion(entity.getDescripcion());
         dto.setImagenes(entity.getImagenes());
         dto.setTipoProblema(entity.getProblema() != null ? entity.getProblema().getTip_problema() : null);
+        dto.setProblemaDesc(entity.getProblema() != null ? entity.getProblema().getDesc_problema() : null);
         return dto;
     }
 

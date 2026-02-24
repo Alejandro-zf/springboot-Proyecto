@@ -8,4 +8,5 @@ public class TicketProblemaDto {
     private String descripcion;
     private String imagenes;
     private String tipoProblema;
+    private String problemaDesc;
 }
