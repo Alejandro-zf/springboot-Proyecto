@@ -27,9 +27,9 @@ public class TicketsDtos {
 
     private Long id_est_tick;
     private String tip_est_ticket;
-    
+
     // Campos planos extraídos del primer TicketProblema
-    private String imageness;  // Imágenes del primer problema
-    private String nom_problm;  // Nombre/tipo del primer problema
-    private String obser;       // Descripción/observaciones del primer problema
+    private String imageness; // Imágenes del primer problema
+    private String nom_problm; // Nombre/tipo del primer problema
+    private String obser; // Descripción/observaciones del primer problema
 }

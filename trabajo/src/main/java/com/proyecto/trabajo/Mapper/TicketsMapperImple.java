@@ -11,8 +11,6 @@ import java.util.stream.Collectors;
 @Component
 public class TicketsMapperImple implements TicketsMapper {
 
-
-
     @Override
     public Tickets toTickets(TicketsDtos ticketsDtos) {
         if (ticketsDtos == null)
@@ -37,19 +35,19 @@ public class TicketsMapperImple implements TicketsMapper {
         dto.setFecha_fin(tickets.getFecha_finn());
         dto.setAmbiente(tickets.getAmbiente());
         dto.setEstado(tickets.getEstado());
-        
+
         // Mapear usuario
         if (tickets.getUsuario() != null) {
             dto.setId_usuario(tickets.getUsuario().getId());
             dto.setNom_usu(tickets.getUsuario().getNom_usu());
         }
-        
+
         // Mapear elemento
         if (tickets.getElementos() != null) {
             dto.setId_eleme(tickets.getElementos().getId());
             dto.setNom_elem(tickets.getElementos().getNom_elemento());
         }
-        
+
         // Mapear estado del ticket
         if (tickets.getIdEstTick() != null) {
             dto.setId_est_tick(tickets.getIdEstTick().getIdEstado().longValue());
@@ -58,9 +56,9 @@ public class TicketsMapperImple implements TicketsMapper {
 
         if (tickets.getTicketProblemas() != null && !tickets.getTicketProblemas().isEmpty()) {
             dto.setProblemas(tickets.getTicketProblemas().stream()
-                .map(TicketProblemaMapper::toDto)
-                .collect(Collectors.toList()));
-            
+                    .map(TicketProblemaMapper::toDto)
+                    .collect(Collectors.toList()));
+
             // Extraer campos del primer problema para compatibilidad con frontend
             var primerProblema = tickets.getTicketProblemas().get(0);
             dto.setImageness(primerProblema.getImagenes());
