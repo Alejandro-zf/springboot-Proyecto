@@ -60,8 +60,19 @@ public class TicketsMapperImple implements TicketsMapper {
             dto.setProblemas(tickets.getTicketProblemas().stream()
                 .map(TicketProblemaMapper::toDto)
                 .collect(Collectors.toList()));
+            
+            // Extraer campos del primer problema para compatibilidad con frontend
+            var primerProblema = tickets.getTicketProblemas().get(0);
+            dto.setImageness(primerProblema.getImagenes());
+            dto.setObser(primerProblema.getDescripcion());
+            if (primerProblema.getProblema() != null) {
+                dto.setNom_problm(primerProblema.getProblema().getTip_problema());
+            }
         } else {
             dto.setProblemas(null);
+            dto.setImageness(null);
+            dto.setNom_problm(null);
+            dto.setObser(null);
         }
 
         return dto;
