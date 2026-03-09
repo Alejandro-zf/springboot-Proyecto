@@ -134,8 +134,7 @@ public class SolicitudesMapperImple implements SolicitudesMapper {
         if (entity.getEspacio() != null) {
             dto.setId_espa(entity.getEspacio().getId().longValue());
             dto.setNom_espa(entity.getEspacio().getNom_espa());
-        }
-    if (entity.getElemento() != null && !entity.getElemento().isEmpty()) {
+        }    if (entity.getElemento() != null && !entity.getElemento().isEmpty()) {
             StringBuilder idsJoin = new StringBuilder();
             StringBuilder namesJoin = new StringBuilder();
             boolean first = true;

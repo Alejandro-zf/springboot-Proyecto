@@ -158,8 +158,7 @@ public class PrestamosServicesImple implements PrestamosServices {
     if (dto.getFecha_entreg() != null) {
         prestamos.setFecha_entre(dto.getFecha_entreg());
     }
-    
-    // Si se está marcando como finalizado (estado = 0) y no tiene fecha de recepción, asignar la actual
+        // Si se está marcando como finalizado (estado = 0) y no tiene fecha de recepción, asignar la actual
     if (dto.getEstado() != null && dto.getEstado() == 0 && prestamos.getFecha_recep() == null) {
         prestamos.setFecha_recep(java.time.LocalDateTime.now());
         

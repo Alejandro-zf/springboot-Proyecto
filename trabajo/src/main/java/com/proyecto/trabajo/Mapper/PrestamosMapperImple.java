@@ -124,8 +124,7 @@ public class PrestamosMapperImple implements PrestamosMapper {
         }
         PrestamosDto prestamosDto = new PrestamosDto();
         prestamosDto.setId_prest(prestamos.getId());
-        prestamosDto.setFecha_entreg(prestamos.getFecha_entre());
-        // Si fecha_recep es null, asignar la fecha actual como fallback
+        prestamosDto.setFecha_entreg(prestamos.getFecha_entre());        // Si fecha_recep es null, asignar la fecha actual como fallback
         if (prestamos.getFecha_recep() != null) {
             prestamosDto.setFecha_repc(prestamos.getFecha_recep());
         } else {

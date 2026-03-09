@@ -150,7 +150,6 @@ public class SolicitudesServicesImple implements SolicitudesServices {
 }
 
         solicitudes.setUsuario(usuario);
-
         if (dto.getIds_elem() != null && !dto.getIds_elem().isEmpty()
                 && (solicitudes.getElemento() == null || solicitudes.getElemento().isEmpty())) {
             for (Long idElem : dto.getIds_elem()) {
@@ -332,10 +331,7 @@ public class SolicitudesServicesImple implements SolicitudesServices {
             }
             actualizado = solicitudesRepository.save(actualizado);
             solicitudesRepository.flush();
-        }
-
-        boolean crearPrestamoFlag = dto != null && dto.getCrear_prestamo() != null && dto.getCrear_prestamo();
-        if (aprobado && sinPrestamo && tieneElementos && crearPrestamoFlag) {
+        }        if (aprobado && sinPrestamo && tieneElementos) {
             if (actualizado.getUsuario() == null) {
                 throw new IllegalArgumentException("No se puede crear el préstamo automáticamente porque la solicitud no tiene usuario asignado. Asigna un usuario antes de aprobar la solicitud.");
             }
