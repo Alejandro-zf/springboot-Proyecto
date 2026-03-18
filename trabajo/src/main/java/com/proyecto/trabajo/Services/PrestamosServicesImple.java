@@ -93,7 +93,15 @@ public class PrestamosServicesImple implements PrestamosServices {
                     Prestamos_Elemento pe = new Prestamos_Elemento();
                     pe.setPrestamos(guardado);
                     pe.setElementos(elemento);
-                    pe.setObser_prest("AUTO");
+                    try {
+                        String nombreElem = elemento.getNom_elemento() != null ? elemento.getNom_elemento() : "Elemento";
+                        String serie = elemento.getNum_serie() != null ? elemento.getNum_serie() : null;
+                        String obs = "Elemento: " + nombreElem;
+                        if (serie != null && !serie.isEmpty()) obs += " | Serie: " + serie;
+                        pe.setObser_prest(obs);
+                    } catch (Exception ex) {
+                        pe.setObser_prest("Préstamo automático");
+                    }
                     prestamosElementoRepository.save(pe);
                     System.out.println("DEBUG - Prestamos_Elemento guardado");
                 }

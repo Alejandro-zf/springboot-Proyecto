@@ -46,7 +46,11 @@ public class Estado_solicitudesServiceImple implements Estado_solicitudesService
         if (aprobado && sinPrestamo && solicitudes.getUsuario() != null && solicitudes.getEspacio() != null) {
             Prestamos p = new Prestamos();
             p.setFecha_entre(LocalDateTime.now());
-            p.setTipo_prest("AUTO");
+            String tipoPrestamo = "Portátiles";
+            if (solicitudes.getEspacio() != null && (solicitudes.getElemento() == null || solicitudes.getElemento().isEmpty())) {
+                tipoPrestamo = "Espacios";
+            }
+            p.setTipo_prest(tipoPrestamo);
             p.setUsuario(solicitudes.getUsuario());
             p.setEspacio(solicitudes.getEspacio());
             p.setSolicitudes(solicitudes);

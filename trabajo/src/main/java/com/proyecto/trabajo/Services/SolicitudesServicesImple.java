@@ -196,7 +196,23 @@ public class SolicitudesServicesImple implements SolicitudesServices {
                             Prestamos_Elemento pe = new Prestamos_Elemento();
                             pe.setPrestamos(prestamoGuardado);
                             pe.setElementos(es.getElementos());
-                            pe.setObser_prest("AUTO");
+                            try {
+                                String obs = "";
+                                if (es.getElementos() != null) {
+                                    String nombreElem = es.getElementos().getNom_elemento() != null ? es.getElementos().getNom_elemento() : "Elemento";
+                                    String serie = es.getElementos().getNum_serie() != null ? es.getElementos().getNum_serie() : null;
+                                    obs = "Elemento: " + nombreElem;
+                                    if (serie != null && !serie.isEmpty()) obs += " | Serie: " + serie;
+                                } else if (prestamoGuardado.getEspacio() != null) {
+                                    String nomEsp = prestamoGuardado.getEspacio().getNom_espa() != null ? prestamoGuardado.getEspacio().getNom_espa() : "Espacio";
+                                    obs = "Espacio: " + nomEsp;
+                                } else {
+                                    obs = "Préstamo automático";
+                                }
+                                pe.setObser_prest(obs);
+                            } catch (Exception ex) {
+                                pe.setObser_prest("Préstamo automático");
+                            }
                             pe.setCantidad(1);
                             prestamosElementoRepository.save(pe);
                             try {
@@ -339,7 +355,11 @@ public class SolicitudesServicesImple implements SolicitudesServices {
             Prestamos p = new Prestamos();
             p.setFecha_entre(LocalDateTime.now());
             p.setEstado((byte) 1); // ✅ Establecer estado explícitamente
-            p.setTipo_prest("AUTO");
+            String tipoPrestamo = "Portátiles";
+            if (actualizado.getEspacio() != null && (actualizado.getElemento() == null || actualizado.getElemento().isEmpty())) {
+                tipoPrestamo = "Espacios";
+            }
+            p.setTipo_prest(tipoPrestamo);
             p.setUsuario(actualizado.getUsuario());
             p.setEspacio(actualizado.getEspacio());
             p.setSolicitudes(actualizado);
@@ -358,7 +378,23 @@ public class SolicitudesServicesImple implements SolicitudesServices {
                 pe.setPrestamos(prestamoGuardado);
                 pe.setElementos(es.getElementos());
                 pe.setCantidad(1);
-                pe.setObser_prest("Préstamo automático generado al aprobar solicitud"); 
+                try {
+                    String obs = "";
+                    if (es.getElementos() != null) {
+                        String nombreElem = es.getElementos().getNom_elemento() != null ? es.getElementos().getNom_elemento() : "Elemento";
+                        String serie = es.getElementos().getNum_serie() != null ? es.getElementos().getNum_serie() : null;
+                        obs = "Elemento: " + nombreElem;
+                        if (serie != null && !serie.isEmpty()) obs += " | Serie: " + serie;
+                    } else if (prestamoGuardado.getEspacio() != null) {
+                        String nomEsp = prestamoGuardado.getEspacio().getNom_espa() != null ? prestamoGuardado.getEspacio().getNom_espa() : "Espacio";
+                        obs = "Espacio: " + nomEsp;
+                    } else {
+                        obs = "Préstamo automático";
+                    }
+                    pe.setObser_prest(obs);
+                } catch (Exception ex) {
+                    pe.setObser_prest("Préstamo automático");
+                }
                 prestamoGuardado.getPrestamoss().add(pe);
                 try {
                     if (es.getElementos() != null) {
