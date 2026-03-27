@@ -48,6 +48,9 @@ public class Tickets {
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TicketProblema> ticketProblemas = new ArrayList<>();
 
+    @Column(nullable = true, length = 255)
+    private String problemas;
+
     @OneToMany(mappedBy = "tickets", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Trasabilidad> trasabilidad = new ArrayList<>();
 
