@@ -12,7 +12,11 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry){
         String[] allowedOrigins = {
             "http://localhost:5173",
+            "http://localhost:5174",
             "http://127.0.0.1:5173",
+            "http://127.0.0.1:5174",
+            "http://192.168.0.6:5173",
+            "http://192.168.0.6:5174",
             "http://3.214.21.224:5173"
         };
 
