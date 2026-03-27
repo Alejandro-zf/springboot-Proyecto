@@ -215,12 +215,6 @@ public class SolicitudesServicesImple implements SolicitudesServices {
                             }
                             pe.setCantidad(1);
                             prestamosElementoRepository.save(pe);
-                            try {
-                                es.getElementos().setEstadosoelement((byte) 0);
-                                elementosRepository.save(es.getElementos());
-                            } catch (Exception ex) {
-                                logger.error("Error marcando elemento {} como inactivo: {}", es.getElementos().getId(), ex.getMessage());
-                            }
                         }
                     }
                 }
@@ -396,14 +390,6 @@ public class SolicitudesServicesImple implements SolicitudesServices {
                     pe.setObser_prest("Préstamo automático");
                 }
                 prestamoGuardado.getPrestamoss().add(pe);
-                try {
-                    if (es.getElementos() != null) {
-                        es.getElementos().setEstadosoelement((byte) 0);
-                        elementosRepository.save(es.getElementos());
-                    }
-                } catch (Exception ex) {
-                    logger.error("Error marcando elemento {} como inactivo al crear préstamo: {}", es != null && es.getElementos() != null ? es.getElementos().getId() : "null", ex.getMessage());
-                }
             }
             prestamosRepository.save(prestamoGuardado);
         } else if (aprobado && !tieneElementos) {
@@ -413,6 +399,27 @@ public class SolicitudesServicesImple implements SolicitudesServices {
             sincronizarEstadoElementos(actualizado);
         } catch (Exception ex) {
             logger.error("Error sincronizando estados de elementos después de actualizar solicitud {}: {}", actualizado.getId(), ex.getMessage());
+        }
+        try {
+            if (dto != null && dto.getId_est_soli() != null) {
+                int nuevo = dto.getId_est_soli();
+                if (nuevo == 3 || nuevo == 4 || nuevo == 5) {
+                    if (actualizado.getElemento() != null) {
+                        for (Elemento_Solicitudes es : actualizado.getElemento()) {
+                            if (es != null && es.getElementos() != null) {
+                                try {
+                                    es.getElementos().setEstadosoelement((byte) 1);
+                                    elementosRepository.save(es.getElementos());
+                                } catch (Exception e) {
+                                    logger.warn("No se pudo reactivar elemento {}: {}", es.getElementos().getId(), e.getMessage());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            logger.error("Error reactivando elementos tras cambio de estado de solicitud {}: {}", actualizado.getId(), ex.getMessage());
         }
 
         return solicitudesMapper.toSolicitudesDto(actualizado);
@@ -451,5 +458,24 @@ public class SolicitudesServicesImple implements SolicitudesServices {
         logger.info("[ELIMINAR] Eliminando solicitud ID: {}", id);
         solicitudesRepository.delete(solicitud);
         logger.info("[ELIMINAR] Solicitud eliminada exitosamente");
+    }
+
+    @Override
+    @Transactional
+    public void reactivarElementosPorSolicitud(Long id) {
+        Solicitudes solicitud = solicitudesRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada"));
+        if (solicitud.getElemento() != null) {
+            for (Elemento_Solicitudes es : solicitud.getElemento()) {
+                if (es != null && es.getElementos() != null) {
+                    try {
+                        es.getElementos().setEstadosoelement((byte)1);
+                        elementosRepository.save(es.getElementos());
+                    } catch (Exception e) {
+                        logger.warn("No se pudo reactivar elemento {}: {}", es.getElementos().getId(), e.getMessage());
+                    }
+                }
+            }
+        }
     }
 }
