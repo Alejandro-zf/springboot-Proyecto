@@ -15,10 +15,7 @@ public class CorsConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedOrigins(
-                            "http://localhost:5173",
-                            "http://localhost:5174",
-                            "http://localhost:3000",
-                            "http://localhost:5175"
+                           "http://3.214.21.224:5173"
                         ) // tu frontend - agregados más puertos comunes
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
                         .allowedHeaders("*")

@@ -1,8 +1,10 @@
 package com.proyecto.trabajo.security;
+import java.util.Arrays;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -105,10 +107,16 @@ public class SecurityConfig {
 // --- Configuración global de CORS para desarrollo React ---
 @Configuration
 class CorsGlobalConfig implements WebMvcConfigurer {
+
+    @Value("${app.cors.allowed-origins:http://localhost:5173,http://3.214.21.224:*}")
+    private String allowedOrigins;
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-            .allowedOriginPatterns("*")  // Permite CUALQUIER origen en desarrollo
+            .allowedOrigins(Arrays.stream(allowedOrigins.split(","))
+                .map(String::trim)
+                .toArray(String[]::new))
             .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
             .allowedHeaders("*")
             .allowCredentials(true);
