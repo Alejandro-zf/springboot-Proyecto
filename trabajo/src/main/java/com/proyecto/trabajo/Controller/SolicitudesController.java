@@ -36,6 +36,13 @@ public class SolicitudesController {
     public ResponseEntity<?> actualizarSolicitud(@PathVariable Long id, @RequestBody SolicitudesUpdateDtos dto) {
         try {
             SolicitudesDto actualizado = solicitudesServices.actualizarSolicitud(id, dto);
+            try {
+                Integer est = dto != null ? dto.getId_est_soli() : null;
+                if (est != null && (est == 3 || est == 4 || est == 5)) {
+                    solicitudesServices.reactivarElementosPorSolicitud(id);
+                }
+            } catch (Exception ex) {
+            }
             return ResponseEntity.ok(Map.of("mensaje", "Solicitud actualizada correctamente", "data", actualizado));
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -56,6 +63,13 @@ public class SolicitudesController {
     public ResponseEntity<?> actualizarEstado(@PathVariable Long id, @RequestBody SolicitudesUpdateDtos dto) {
         try {
             SolicitudesDto actualizado = solicitudesServices.actualizarSolicitud(id, dto);
+            try {
+                Integer est = dto != null ? dto.getId_est_soli() : null;
+                if (est != null && (est == 3 || est == 4 || est == 5)) {
+                    solicitudesServices.reactivarElementosPorSolicitud(id);
+                }
+            } catch (Exception ex) {
+            }
             return ResponseEntity.ok(Map.of("mensaje", "Solicitud actualizada", "data", actualizado));
         } catch (Exception ex) {
             ex.printStackTrace();

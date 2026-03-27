@@ -85,10 +85,7 @@ public class PrestamosServicesImple implements PrestamosServices {
                     Elementos elemento = elementosRepository.findById(idElem)
                         .orElseThrow(() -> new EntityNotFoundException("Elemento no encontrado"));
                     
-                    // Cambiar el estado del elemento a 0 (inactivo/asignado)
-                    elemento.setEstadosoelement((byte) 0);
-                    elementosRepository.save(elemento);
-                    System.out.println("DEBUG - Elemento " + idElem + " actualizado a estado 0 (inactivo)");
+                    System.out.println("DEBUG - Elemento " + idElem + " procesado (sin cambiar estado en backend)");
                     
                     Prestamos_Elemento pe = new Prestamos_Elemento();
                     pe.setPrestamos(guardado);

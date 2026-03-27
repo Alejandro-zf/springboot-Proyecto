@@ -35,15 +35,6 @@ public class Prestamos_ElementoServiceImple implements Prestamos_ElementoService
         if (repository.existsById(id)) {
             throw new IllegalStateException("Ya existe una asignación para ese préstamo y elemento");
         }
-        // Marcar el elemento como inactivo (0) cuando se asigna a un préstamo
-        try {
-            if (pe.getElementos() != null) {
-                pe.getElementos().setEstadosoelement((byte) 0);
-                elementosRepository.save(pe.getElementos());
-            }
-        } catch (Exception e) {
-            System.out.println("WARN: no se pudo actualizar el estado del elemento al asignar: " + e.getMessage());
-        }
 
         Prestamos_Elemento guardado = repository.save(pe);
         return mapper.toDTO(guardado);
